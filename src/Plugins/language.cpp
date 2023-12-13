@@ -10,15 +10,22 @@
 #include <llapi/mc/CommandOrigin.hpp>
 #include <llapi/mc/CommandOutput.hpp>
 #include <llapi/mc/Player.hpp>
+#include "../config.h"
 #include "../Storage/SQLiteDatabase.h"
 #include "i18nLang.h"
 #include "language.h"
 extern Logger logger;
-const std::string PluginData = "./plugins/LOICollection/data";
-std::filesystem::path PluginDataPath(PluginData);
 
 namespace language {
     namespace {
+        void database() {
+            if (!std::filesystem::exists(PluginDataPath.append("language.db"))) {
+                logger.info("数据库 language.db 已创建");
+                SQLiteDatabase db(PluginData + "/language.db");
+                db.close();
+            }
+        }
+
         void ui(ServerPlayer* player) {
             std::string PlayerLanguage = get(player);
             i18nLang lang("./plugins/LOICollection/language.json");
@@ -40,8 +47,7 @@ namespace language {
         void listen() {
             Event::PlayerJoinEvent::subscribe([](const Event::PlayerJoinEvent& event) {
                 std::string xuid = event.mPlayer->getXuid();
-                if (!std::filesystem::exists(PluginDataPath.append("language.db")))
-                    logger.info("数据库 language.db 已创建");
+                database();
                 SQLiteDatabase db(PluginData + "/language.db");
                 if (!db.exists(xuid))
                     db.set(xuid, "zh_CN");
@@ -87,6 +93,7 @@ namespace language {
         (*OpenPlugin)++;
         listen();
         command();
+        database();
         logger.info("插件 <language> 已加载");
     }
 }

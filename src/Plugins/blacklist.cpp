@@ -5,11 +5,21 @@
 #include <llapi/mc/Types.hpp>
 #include <llapi/mc/ServerPlayer.hpp>
 #include <llapi/mc/Player.hpp>
+#include "../config.h"
+#include "../Storage/SQLiteDatabase.h"
 #include "blacklist.h"
 extern Logger logger;
 
 namespace blacklist {
     namespace {
+        void database() {
+            if (!std::filesystem::exists(PluginDataPath.append("blacklist.db"))) {
+                logger.info("数据库 blacklist.db 已创建");
+                SQLiteDatabase db(PluginData + "/blacklist.db");
+                db.close();
+            }
+        }
+
         class BlacklistCommand : public Command {
             std::string cause;
             std::string PlayerString;
