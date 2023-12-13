@@ -3,11 +3,11 @@
 #include <fstream>
 #include <string>
 #include "lang.h"
-#include "config.h"
 #include "version.h"
 #include "Plugins/language.h"
 #include "Plugins/blacklist.h"
 extern Logger logger;
+const std::string PluginDirectory = "./plugins/LOICollection";
 bool blacklistPlugin = false;
 
 void update(std::string& versionInfo) {

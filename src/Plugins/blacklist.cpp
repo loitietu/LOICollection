@@ -5,15 +5,15 @@
 #include <llapi/mc/Types.hpp>
 #include <llapi/mc/ServerPlayer.hpp>
 #include <llapi/mc/Player.hpp>
-#include "../config.h"
 #include "../Storage/SQLiteDatabase.h"
 #include "blacklist.h"
 extern Logger logger;
+const std::string PluginData = "./plugins/LOICollection/data";
 
 namespace blacklist {
     namespace {
         void database() {
-            if (!std::filesystem::exists(PluginDataPath.append("blacklist.db"))) {
+            if (!std::filesystem::exists(PluginData + "/blacklist.db")) {
                 logger.info("数据库 blacklist.db 已创建");
                 SQLiteDatabase db(PluginData + "/blacklist.db");
                 db.close();
@@ -35,6 +35,7 @@ namespace blacklist {
             CommandSelector<Player> target;
             public:
                 void execute(CommandOrigin const& ori, CommandOutput& outp) const {
+                    SQLiteDatabase db(PluginData + "/blacklist.db");
                     switch (op) {
                         case add:
                             break;
@@ -47,6 +48,7 @@ namespace blacklist {
                         default:
                             break;
                     }
+                    db.close();
                 }
 
                 static void setup(CommandRegistry* registry) {
@@ -77,6 +79,7 @@ namespace blacklist {
     void load(int* OpenPlugin) {
         (*OpenPlugin)++;
         listen();
+        database();
         logger.info("插件 <Blacklist> 已加载");
     }
 }
