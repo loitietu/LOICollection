@@ -18,6 +18,20 @@ const std::string PluginData = "./plugins/LOICollection/data";
 
 namespace language {
     namespace {
+        std::string get(ServerPlayer* player) {
+            SQLiteDatabase db(PluginData + "/language.db");
+            std::string playerLang = db.get(player->getXuid());
+            db.close();
+            return playerLang;
+        }
+
+        std::string get(Player* player) {
+            SQLiteDatabase db(PluginData + "/language.db");
+            std::string playerLang = db.get(player->getXuid());
+            db.close();
+            return playerLang;
+        }
+
         void database() {
             if (!std::filesystem::exists(PluginData + "/language.db")) {
                 logger.info("数据库 language.db 已创建");
@@ -72,20 +86,6 @@ namespace language {
                 }
             );
         }
-    }
-
-    std::string get(ServerPlayer* player) {
-        SQLiteDatabase db(PluginData + "/language.db");
-        std::string playerLang = db.get(player->getXuid());
-        db.close();
-        return playerLang;
-    }
-
-    std::string get(Player* player) {
-        SQLiteDatabase db(PluginData + "/language.db");
-        std::string playerLang = db.get(player->getXuid());
-        db.close();
-        return playerLang;
     }
 
     void load(int* OpenPlugin) {

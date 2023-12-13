@@ -7,8 +7,6 @@
 
 namespace language {
     void load(int* OpenPlugin);
-    std::string get(ServerPlayer* player);
-    std::string get(Player* player);
 }
 
 #endif

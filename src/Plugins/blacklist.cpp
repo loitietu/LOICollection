@@ -5,6 +5,7 @@
 #include <llapi/mc/Types.hpp>
 #include <llapi/mc/ServerPlayer.hpp>
 #include <llapi/mc/Player.hpp>
+#include "i18nLang.h"
 #include "../Storage/SQLiteDatabase.h"
 #include "blacklist.h"
 extern Logger logger;
@@ -12,6 +13,20 @@ const std::string PluginData = "./plugins/LOICollection/data";
 
 namespace blacklist {
     namespace {
+        std::string get(ServerPlayer* player) {
+            SQLiteDatabase db(PluginData + "/language.db");
+            std::string playerLang = db.get(player->getXuid());
+            db.close();
+            return playerLang;
+        }
+
+        std::string get(Player* player) {
+            SQLiteDatabase db(PluginData + "/language.db");
+            std::string playerLang = db.get(player->getXuid());
+            db.close();
+            return playerLang;
+        }
+
         void database() {
             if (!std::filesystem::exists(PluginData + "/blacklist.db")) {
                 logger.info("数据库 blacklist.db 已创建");
@@ -21,9 +36,9 @@ namespace blacklist {
         }
 
         class BlacklistCommand : public Command {
-            std::string cause;
-            std::string PlayerString;
-            int time;
+            std::string cause = "";
+            std::string PlayerString = "";
+            int time = 0;
             enum BLACKLISTOP : int {
                 add = 1,
                 remove = 2,
@@ -36,8 +51,29 @@ namespace blacklist {
             public:
                 void execute(CommandOrigin const& ori, CommandOutput& outp) const {
                     SQLiteDatabase db(PluginData + "/blacklist.db");
+                    auto res = target.results(ori);
+                    i18nLang lang("./plugins/LOICollection/language.json");
                     switch (op) {
                         case add:
+                            switch (op) {
+                                case xuid:
+                                    if (!Command::checkHasTargets(res, outp)) return;
+                                    for (auto i: res) {
+                                        std::string xuid = i->getXuid();
+                                        std::string BlackCause = cause;
+                                        if (cause == "") BlackCause = lang.tr(get(i), "blacklist.cause");
+                                        if (!db.exists(xuid)) {
+                                            db.set(xuid, BlackCause);
+                                        }
+                                        i->kick(BlackCause);
+                                    }
+                                    break;
+                                case ip:
+                                    break;
+                                default:
+                                    outp.error("Blacklist: Add Error");
+                                    break;
+                            }
                             break;
                         case remove:
                             break;
@@ -46,6 +82,7 @@ namespace blacklist {
                         case gui:
                             break;
                         default:
+                            outp.error("Blacklist: Error");
                             break;
                     }
                     db.close();
