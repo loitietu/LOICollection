@@ -63,7 +63,9 @@ namespace blacklist {
                                         std::string BlackCause = cause;
                                         if (cause == "") BlackCause = lang.tr(get(i), "blacklist.cause");
                                         if (!db.exists(xuid)) {
-                                            db.set(xuid, BlackCause);
+                                            db.setTable(xuid);
+                                            db.set("Cause", BlackCause);
+                                            db.set("Time", std::to_string(time));
                                         }
                                         i->kick(BlackCause);
                                     }

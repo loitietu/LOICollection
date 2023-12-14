@@ -2,11 +2,13 @@
 #define LOICOLLECTION_SQLITEDATABASE_H
 
 #include <string>
+#include <vector>
 #include <SQLiteCpp/SQLiteCpp.h>
 
 class SQLiteDatabase {
 private:
     SQLite::Database db;
+    std::string table = "data";
 
 public:
     SQLiteDatabase(const std::string& db_name);
@@ -15,6 +17,9 @@ public:
     std::string get(const std::string& key);
     void remove(const std::string& key);
     void update(const std::string& key, const std::string& value);
+    void setTable(const std::string& tableName);
+    std::vector<std::string> list();
+    std::vector<std::string> listTabe(const std::string& tableName);
     bool exists(const std::string& key);
     void close();
 };
