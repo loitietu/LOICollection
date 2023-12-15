@@ -1,4 +1,5 @@
 #include <string>
+#include <vector>
 #include <llapi/LoggerAPI.h>
 #include <llapi/RegCommandAPI.h>
 #include <llapi/EventAPI.h>
@@ -27,9 +28,19 @@ namespace blacklist {
             return playerLang;
         }
 
+        std::vector<std::string> split(const std::string& s, char delimiter) {
+            std::vector<std::string> tokens;
+            std::stringstream ss(s);
+            std::string token;
+            while (std::getline(ss, token, delimiter)) {
+                tokens.push_back(token);
+            }
+            return tokens;
+        }
+
         void database() {
             if (!std::filesystem::exists(PluginData + "/blacklist.db")) {
-                logger.info("数据库 blacklist.db 已创建");
+                logger.info("<Blacklist>: 数据库已创建");
                 SQLiteDatabase db(PluginData + "/blacklist.db");
                 db.close();
             }
@@ -43,67 +54,82 @@ namespace blacklist {
                 add = 1,
                 remove = 2,
                 list = 3,
-                gui = 4,
-                ip = 5,
-                xuid = 6
+                gui = 4
             } op;
+            enum BLACKLISTYPE : int {
+                xuid = 1,
+                ip = 2
+            } BlacklisType;
             CommandSelector<Player> target;
             public:
                 void execute(CommandOrigin const& ori, CommandOutput& outp) const {
                     SQLiteDatabase db(PluginData + "/blacklist.db");
-                    auto res = target.results(ori);
                     i18nLang lang("./plugins/LOICollection/language.json");
+                    auto res = target.results(ori);
                     switch (op) {
-                        case add:
-                            switch (op) {
-                                case xuid:
-                                    if (!Command::checkHasTargets(res, outp)) return;
-                                    for (auto i: res) {
+                        case BLACKLISTOP::add:
+                            switch (BlacklisType) {
+                                case BLACKLISTYPE::xuid:
+                                    for (auto i : res) {
                                         std::string xuid = i->getXuid();
                                         std::string BlackCause = cause;
-                                        if (cause == "") BlackCause = lang.tr(get(i), "blacklist.cause");
-                                        if (!db.exists(xuid)) {
-                                            db.setTable(xuid);
-                                            db.set("Cause", BlackCause);
-                                            db.set("Time", std::to_string(time));
-                                        }
+                                        if (cause.empty()) BlackCause = lang.tr(get(i), "blacklist.cause");
+                                        db.setTable("Player" + xuid);
+                                        db.createTable();
+                                        db.set("Cause", BlackCause);
+                                        db.set("Time", std::to_string(time));
                                         i->kick(BlackCause);
                                     }
+                                    outp.success("Blacklist: Adding players succeeded.");
                                     break;
-                                case ip:
+                                case BLACKLISTYPE::ip:
+                                    for (auto i : res) {
+                                        std::string ip = split(i->getIP(), ':')[0];
+                                        std::replace(ip.begin(), ip.end(), '.', '\0');
+                                        std::string BlackCause = cause;
+                                        if (cause.empty()) BlackCause = lang.tr(get(i), "blacklist.cause");
+                                        db.setTable("Player" + ip);
+                                        db.createTable();
+                                        db.set("Cause", BlackCause);
+                                        db.set("Time", std::to_string(time));
+                                        i->kick(BlackCause);
+                                    }
+                                    outp.success("Blacklist: Adding players succeeded.");
                                     break;
                                 default:
-                                    outp.error("Blacklist: Add Error");
+                                    outp.error("Blacklist: Failed to add player.");
                                     break;
                             }
                             break;
-                        case remove:
+                        case BLACKLISTOP::remove:
                             break;
-                        case list:
+                        case BLACKLISTOP::list:
                             break;
-                        case gui:
+                        case BLACKLISTOP::gui:
                             break;
                         default:
-                            outp.error("Blacklist: Error");
+                            logger.error("<Blacklist>: 命令分支 " + std::to_string(op) + " 不存在");
+                            outp.error("Blacklist: Instruction error.");
                             break;
                     }
+                    lang.close();
                     db.close();
                 }
 
                 static void setup(CommandRegistry* registry) {
                     using RegisterCommandHelper::makeMandatory;
                     registry->registerCommand("blacklist", "§e§lLOICollection -> §b服务器黑名单", CommandPermissionLevel::GameMasters, {(CommandFlagValue)0},{(CommandFlagValue)0x200});
-                    registry->addEnum<BLACKLISTOP>("BLACKLISTGUI", {{"gui", BLACKLISTOP::gui}});
-                    registry->addEnum<BLACKLISTOP>("BLACKLISTADD", {{"add", BLACKLISTOP::add}});
-                    registry->addEnum<BLACKLISTOP>("BLACKLISTREMOVE", {{"remove", BLACKLISTOP::remove}});
-                    registry->addEnum<BLACKLISTOP>("BLACKLISTLIST", {{"list", BLACKLISTOP::list}});
-                    registry->addEnum<BLACKLISTOP>("BLACKLISTYPE", {{"xuid", BLACKLISTOP::xuid},{"ip", BLACKLISTOP::ip}});
-                    registry->registerOverload<BlacklistCommand>("blacklist", makeMandatory<CommandParameterDataType::ENUM>(&BlacklistCommand::op, "optional", "BLACKLISTGUI"));
-                    registry->registerOverload<BlacklistCommand>("blacklist", makeMandatory<CommandParameterDataType::ENUM>(&BlacklistCommand::op, "optional", "BLACKLISTLIST"));
-                    registry->registerOverload<BlacklistCommand>("blacklist", makeMandatory<CommandParameterDataType::ENUM>(&BlacklistCommand::op, "optional", "BLACKLISTADD"), makeMandatory<CommandParameterDataType::ENUM>(&BlacklistCommand::op, "type", "BLACKLISTYPE"), makeMandatory(&BlacklistCommand::target, "player"));
-                    registry->registerOverload<BlacklistCommand>("blacklist", makeMandatory<CommandParameterDataType::ENUM>(&BlacklistCommand::op, "optional", "BLACKLISTADD"), makeMandatory<CommandParameterDataType::ENUM>(&BlacklistCommand::op, "type", "BLACKLISTYPE"), makeMandatory(&BlacklistCommand::target, "player"), makeMandatory(&BlacklistCommand::cause, "cause"));
-                    registry->registerOverload<BlacklistCommand>("blacklist", makeMandatory<CommandParameterDataType::ENUM>(&BlacklistCommand::op, "optional", "BLACKLISTADD"), makeMandatory<CommandParameterDataType::ENUM>(&BlacklistCommand::op, "type", "BLACKLISTYPE"), makeMandatory(&BlacklistCommand::target, "player"), makeMandatory(&BlacklistCommand::cause, "cause"), makeMandatory(&BlacklistCommand::time, "time"));
-                    registry->registerOverload<BlacklistCommand>("blacklist", makeMandatory<CommandParameterDataType::ENUM>(&BlacklistCommand::op, "optional", "BLACKLISTREMOVE"), makeMandatory(&BlacklistCommand::PlayerString, "string"));
+                    registry->addEnum<BLACKLISTOP>("gui", {{"gui", BLACKLISTOP::gui}});
+                    registry->addEnum<BLACKLISTOP>("add", {{"add", BLACKLISTOP::add}});
+                    registry->addEnum<BLACKLISTOP>("remove", {{"remove", BLACKLISTOP::remove}});
+                    registry->addEnum<BLACKLISTOP>("list", {{"list", BLACKLISTOP::list}});
+                    registry->addEnum<BLACKLISTYPE>("type", {{"xuid", BLACKLISTYPE::xuid},{"ip", BLACKLISTYPE::ip}});
+                    registry->registerOverload<BlacklistCommand>("blacklist", makeMandatory<CommandParameterDataType::ENUM>(&BlacklistCommand::op, "op", "gui"));
+                    registry->registerOverload<BlacklistCommand>("blacklist", makeMandatory<CommandParameterDataType::ENUM>(&BlacklistCommand::op, "op", "list"));
+                    registry->registerOverload<BlacklistCommand>("blacklist", makeMandatory<CommandParameterDataType::ENUM>(&BlacklistCommand::op, "op", "add"), makeMandatory<CommandParameterDataType::ENUM>(&BlacklistCommand::BlacklisType, "type", "type"), makeMandatory(&BlacklistCommand::target, "player"));
+                    registry->registerOverload<BlacklistCommand>("blacklist", makeMandatory<CommandParameterDataType::ENUM>(&BlacklistCommand::op, "op", "add"), makeMandatory<CommandParameterDataType::ENUM>(&BlacklistCommand::BlacklisType, "type", "type"), makeMandatory(&BlacklistCommand::target, "player"), makeMandatory(&BlacklistCommand::cause, "cause"));
+                    registry->registerOverload<BlacklistCommand>("blacklist", makeMandatory<CommandParameterDataType::ENUM>(&BlacklistCommand::op, "op", "add"), makeMandatory<CommandParameterDataType::ENUM>(&BlacklistCommand::BlacklisType, "type", "type"), makeMandatory(&BlacklistCommand::target, "player"), makeMandatory(&BlacklistCommand::cause, "cause"), makeMandatory(&BlacklistCommand::time, "time"));
+                    registry->registerOverload<BlacklistCommand>("blacklist", makeMandatory<CommandParameterDataType::ENUM>(&BlacklistCommand::op, "op", "remove"), makeMandatory(&BlacklistCommand::PlayerString, "string"));
                 }
         };
 
@@ -119,6 +145,6 @@ namespace blacklist {
         (*OpenPlugin)++;
         listen();
         database();
-        logger.info("插件 <Blacklist> 已加载");
+        logger.info("<Blacklist>: 插件已加载");
     }
 }

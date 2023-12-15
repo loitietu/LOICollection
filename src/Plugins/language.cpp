@@ -34,7 +34,7 @@ namespace language {
 
         void database() {
             if (!std::filesystem::exists(PluginData + "/language.db")) {
-                logger.info("数据库 language.db 已创建");
+                logger.info("<language>: 数据库已创建");
                 SQLiteDatabase db(PluginData + "/language.db");
                 db.close();
             }
@@ -93,6 +93,6 @@ namespace language {
         listen();
         command();
         database();
-        logger.info("插件 <language> 已加载");
+        logger.info("<language>: 插件已加载");
     }
 }
