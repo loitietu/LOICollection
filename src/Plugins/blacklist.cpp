@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include <ctime>
 #include <llapi/LoggerAPI.h>
 #include <llapi/RegCommandAPI.h>
 #include <llapi/EventAPI.h>
@@ -74,24 +75,28 @@ namespace blacklist {
                                         std::string xuid = i->getXuid();
                                         std::string BlackCause = cause;
                                         if (cause.empty()) BlackCause = lang.tr(get(i), "blacklist.cause");
-                                        db.setTable("Player" + xuid);
-                                        db.createTable();
-                                        db.set("Cause", BlackCause);
-                                        db.set("Time", std::to_string(time));
+                                        if (!db.existsTable("Xuid" + xuid)) {
+                                            db.setTable("Xuid" + xuid);
+                                            db.createTable();
+                                            db.set("Cause", BlackCause);
+                                            db.set("Time", std::to_string(time));
+                                        }
                                         i->kick(BlackCause);
                                     }
                                     outp.success("Blacklist: Adding players succeeded.");
                                     break;
                                 case BLACKLISTYPE::ip:
                                     for (auto i : res) {
-                                        std::string ip = split(i->getIP(), ':')[0];
-                                        std::replace(ip.begin(), ip.end(), '.', '\0');
+                                        std::string mIp = split(i->getIP(), ':')[0];
+                                        std::replace(mIp.begin(), mIp.end(), '.', '\0');
                                         std::string BlackCause = cause;
                                         if (cause.empty()) BlackCause = lang.tr(get(i), "blacklist.cause");
-                                        db.setTable("Player" + ip);
-                                        db.createTable();
-                                        db.set("Cause", BlackCause);
-                                        db.set("Time", std::to_string(time));
+                                        if (!db.existsTable("Ip" + mIp)) {
+                                            db.setTable("Ip" + mIp);
+                                            db.createTable();
+                                            db.set("Cause", BlackCause);
+                                            db.set("Time", std::to_string(time));
+                                        }
                                         i->kick(BlackCause);
                                     }
                                     outp.success("Blacklist: Adding players succeeded.");
@@ -137,6 +142,26 @@ namespace blacklist {
             Event::RegCmdEvent::subscribe([](const Event::RegCmdEvent& e) {
                 BlacklistCommand::setup(e.mCommandRegistry);
                 return true;
+            });
+            Event::PlayerJoinEvent::subscribe([](const Event::PlayerJoinEvent& e) {
+                SQLiteDatabase db(PluginData + "/blacklist.db");
+                std::string xuid = e.mPlayer->getXuid();
+                std::string ip = split(e.mPlayer->getIP(), ':')[0];
+                std::replace(ip.begin(), ip.end(), '.', '\0');
+                if (db.existsTable("Xuid" + xuid)) {
+                    db.setTable("Xuid" + xuid);
+                    e.mPlayer->kick(db.get("Cause"));
+                    db.close();
+                    return false;
+                } else if(db.existsTable("Ip" + ip)) {
+                    db.setTable("Ip" + ip);
+                    e.mPlayer->kick(db.get("Cause"));
+                    db.close();
+                    return false;
+                } else {
+                    db.close();
+                    return true;
+                }
             });
         }
     }

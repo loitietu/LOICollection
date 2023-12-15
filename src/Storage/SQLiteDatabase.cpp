@@ -65,6 +65,12 @@ bool SQLiteDatabase::exists(const std::string& key) {
     return query.executeStep();
 }
 
+bool SQLiteDatabase::existsTable(const std::string& tableName) {
+    SQLite::Statement query(db, "SELECT name FROM sqlite_master WHERE type='table' AND name = ?;");
+    query.bind(1, tableName);
+    return query.executeStep();
+}
+
 void SQLiteDatabase::close() {
     db.~Database();
 }
