@@ -71,6 +71,11 @@ bool SQLiteDatabase::existsTable(const std::string& tableName) {
     return query.executeStep();
 }
 
+void SQLiteDatabase::removeTable(const std::string& tableName) {
+    SQLite::Statement query(db, "DROP TABLE IF EXISTS " + tableName);
+    query.exec();
+}
+
 void SQLiteDatabase::close() {
     db.~Database();
 }

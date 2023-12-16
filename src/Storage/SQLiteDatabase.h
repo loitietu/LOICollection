@@ -22,6 +22,7 @@ public:
     std::vector<std::string> listTabe(const std::string& tableName);
     bool exists(const std::string& key);
     bool existsTable(const std::string& tableName);
+    void removeTable(const std::string& tableName);
     void close();
 };
 

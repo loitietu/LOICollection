@@ -39,6 +39,28 @@ namespace blacklist {
             return tokens;
         }
 
+        std::string timeCalculate(int hours) {
+            std::time_t currentTime = std::time(nullptr);
+            std::tm* timeInfo = std::localtime(&currentTime);
+            timeInfo->tm_hour += 1;
+            std::time_t laterTime = std::mktime(timeInfo);
+            char formattedTime[15];
+            std::strftime(formattedTime, sizeof(formattedTime), "%Y%m%d%H%H%S", std::localtime(&laterTime));
+            std::string formattedTimeString(formattedTime);
+            return formattedTimeString;
+        }
+
+        bool isReach(const std::string& timeString) {
+            std::time_t currentTime = std::time(nullptr);
+            char formattedTime[15];
+            std::strftime(formattedTime, sizeof(formattedTime), "%Y%m%d%H%H%S", std::localtime(&currentTime));
+            std::string formattedTimeString(formattedTime);
+            int64_t formattedTimeInt = std::stoll(formattedTimeString);
+            int64_t timeInt = std::stoll(timeString);
+            if (formattedTimeInt > timeInt) return true;
+            else return false;
+        }
+
         void database() {
             if (!std::filesystem::exists(PluginData + "/blacklist.db")) {
                 logger.info("<Blacklist>: 数据库已创建");
@@ -74,12 +96,14 @@ namespace blacklist {
                                     for (auto i : res) {
                                         std::string xuid = i->getXuid();
                                         std::string BlackCause = cause;
+                                        std::string timeString = std::to_string(time);
                                         if (cause.empty()) BlackCause = lang.tr(get(i), "blacklist.cause");
-                                        if (!db.existsTable("Xuid" + xuid)) {
-                                            db.setTable("Xuid" + xuid);
+                                        if (time) timeString = timeCalculate(time);
+                                        if (!db.existsTable("XUID" + xuid)) {
+                                            db.setTable("XUID" + xuid);
                                             db.createTable();
                                             db.set("Cause", BlackCause);
-                                            db.set("Time", std::to_string(time));
+                                            db.set("Time", timeString);
                                         }
                                         i->kick(BlackCause);
                                     }
@@ -88,14 +112,16 @@ namespace blacklist {
                                 case BLACKLISTYPE::ip:
                                     for (auto i : res) {
                                         std::string mIp = split(i->getIP(), ':')[0];
-                                        std::replace(mIp.begin(), mIp.end(), '.', '\0');
+                                        std::replace(mIp.begin(), mIp.end(), '.', 'A');
                                         std::string BlackCause = cause;
+                                        std::string timeString = std::to_string(time);
                                         if (cause.empty()) BlackCause = lang.tr(get(i), "blacklist.cause");
-                                        if (!db.existsTable("Ip" + mIp)) {
-                                            db.setTable("Ip" + mIp);
+                                        if (time) timeString = timeCalculate(time);
+                                        if (!db.existsTable("IP" + mIp)) {
+                                            db.setTable("IP" + mIp);
                                             db.createTable();
                                             db.set("Cause", BlackCause);
-                                            db.set("Time", std::to_string(time));
+                                            db.set("Time", timeString);
                                         }
                                         i->kick(BlackCause);
                                     }
@@ -147,17 +173,41 @@ namespace blacklist {
                 SQLiteDatabase db(PluginData + "/blacklist.db");
                 std::string xuid = e.mPlayer->getXuid();
                 std::string ip = split(e.mPlayer->getIP(), ':')[0];
-                std::replace(ip.begin(), ip.end(), '.', '\0');
-                if (db.existsTable("Xuid" + xuid)) {
-                    db.setTable("Xuid" + xuid);
-                    e.mPlayer->kick(db.get("Cause"));
-                    db.close();
-                    return false;
-                } else if(db.existsTable("Ip" + ip)) {
-                    db.setTable("Ip" + ip);
-                    e.mPlayer->kick(db.get("Cause"));
-                    db.close();
-                    return false;
+                std::replace(ip.begin(), ip.end(), '.', 'A');
+                if (db.existsTable("XUID" + xuid)) {
+                    db.setTable("XUID" + xuid);
+                    std::string timeString = db.get("Time");
+                    if (timeString == "0") {
+                        e.mPlayer->kick(db.get("Cause"));
+                        db.close();
+                        return false;
+                    }
+                    if (isReach(timeString)) {
+                        db.removeTable("XUID" + xuid);
+                        db.close();
+                        return true;
+                    } else {
+                        e.mPlayer->kick(db.get("Cause"));
+                        db.close();
+                        return false;
+                    }
+                } else if(db.existsTable("IP" + ip)) {
+                    db.setTable("IP" + ip);
+                    std::string timeString = db.get("Time");
+                    if (timeString == "0") {
+                        e.mPlayer->kick(db.get("Cause"));
+                        db.close();
+                        return false;
+                    }
+                    if (isReach(timeString)) {
+                        db.removeTable("IP" + ip);
+                        db.close();
+                        return true;
+                    } else {
+                        e.mPlayer->kick(db.get("Cause"));
+                        db.close();
+                        return false;
+                    }
                 } else {
                     db.close();
                     return true;
