@@ -44,18 +44,24 @@ namespace language {
             std::string PlayerLanguage = get(player);
             i18nLang lang("./plugins/LOICollection/language.json");
             auto form = Form::CustomForm(lang.tr(PlayerLanguage, "language.gui.title"));
-            form.append(Form::Label("label1", lang.tr(PlayerLanguage, "language.gui.label")));
+            form.append(Form::Label("label", lang.tr(PlayerLanguage, "language.gui.label")));
             form.append(Form::Dropdown("dropdown", lang.tr(PlayerLanguage, "language.gui.dropdown"), lang.list()));
+            lang.close();
             form.sendTo(player, [](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
-                if (mp.empty())
+                std::string PlayerLanguage = get(pl);
+                i18nLang lang("./plugins/LOICollection/language.json");
+                if (mp.empty()) {
+                    pl->sendTextPacket(lang.tr(PlayerLanguage, "exit"));
+                    lang.close();
                     return;
+                }
                 std::string PlayerSelectLanguage = mp["dropdown"]->getString();
                 SQLiteDatabase db(PluginData + "/language.db");
                 db.update(pl->getXuid(), PlayerSelectLanguage);
                 db.close();
-                logger.info("玩家 {} 已更改语言为: {}", pl->getRealName(), PlayerSelectLanguage);
+                logger.info(lang.tr(PlayerLanguage, "language.log"), pl->getRealName(), PlayerSelectLanguage);
+                lang.close();
             });
-            lang.close();
         }
 
         void listen() {

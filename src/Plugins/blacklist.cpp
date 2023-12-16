@@ -1,9 +1,11 @@
 #include <string>
 #include <vector>
 #include <ctime>
+#include <llapi/FormUI.h>
 #include <llapi/LoggerAPI.h>
 #include <llapi/RegCommandAPI.h>
 #include <llapi/EventAPI.h>
+#include <llapi/mc/Level.hpp>
 #include <llapi/mc/Types.hpp>
 #include <llapi/mc/ServerPlayer.hpp>
 #include <llapi/mc/Player.hpp>
@@ -67,6 +69,84 @@ namespace blacklist {
                 SQLiteDatabase db(PluginData + "/blacklist.db");
                 db.close();
             }
+        }
+
+        void addGui(Player* player) {
+            std::vector<Player*> playerList =  Level::getAllPlayers();
+            std::vector<std::string> playerListName;
+            for (auto p : playerList) playerListName.push_back(p->getName());
+            std::string PlayerLanguage = get(player);
+            i18nLang lang("./plugins/LOICollection/language.json");
+            std::vector<std::string> typeList = { "ip", "xuid" };
+            auto form = Form::CustomForm(lang.tr(PlayerLanguage, "blacklist.gui.add.title"));
+            form.append(Form::Label("label", lang.tr(PlayerLanguage, "blacklist.gui.label")));
+            form.append(Form::Dropdown("dropdown1", lang.tr(PlayerLanguage, "blacklist.gui.add.dropdown1"), playerListName));
+            form.append(Form::Dropdown("dropdown2", lang.tr(PlayerLanguage, "blacklist.gui.add.dropdown2"), typeList));
+            form.append(Form::Input("input1", lang.tr(PlayerLanguage, "blacklist.gui.add.input1"), "", lang.tr(PlayerLanguage, "blacklist.cause")));
+            form.append(Form::Input("input2", lang.tr(PlayerLanguage, "blacklist.gui.add.input2"), "", "0"));
+            lang.close();
+            form.sendTo(player, [](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
+                std::string PlayerLanguage = get(pl);
+                i18nLang lang("./plugins/LOICollection/language.json");
+                if (mp.empty()) {
+                    pl->sendTextPacket(lang.tr(PlayerLanguage, "exit"));
+                    lang.close();
+                    return;
+                }
+                std::string PlayerSelectName = mp["dropdown1"]->getString();
+                std::string PlayerSelectType = mp["dropdown2"]->getString();
+                std::string PlayerInputCause = mp["input1"]->getString();
+                std::string PlayerInputTime = mp["input2"]->getString();
+                pl->runcmd("blacklist add " + PlayerSelectType + " " + PlayerSelectName + " " + PlayerInputCause + " " + PlayerInputTime);
+            });
+        }
+
+        void removeGui(Player* player) {
+            SQLiteDatabase db(PluginData + "/blacklist.db");
+            std::string PlayerLanguage = get(player);
+            i18nLang lang("./plugins/LOICollection/language.json");
+            auto form = Form::CustomForm(lang.tr(PlayerLanguage, "blacklist.gui.remove.title"));
+            form.append(Form::Label("label", lang.tr(PlayerLanguage, "blacklist.gui.label")));
+            form.append(Form::Dropdown("dropdown", lang.tr(PlayerLanguage, "blacklist.gui.remove.dropdown"), db.list()));
+            lang.close();
+            db.close();
+            form.sendTo(player, [](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
+                std::string PlayerLanguage = get(pl);
+                i18nLang lang("./plugins/LOICollection/language.json");
+                if (mp.empty()) {
+                    pl->sendTextPacket(lang.tr(PlayerLanguage, "exit"));
+                    lang.close();
+                    return;
+                }
+                std::string PlayerSelectString = mp["dropdown"]->getString();
+                pl->runcmd("blacklist remove " + PlayerSelectString);
+            });
+        }
+
+        void menuGui(ServerPlayer* player) {
+            std::string PlayerLanguage = get(player);
+            i18nLang lang("./plugins/LOICollection/language.json");
+            auto form = Form::SimpleForm(lang.tr(PlayerLanguage, "blacklist.gui.title"), lang.tr(PlayerLanguage, "blacklist.gui.label"));
+            form.addButton(lang.tr(PlayerLanguage, "blacklist.gui.addBlacklist"), "textures/ui/backup_replace");
+            form.addButton(lang.tr(PlayerLanguage, "blacklist.gui.removeBlacklist"), "textures/ui/free_download_symbol");
+            lang.close();
+            form.sendTo(player, [](Player* pl, int id) {
+                if (id == -1) {
+                    std::string PlayerLanguage = get(pl);
+                    i18nLang lang("./plugins/LOICollection/language.json");
+                    pl->sendTextPacket(lang.tr(PlayerLanguage, "exit"));
+                    lang.close();
+                    return;
+                }
+                switch(id) {
+                    case 0:
+                        addGui(pl);
+                        break;
+                    case 1:
+                        removeGui(pl);
+                        break;
+                }
+            });
         }
 
         class BlacklistCommand : public Command {
@@ -133,11 +213,30 @@ namespace blacklist {
                             }
                             break;
                         case BLACKLISTOP::remove:
+                            if (PlayerString != "data") {
+                                if (db.existsTable(PlayerString)) {
+                                    db.removeTable(PlayerString);
+                                    outp.success("Blacklist: Data table " + PlayerString + " has been successfully deleted.");
+                                } else {
+                                    outp.error("Blacklist: There is no data table " + PlayerString);
+                                }
+                            } else {
+                                outp.error("Blacklist: Deleting data table data is prohibited.");
+                            }
                             break;
-                        case BLACKLISTOP::list:
+                        case BLACKLISTOP::list: {
+                            std::vector<std::string> listPlayer = db.list();
+                            std::stringstream ss;
+                            for (const auto& pl : listPlayer) ss << pl << ",";
+                            outp.success("Blacklist: Add list - " + ss.str());
                             break;
-                        case BLACKLISTOP::gui:
+                        }
+                        case BLACKLISTOP::gui: {
+                            std::string playerName = ori.getName();
+                            menuGui(ori.getPlayer());
+                            outp.success("The UI has been opened to player " + playerName);
                             break;
+                        }
                         default:
                             logger.error("<Blacklist>: 命令分支 " + std::to_string(op) + " 不存在");
                             outp.error("Blacklist: Instruction error.");
@@ -158,6 +257,7 @@ namespace blacklist {
                     registry->registerOverload<BlacklistCommand>("blacklist", makeMandatory<CommandParameterDataType::ENUM>(&BlacklistCommand::op, "op", "gui"));
                     registry->registerOverload<BlacklistCommand>("blacklist", makeMandatory<CommandParameterDataType::ENUM>(&BlacklistCommand::op, "op", "list"));
                     registry->registerOverload<BlacklistCommand>("blacklist", makeMandatory<CommandParameterDataType::ENUM>(&BlacklistCommand::op, "op", "add"), makeMandatory<CommandParameterDataType::ENUM>(&BlacklistCommand::BlacklisType, "type", "type"), makeMandatory(&BlacklistCommand::target, "player"));
+                    registry->registerOverload<BlacklistCommand>("blacklist", makeMandatory<CommandParameterDataType::ENUM>(&BlacklistCommand::op, "op", "add"), makeMandatory<CommandParameterDataType::ENUM>(&BlacklistCommand::BlacklisType, "type", "type"), makeMandatory(&BlacklistCommand::target, "player"), makeMandatory(&BlacklistCommand::time, "time"));
                     registry->registerOverload<BlacklistCommand>("blacklist", makeMandatory<CommandParameterDataType::ENUM>(&BlacklistCommand::op, "op", "add"), makeMandatory<CommandParameterDataType::ENUM>(&BlacklistCommand::BlacklisType, "type", "type"), makeMandatory(&BlacklistCommand::target, "player"), makeMandatory(&BlacklistCommand::cause, "cause"));
                     registry->registerOverload<BlacklistCommand>("blacklist", makeMandatory<CommandParameterDataType::ENUM>(&BlacklistCommand::op, "op", "add"), makeMandatory<CommandParameterDataType::ENUM>(&BlacklistCommand::BlacklisType, "type", "type"), makeMandatory(&BlacklistCommand::target, "player"), makeMandatory(&BlacklistCommand::cause, "cause"), makeMandatory(&BlacklistCommand::time, "time"));
                     registry->registerOverload<BlacklistCommand>("blacklist", makeMandatory<CommandParameterDataType::ENUM>(&BlacklistCommand::op, "op", "remove"), makeMandatory(&BlacklistCommand::PlayerString, "string"));
