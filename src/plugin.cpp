@@ -1,11 +1,11 @@
-#include <llapi/LoggerAPI.h>
-#include <Nlohmann/json.hpp>
 #include <fstream>
 #include <string>
+#include <llapi/LoggerAPI.h>
+#include <Nlohmann/json.hpp>
+#include "Plugins/include/language.h"
+#include "Plugins/include/blacklist.h"
 #include "lang.h"
 #include "version.h"
-#include "Plugins/language.h"
-#include "Plugins/blacklist.h"
 extern Logger logger;
 const std::string PluginDirectory = "./plugins/LOICollection";
 bool blacklistPlugin = false;

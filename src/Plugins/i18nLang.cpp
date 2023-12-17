@@ -1,6 +1,6 @@
 #include <fstream>
 #include <vector>
-#include "i18nLang.h"
+#include "include/i18nLang.h"
 
 i18nLang::i18nLang(const std::string& path) {
     std::ifstream langFile(path);

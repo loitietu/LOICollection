@@ -9,9 +9,9 @@
 #include <llapi/mc/Types.hpp>
 #include <llapi/mc/ServerPlayer.hpp>
 #include <llapi/mc/Player.hpp>
-#include "i18nLang.h"
 #include "../Storage/SQLiteDatabase.h"
-#include "blacklist.h"
+#include "include/i18nLang.h"
+#include "include/blacklist.h"
 extern Logger logger;
 const std::string PluginData = "./plugins/LOICollection/data";
 

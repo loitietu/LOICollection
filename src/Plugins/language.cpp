@@ -11,8 +11,8 @@
 #include <llapi/mc/CommandOutput.hpp>
 #include <llapi/mc/Player.hpp>
 #include "../Storage/SQLiteDatabase.h"
-#include "i18nLang.h"
-#include "language.h"
+#include "include/i18nLang.h"
+#include "include/language.h"
 extern Logger logger;
 const std::string PluginData = "./plugins/LOICollection/data";
 
