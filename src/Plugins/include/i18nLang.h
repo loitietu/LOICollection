@@ -7,7 +7,7 @@
 
 class i18nLang {
 private:
-    nlohmann::json language;
+    nlohmann::ordered_json language;
 
 public:
     i18nLang(const std::string& path);

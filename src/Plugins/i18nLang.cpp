@@ -15,7 +15,7 @@ std::string i18nLang::tr(const std::string& lang, const std::string& title) {
 
 std::vector<std::string> i18nLang::list() {
     std::vector<std::string> languageList;
-    for (nlohmann::json::iterator it = language.begin(); it != language.end(); ++it) {
+    for (nlohmann::ordered_json::iterator it = language.begin(); it != language.end(); ++it) {
         languageList.push_back(it.key());
     }
     return languageList;

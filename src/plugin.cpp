@@ -4,17 +4,19 @@
 #include <Nlohmann/json.hpp>
 #include "Plugins/include/language.h"
 #include "Plugins/include/blacklist.h"
+#include "Plugins/include/mute.h"
 #include "lang.h"
 #include "version.h"
 extern Logger logger;
 const std::string PluginDirectory = "./plugins/LOICollection";
 bool blacklistPlugin = false;
+bool mutePlugin = false;
 
 void update(std::string& versionInfo) {
     logger.info("开始加载配置文件");
     std::ifstream configFile(PluginDirectory + "/config.json");
-    nlohmann::json config;
-    nlohmann::json configArray = nlohmann::json::array();
+    nlohmann::ordered_json config;
+    nlohmann::ordered_json configArray = nlohmann::ordered_json::array();
     configFile >> config;
     configFile.close();
     if (!config.contains("Blacklist")) config["Blacklist"] = false;
@@ -38,6 +40,7 @@ void update(std::string& versionInfo) {
         logger.info("配置文件已更新");
     }
     blacklistPlugin = config["Blacklist"].template get<bool>();
+    mutePlugin = config["Mute"].template get<bool>();
     std::ofstream configNewFile(PluginDirectory + "/config.json");
     configNewFile << config.dump(4);
     configNewFile.close();
@@ -50,7 +53,7 @@ void Init(std::string& versionInfo) {
         logger.info("初次运行，正在初始化插件");
         std::filesystem::create_directory(dir);
         std::filesystem::create_directory(dir.append("data"));
-        nlohmann::json config;
+        nlohmann::ordered_json config;
         config["version"] = versionInfo;
         std::ofstream configFile(PluginDirectory + "/config.json");
         configFile << config.dump(4);
@@ -68,6 +71,7 @@ void load() {
     int OpenPlugin = 0;
     language::load(&OpenPlugin);
     if (blacklistPlugin) blacklist::load(&OpenPlugin);
+    if (mutePlugin) mute::load(&OpenPlugin);
     logger.info("加载成功，已加载内置插件数量: " + std::to_string(OpenPlugin));
 }
 

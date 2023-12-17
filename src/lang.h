@@ -3,7 +3,7 @@
 
 #include <Nlohmann/json.hpp>
 
-static const nlohmann::json defultLangData = {
+static const nlohmann::ordered_json defultLangData = {
     {"zh_CN", {
         {"exit", "§e[LOICollection] §c已退出"},
         {"language.log", "玩家 {} 已更改语言为: {}"},
