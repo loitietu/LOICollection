@@ -8,7 +8,6 @@
 #include <llapi/mc/Types.hpp>
 #include <llapi/mc/ServerPlayer.hpp>
 #include <llapi/mc/Player.hpp>
-#include "../Storage/SQLiteDatabase.h"
 #include "../tool.h"
 #include "include/i18nLang.h"
 #include "include/blacklist.h"
@@ -109,8 +108,8 @@ namespace blacklist {
             enum BLACKLISTOP : int {
                 add = 1,
                 remove = 2,
-                list = 3,
-                gui = 4
+                gui = 3,
+                list = 4
             } op;
             enum BLACKLISTYPE : int {
                 xuid = 1,
@@ -209,7 +208,7 @@ namespace blacklist {
 
                 static void setup(CommandRegistry* registry) {
                     using RegisterCommandHelper::makeMandatory;
-                    registry->registerCommand("blacklist", "§e§lLOICollection -> §b服务器黑名单", CommandPermissionLevel::GameMasters, {(CommandFlagValue)0},{(CommandFlagValue)0x200});
+                    registry->registerCommand("blacklist", "§e§lLOICollection -> §b服务器黑名单", CommandPermissionLevel::GameMasters, {(CommandFlagValue)0},{(CommandFlagValue)0x80});
                     registry->addEnum<BLACKLISTOP>("gui", {{"gui", BLACKLISTOP::gui}});
                     registry->addEnum<BLACKLISTOP>("add", {{"add", BLACKLISTOP::add}});
                     registry->addEnum<BLACKLISTOP>("remove", {{"remove", BLACKLISTOP::remove}});
