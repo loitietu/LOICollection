@@ -1,0 +1,49 @@
+#include "tool.h"
+
+namespace tool {
+    std::string get(ServerPlayer* player) {
+        SQLiteDatabase db(PluginData + "/language.db");
+        std::string playerLang = db.get(player->getXuid());
+        db.close();
+        return playerLang;
+    }
+
+    std::string get(Player* player) {
+        SQLiteDatabase db(PluginData + "/language.db");
+        std::string playerLang = db.get(player->getXuid());
+        db.close();
+        return playerLang;
+    }
+
+    std::vector<std::string> split(const std::string& s, char delimiter) {
+        std::vector<std::string> tokens;
+        std::stringstream ss(s);
+        std::string token;
+        while (std::getline(ss, token, delimiter)) {
+            tokens.push_back(token);
+        }
+        return tokens;
+    }
+
+    std::string timeCalculate(int hours) {
+        std::time_t currentTime = std::time(nullptr);
+        std::tm* timeInfo = std::localtime(&currentTime);
+        timeInfo->tm_hour += 1;
+        std::time_t laterTime = std::mktime(timeInfo);
+        char formattedTime[15];
+        std::strftime(formattedTime, sizeof(formattedTime), "%Y%m%d%H%H%S", std::localtime(&laterTime));
+        std::string formattedTimeString(formattedTime);
+        return formattedTimeString;
+    }
+
+    bool isReach(const std::string& timeString) {
+        std::time_t currentTime = std::time(nullptr);
+        char formattedTime[15];
+        std::strftime(formattedTime, sizeof(formattedTime), "%Y%m%d%H%H%S", std::localtime(&currentTime));
+        std::string formattedTimeString(formattedTime);
+        int64_t formattedTimeInt = std::stoll(formattedTimeString);
+        int64_t timeInt = std::stoll(timeString);
+        if (formattedTimeInt > timeInt) return true;
+        else return false;
+    }
+}

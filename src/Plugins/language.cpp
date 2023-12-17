@@ -11,27 +11,13 @@
 #include <llapi/mc/CommandOutput.hpp>
 #include <llapi/mc/Player.hpp>
 #include "../Storage/SQLiteDatabase.h"
+#include "../tool.h"
 #include "include/i18nLang.h"
 #include "include/language.h"
 extern Logger logger;
-const std::string PluginData = "./plugins/LOICollection/data";
 
 namespace language {
     namespace {
-        std::string get(ServerPlayer* player) {
-            SQLiteDatabase db(PluginData + "/language.db");
-            std::string playerLang = db.get(player->getXuid());
-            db.close();
-            return playerLang;
-        }
-
-        std::string get(Player* player) {
-            SQLiteDatabase db(PluginData + "/language.db");
-            std::string playerLang = db.get(player->getXuid());
-            db.close();
-            return playerLang;
-        }
-
         void database() {
             if (!std::filesystem::exists(PluginData + "/language.db")) {
                 logger.info("<language>: 数据库已创建");
@@ -41,14 +27,14 @@ namespace language {
         }
 
         void ui(ServerPlayer* player) {
-            std::string PlayerLanguage = get(player);
+            std::string PlayerLanguage = tool::get(player);
             i18nLang lang("./plugins/LOICollection/language.json");
             auto form = Form::CustomForm(lang.tr(PlayerLanguage, "language.gui.title"));
             form.append(Form::Label("label", lang.tr(PlayerLanguage, "language.gui.label")));
             form.append(Form::Dropdown("dropdown", lang.tr(PlayerLanguage, "language.gui.dropdown"), lang.list()));
             lang.close();
             form.sendTo(player, [](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
-                std::string PlayerLanguage = get(pl);
+                std::string PlayerLanguage = tool::get(pl);
                 i18nLang lang("./plugins/LOICollection/language.json");
                 if (mp.empty()) {
                     pl->sendTextPacket(lang.tr(PlayerLanguage, "exit"));
@@ -86,6 +72,10 @@ namespace language {
                     CommandOutput& output,
                     std::unordered_map<std::string, DynamicCommand::Result>& results
                 ) {
+                    if (origin.getPlayer() == nullptr) {
+                        output.error("Blacklist: No player selected.");
+                        return;
+                    }
                     std::string playerName = origin.getName();
                     ui(origin.getPlayer());
                     output.success("The UI has been opened to player " + playerName);

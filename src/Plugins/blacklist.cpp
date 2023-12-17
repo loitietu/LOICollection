@@ -1,6 +1,5 @@
 #include <string>
 #include <vector>
-#include <ctime>
 #include <llapi/FormUI.h>
 #include <llapi/LoggerAPI.h>
 #include <llapi/RegCommandAPI.h>
@@ -10,59 +9,13 @@
 #include <llapi/mc/ServerPlayer.hpp>
 #include <llapi/mc/Player.hpp>
 #include "../Storage/SQLiteDatabase.h"
+#include "../tool.h"
 #include "include/i18nLang.h"
 #include "include/blacklist.h"
 extern Logger logger;
-const std::string PluginData = "./plugins/LOICollection/data";
 
 namespace blacklist {
     namespace {
-        std::string get(ServerPlayer* player) {
-            SQLiteDatabase db(PluginData + "/language.db");
-            std::string playerLang = db.get(player->getXuid());
-            db.close();
-            return playerLang;
-        }
-
-        std::string get(Player* player) {
-            SQLiteDatabase db(PluginData + "/language.db");
-            std::string playerLang = db.get(player->getXuid());
-            db.close();
-            return playerLang;
-        }
-
-        std::vector<std::string> split(const std::string& s, char delimiter) {
-            std::vector<std::string> tokens;
-            std::stringstream ss(s);
-            std::string token;
-            while (std::getline(ss, token, delimiter)) {
-                tokens.push_back(token);
-            }
-            return tokens;
-        }
-
-        std::string timeCalculate(int hours) {
-            std::time_t currentTime = std::time(nullptr);
-            std::tm* timeInfo = std::localtime(&currentTime);
-            timeInfo->tm_hour += 1;
-            std::time_t laterTime = std::mktime(timeInfo);
-            char formattedTime[15];
-            std::strftime(formattedTime, sizeof(formattedTime), "%Y%m%d%H%H%S", std::localtime(&laterTime));
-            std::string formattedTimeString(formattedTime);
-            return formattedTimeString;
-        }
-
-        bool isReach(const std::string& timeString) {
-            std::time_t currentTime = std::time(nullptr);
-            char formattedTime[15];
-            std::strftime(formattedTime, sizeof(formattedTime), "%Y%m%d%H%H%S", std::localtime(&currentTime));
-            std::string formattedTimeString(formattedTime);
-            int64_t formattedTimeInt = std::stoll(formattedTimeString);
-            int64_t timeInt = std::stoll(timeString);
-            if (formattedTimeInt > timeInt) return true;
-            else return false;
-        }
-
         void database() {
             if (!std::filesystem::exists(PluginData + "/blacklist.db")) {
                 logger.info("<Blacklist>: 数据库已创建");
@@ -75,7 +28,7 @@ namespace blacklist {
             std::vector<Player*> playerList =  Level::getAllPlayers();
             std::vector<std::string> playerListName;
             for (auto p : playerList) playerListName.push_back(p->getName());
-            std::string PlayerLanguage = get(player);
+            std::string PlayerLanguage = tool::get(player);
             i18nLang lang("./plugins/LOICollection/language.json");
             std::vector<std::string> typeList = { "ip", "xuid" };
             auto form = Form::CustomForm(lang.tr(PlayerLanguage, "blacklist.gui.add.title"));
@@ -86,9 +39,9 @@ namespace blacklist {
             form.append(Form::Input("input2", lang.tr(PlayerLanguage, "blacklist.gui.add.input2"), "", "0"));
             lang.close();
             form.sendTo(player, [](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
-                std::string PlayerLanguage = get(pl);
-                i18nLang lang("./plugins/LOICollection/language.json");
                 if (mp.empty()) {
+                    std::string PlayerLanguage = tool::get(pl);
+                    i18nLang lang("./plugins/LOICollection/language.json");
                     pl->sendTextPacket(lang.tr(PlayerLanguage, "exit"));
                     lang.close();
                     return;
@@ -103,7 +56,7 @@ namespace blacklist {
 
         void removeGui(Player* player) {
             SQLiteDatabase db(PluginData + "/blacklist.db");
-            std::string PlayerLanguage = get(player);
+            std::string PlayerLanguage = tool::get(player);
             i18nLang lang("./plugins/LOICollection/language.json");
             auto form = Form::CustomForm(lang.tr(PlayerLanguage, "blacklist.gui.remove.title"));
             form.append(Form::Label("label", lang.tr(PlayerLanguage, "blacklist.gui.label")));
@@ -111,9 +64,9 @@ namespace blacklist {
             lang.close();
             db.close();
             form.sendTo(player, [](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
-                std::string PlayerLanguage = get(pl);
-                i18nLang lang("./plugins/LOICollection/language.json");
                 if (mp.empty()) {
+                    std::string PlayerLanguage = tool::get(pl);
+                    i18nLang lang("./plugins/LOICollection/language.json");
                     pl->sendTextPacket(lang.tr(PlayerLanguage, "exit"));
                     lang.close();
                     return;
@@ -124,7 +77,7 @@ namespace blacklist {
         }
 
         void menuGui(ServerPlayer* player) {
-            std::string PlayerLanguage = get(player);
+            std::string PlayerLanguage = tool::get(player);
             i18nLang lang("./plugins/LOICollection/language.json");
             auto form = Form::SimpleForm(lang.tr(PlayerLanguage, "blacklist.gui.title"), lang.tr(PlayerLanguage, "blacklist.gui.label"));
             form.addButton(lang.tr(PlayerLanguage, "blacklist.gui.addBlacklist"), "textures/ui/backup_replace");
@@ -132,7 +85,7 @@ namespace blacklist {
             lang.close();
             form.sendTo(player, [](Player* pl, int id) {
                 if (id == -1) {
-                    std::string PlayerLanguage = get(pl);
+                    std::string PlayerLanguage = tool::get(pl);
                     i18nLang lang("./plugins/LOICollection/language.json");
                     pl->sendTextPacket(lang.tr(PlayerLanguage, "exit"));
                     lang.close();
@@ -171,14 +124,18 @@ namespace blacklist {
                     auto res = target.results(ori);
                     switch (op) {
                         case BLACKLISTOP::add:
+                            if (res.empty()) {
+                                outp.error("Blacklist: No player selected.");
+                                break;
+                            }
                             switch (BlacklisType) {
                                 case BLACKLISTYPE::xuid:
                                     for (auto i : res) {
                                         std::string xuid = i->getXuid();
                                         std::string BlackCause = cause;
                                         std::string timeString = std::to_string(time);
-                                        if (cause.empty()) BlackCause = lang.tr(get(i), "blacklist.cause");
-                                        if (time) timeString = timeCalculate(time);
+                                        if (cause.empty()) BlackCause = lang.tr(tool::get(i), "blacklist.cause");
+                                        if (time) timeString = tool::timeCalculate(time);
                                         if (!db.existsTable("XUID" + xuid)) {
                                             db.setTable("XUID" + xuid);
                                             db.createTable();
@@ -191,12 +148,12 @@ namespace blacklist {
                                     break;
                                 case BLACKLISTYPE::ip:
                                     for (auto i : res) {
-                                        std::string mIp = split(i->getIP(), ':')[0];
+                                        std::string mIp = tool::split(i->getIP(), ':')[0];
                                         std::replace(mIp.begin(), mIp.end(), '.', 'A');
                                         std::string BlackCause = cause;
                                         std::string timeString = std::to_string(time);
-                                        if (cause.empty()) BlackCause = lang.tr(get(i), "blacklist.cause");
-                                        if (time) timeString = timeCalculate(time);
+                                        if (cause.empty()) BlackCause = lang.tr(tool::get(i), "blacklist.cause");
+                                        if (time) timeString = tool::timeCalculate(time);
                                         if (!db.existsTable("IP" + mIp)) {
                                             db.setTable("IP" + mIp);
                                             db.createTable();
@@ -232,6 +189,10 @@ namespace blacklist {
                             break;
                         }
                         case BLACKLISTOP::gui: {
+                            if (ori.getPlayer() == nullptr) {
+                                outp.error("Blacklist: No player selected.");
+                                break;
+                            }
                             std::string playerName = ori.getName();
                             menuGui(ori.getPlayer());
                             outp.success("The UI has been opened to player " + playerName);
@@ -272,7 +233,7 @@ namespace blacklist {
             Event::PlayerJoinEvent::subscribe([](const Event::PlayerJoinEvent& e) {
                 SQLiteDatabase db(PluginData + "/blacklist.db");
                 std::string xuid = e.mPlayer->getXuid();
-                std::string ip = split(e.mPlayer->getIP(), ':')[0];
+                std::string ip = tool::split(e.mPlayer->getIP(), ':')[0];
                 std::replace(ip.begin(), ip.end(), '.', 'A');
                 if (db.existsTable("XUID" + xuid)) {
                     db.setTable("XUID" + xuid);
@@ -282,7 +243,7 @@ namespace blacklist {
                         db.close();
                         return false;
                     }
-                    if (isReach(timeString)) {
+                    if (tool::isReach(timeString)) {
                         db.removeTable("XUID" + xuid);
                         db.close();
                         return true;
@@ -299,7 +260,7 @@ namespace blacklist {
                         db.close();
                         return false;
                     }
-                    if (isReach(timeString)) {
+                    if (tool::isReach(timeString)) {
                         db.removeTable("IP" + ip);
                         db.close();
                         return true;
