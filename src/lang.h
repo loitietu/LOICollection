@@ -21,7 +21,10 @@ static const nlohmann::ordered_json defultLangData = {
         {"blacklist.gui.add.input1", "请输入加入黑名单原因:"},
         {"blacklist.gui.add.input2", "请输入加入黑名单时间[/day](0为永久加入)"},
         {"blacklist.gui.remove.title", "§eLOIBlacklist §b-> §a删除黑名单"},
-        {"blacklist.gui.remove.dropdown", "请选择删除黑名单对象:"}
+        {"blacklist.gui.remove.dropdown", "请选择删除黑名单对象:"},
+        {"mute.cause", "§4您已被禁言，无法发送消息"},
+        {"mute.gui.title", "§eLOIMute §b-> §c服务器禁言"},
+        {"mute.gui.label", "§a功能如下:"}
     }}
 };
 

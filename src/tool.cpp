@@ -46,4 +46,18 @@ namespace tool {
         if (formattedTimeInt > timeInt) return true;
         else return false;
     }
+
+    bool isMute(Player* player) {
+        SQLiteDatabase db(PluginData + "/mute.db");
+        bool is_mute = db.existsTable("XUID" + player->getXuid());
+        db.close();
+        return is_mute;
+    }
+
+    bool isMute(ServerPlayer* player) {
+        SQLiteDatabase db(PluginData + "/mute.db");
+        bool is_mute = db.existsTable("XUID" + player->getXuid());
+        db.close();
+        return is_mute;
+    }
 }

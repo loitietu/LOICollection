@@ -1,7 +1,11 @@
+#include <string>
 #include <llapi/LoggerAPI.h>
 #include <llapi/RegCommandAPI.h>
 #include <llapi/EventAPI.h>
+#include <llapi/mc/ServerPlayer.hpp>
+#include <llapi/mc/Player.hpp>
 #include "../tool.h"
+#include "../Storage/SQLiteDatabase.h"
 #include "include/i18nLang.h"
 #include "include/mute.h"
 extern Logger logger;
@@ -27,19 +31,48 @@ namespace mute {
             CommandSelector<Player> target;
             public:
                 void execute(CommandOrigin const& ori, CommandOutput& outp) const {
-                    SQLiteDatabase db(PluginData + "/blacklist.db");
+                    SQLiteDatabase db(PluginData + "/mute.db");
                     i18nLang lang("./plugins/LOICollection/language.json");
                     auto res = target.results(ori);
                     switch (op) {
                         case MUTEOP::add:
+                            if (res.empty()) {
+                                outp.error("Mute: No player selected.");
+                                break;
+                            }
+                            for (auto i : res) {
+                                std::string xuid = i->getXuid();
+                                std::string MuteCause = cause;
+                                std::string timeString = std::to_string(time);
+                                if (cause.empty()) MuteCause = lang.tr(tool::get(i), "mute.cause");
+                                if (time) timeString = tool::timeCalculate(time);
+                                if (!db.existsTable("XUID" + xuid)) {
+                                    db.setTable("XUID" + xuid);
+                                    db.createTable();
+                                    db.set("Cause", MuteCause);
+                                    db.set("Time", timeString);
+                                }
+                            }
+                            outp.success("Mute: Adding players succeeded.");
                             break;
                         case MUTEOP::remove:
+                            if (res.empty()) {
+                                outp.error("Mute: No player selected.");
+                                break;
+                            }
+                            for (auto i : res) {
+                                std::string xuid = i->getXuid();
+                                if (!db.existsTable("XUID" + xuid)) {
+                                    db.removeTable("XUID" + xuid);
+                                }
+                            }
+                            outp.success("Mute: The player silence status has been deleted.");
                             break;
                         case MUTEOP::gui:
                             break;
                         default:
-                            logger.error("<Blacklist>: 命令分支 " + std::to_string(op) + " 不存在");
-                            outp.error("Blacklist: Instruction error.");
+                            logger.error("<Mute>: 命令分支 " + std::to_string(op) + " 不存在");
+                            outp.error("Mute: Instruction error.");
                             break;
                     }
                     lang.close();
@@ -65,6 +98,25 @@ namespace mute {
             Event::RegCmdEvent::subscribe([](const Event::RegCmdEvent& e) {
                 MuteCommand::setup(e.mCommandRegistry);
                 return true;
+            });
+            Event::PlayerChatEvent::subscribe([](const Event::PlayerChatEvent& e) {
+                std::string xuid = e.mPlayer->getXuid();
+                SQLiteDatabase db(PluginData + "/mute.db");
+                if(db.existsTable("XUID" + xuid)) {
+                    db.setTable("XUID" + xuid);
+                    std::string timeString = db.get("Time");
+                    if (tool::isReach(timeString) && timeString != "0") {
+                        db.removeTable("XUID" + xuid);
+                        db.close();
+                        return true;
+                    }
+                    e.mPlayer->sendTextPacket(db.get("Cause"));
+                    db.close();
+                    return false;
+                } else {
+                    db.close();
+                    return true;
+                }
             });
         }
     }

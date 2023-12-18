@@ -15,6 +15,8 @@ namespace tool {
     std::vector<std::string> split(const std::string& s, char delimiter);
     std::string timeCalculate(int hours);
     bool isReach(const std::string& timeString);
+    bool isMute(Player* player);
+    bool isMute(ServerPlayer* player);
 }
 
 #endif

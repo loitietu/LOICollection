@@ -180,13 +180,6 @@ namespace blacklist {
                                 outp.error("Blacklist: Deleting data table data is prohibited.");
                             }
                             break;
-                        case BLACKLISTOP::list: {
-                            std::vector<std::string> listPlayer = db.list();
-                            std::stringstream ss;
-                            for (const auto& pl : listPlayer) ss << pl << ",";
-                            outp.success("Blacklist: Add list - " + ss.str());
-                            break;
-                        }
                         case BLACKLISTOP::gui: {
                             if (ori.getPlayer() == nullptr) {
                                 outp.error("Blacklist: No player selected.");
@@ -195,6 +188,13 @@ namespace blacklist {
                             std::string playerName = ori.getName();
                             menuGui(ori.getPlayer());
                             outp.success("The UI has been opened to player " + playerName);
+                            break;
+                        }
+                        case BLACKLISTOP::list: {
+                            std::vector<std::string> listPlayer = db.list();
+                            std::stringstream ss;
+                            for (const auto& pl : listPlayer) ss << pl << ",";
+                            outp.success("Blacklist: Add list - " + ss.str());
                             break;
                         }
                         default:
