@@ -62,7 +62,7 @@ namespace mute {
                             }
                             for (auto i : res) {
                                 std::string xuid = i->getXuid();
-                                if (!db.existsTable("XUID" + xuid)) {
+                                if (db.existsTable("XUID" + xuid)) {
                                     db.removeTable("XUID" + xuid);
                                 }
                             }
