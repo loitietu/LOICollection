@@ -14,13 +14,13 @@
 3. When you open it, you'll see something like this:
 ```json
 {
-    "version": "1.2.0", //Plugin Version
-    "Blacklist": false, //Whether the plug-in is enabled (true is enabled, false is disabled)
+    "version": "1.2.0",
+    "Blacklist": false,
     "Mute": false, 
     "Cdk": false,
     "Menu": {
         "Enable": false,
-        "ItemId": "minecraft:clock" //menu to open the item ID
+        "ItemId": "minecraft:clock" 
     },
     "Tpa": false,
     "Shop": false,
@@ -28,23 +28,23 @@
     "Pvp": false,
     "Wallet": {
         "Enable": false,
-        "llmoney": true, //Whether to enable the llmoney economic core
-        "score": "money", //Use the scoreboard name
-        "tax": 0.1 //Exchange rates such as transfers
+        "llmoney": true,
+        "score": "money",
+        "tax": 0.1 
     },
     "Chat": {
         "Enable": false,
-        "chat": "<{player}> {chat}" //Format of presentations
+        "chat": "<{player}> {chat}"
     },
     "Command": {
         "Enable": false,
-        "command": [], //Disable the command
-        "tips": "该指令已被禁用" //Prompted when using the Disable command
+        "command": [],
+        "tips": "该指令已被禁用" 
     },
     "ServerTips": {
         "Enable": false,
-        "join": "{player}加入了服务器", //Player join prompt
-        "left": "{player}退出了服务器" //Player exit prompt
+        "join": "{player}加入了服务器",
+        "left": "{player}退出了服务器" 
     },
     "AnnounCement": false
 }
