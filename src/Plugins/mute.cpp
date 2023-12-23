@@ -2,10 +2,11 @@
 #include <llapi/LoggerAPI.h>
 #include <llapi/RegCommandAPI.h>
 #include <llapi/EventAPI.h>
+#include <llapi/FormUI.h>
+#include <llapi/mc/Level.hpp>
 #include <llapi/mc/ServerPlayer.hpp>
 #include <llapi/mc/Player.hpp>
 #include "../tool.h"
-#include "../Storage/SQLiteDatabase.h"
 #include "include/i18nLang.h"
 #include "include/mute.h"
 extern Logger logger;
@@ -18,6 +19,82 @@ namespace mute {
                 SQLiteDatabase db(PluginData + "/mute.db");
                 db.close();
             }
+        }
+
+        void addGui(Player* player) {
+            std::vector<Player*> playerList =  Level::getAllPlayers();
+            std::vector<std::string> playerListName;
+            for (auto p : playerList) playerListName.push_back(p->getName());
+            std::string PlayerLanguage = tool::get(player);
+            i18nLang lang("./plugins/LOICollection/language.json");
+            auto form = Form::CustomForm(lang.tr(PlayerLanguage, "mute.gui.add.title"));
+            form.append(Form::Label("label", lang.tr(PlayerLanguage, "mute.gui.label")));
+            form.append(Form::Dropdown("dropdown", lang.tr(PlayerLanguage, "mute.gui.add.dropdown"), playerListName));
+            form.append(Form::Input("input1", lang.tr(PlayerLanguage, "mute.gui.add.input1"), "", lang.tr(PlayerLanguage, "mute.cause")));
+            form.append(Form::Input("input2", lang.tr(PlayerLanguage, "mute.gui.add.input2"), "", "0"));
+            lang.close();
+            form.sendTo(player, [](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
+                if (mp.empty()) {
+                    std::string PlayerLanguage = tool::get(pl);
+                    i18nLang lang("./plugins/LOICollection/language.json");
+                    pl->sendTextPacket(lang.tr(PlayerLanguage, "exit"));
+                    lang.close();
+                    return;
+                }
+                std::string PlayerSelectName = mp["dropdown"]->getString();
+                std::string PlayerInputCause = mp["input1"]->getString();
+                std::string PlayerInputTime = mp["input2"]->getString();
+                pl->runcmd("mute add " + PlayerSelectName + " " + PlayerInputCause + " " + PlayerInputTime);
+            });
+        }
+
+        void removeGui(Player* player) {
+            std::vector<Player*> playerList =  Level::getAllPlayers();
+            std::vector<std::string> playerListName;
+            for (auto p : playerList) playerListName.push_back(p->getName());
+            std::string PlayerLanguage = tool::get(player);
+            i18nLang lang("./plugins/LOICollection/language.json");
+            auto form = Form::CustomForm(lang.tr(PlayerLanguage, "mute.gui.remove.title"));
+            form.append(Form::Label("label", lang.tr(PlayerLanguage, "mute.gui.label")));
+            form.append(Form::Dropdown("dropdown", lang.tr(PlayerLanguage, "mute.gui.remove.dropdown"), playerListName));
+            lang.close();
+            form.sendTo(player, [](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
+                if (mp.empty()) {
+                    std::string PlayerLanguage = tool::get(pl);
+                    i18nLang lang("./plugins/LOICollection/language.json");
+                    pl->sendTextPacket(lang.tr(PlayerLanguage, "exit"));
+                    lang.close();
+                    return;
+                }
+                std::string PlayerSelectString = mp["dropdown"]->getString();
+                pl->runcmd("mute remove " + PlayerSelectString);
+            });
+        }
+
+        void menuGui(ServerPlayer* player) {
+            std::string PlayerLanguage = tool::get(player);
+            i18nLang lang("./plugins/LOICollection/language.json");
+            auto form = Form::SimpleForm(lang.tr(PlayerLanguage, "mute.gui.title"), lang.tr(PlayerLanguage, "mute.gui.label"));
+            form.addButton(lang.tr(PlayerLanguage, "mute.gui.addMute"), "textures/ui/backup_replace");
+            form.addButton(lang.tr(PlayerLanguage, "mute.gui.removeMute"), "textures/ui/free_download_symbol");
+            lang.close();
+            form.sendTo(player, [](Player* pl, int id) {
+                if (id == -1) {
+                    std::string PlayerLanguage = tool::get(pl);
+                    i18nLang lang("./plugins/LOICollection/language.json");
+                    pl->sendTextPacket(lang.tr(PlayerLanguage, "exit"));
+                    lang.close();
+                    return;
+                }
+                switch (id) {
+                    case 0:
+                        addGui(pl);
+                        break;
+                    case 1:
+                        removeGui(pl);
+                        break;
+                }
+            });
         }
 
         class MuteCommand : public Command {
@@ -68,8 +145,16 @@ namespace mute {
                             }
                             outp.success("Mute: The player silence status has been deleted.");
                             break;
-                        case MUTEOP::gui:
+                        case MUTEOP::gui: {
+                            if (ori.getPlayer() == nullptr) {
+                                outp.error("Blacklist: No player selected.");
+                                break;
+                            }
+                            std::string playerName = ori.getName();
+                            menuGui(ori.getPlayer());
+                            outp.success("The UI has been opened to player " + playerName);
                             break;
+                        }
                         default:
                             logger.error("<Mute>: 命令分支 " + std::to_string(op) + " 不存在");
                             outp.error("Mute: Instruction error.");

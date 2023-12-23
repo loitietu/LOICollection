@@ -24,7 +24,15 @@ static const nlohmann::ordered_json defultLangData = {
         {"blacklist.gui.remove.dropdown", "请选择删除黑名单对象:"},
         {"mute.cause", "§4您已被禁言，无法发送消息"},
         {"mute.gui.title", "§eLOIMute §b-> §c服务器禁言"},
-        {"mute.gui.label", "§a功能如下:"}
+        {"mute.gui.label", "§a功能如下:"},
+        {"mute.gui.addMute", "§c添加禁言\n§4将玩家添加至禁言"},
+        {"mute.gui.removeMute", "§a删除禁言\n§4将玩家从禁言中移除"},
+        {"mute.gui.add.title", "§eLOIMute §b-> §c添加禁言"},
+        {"mute.gui.add.dropdown", "请选择添加至禁言玩家:"},
+        {"mute.gui.add.input1", "请输入禁言原因:"},
+        {"mute.gui.add.input2", "请输入禁言时间[/day](0为永久禁言)"},
+        {"mute.gui.remove.title", "§eLOIMute §b-> §a删除禁言"},
+        {"mute.gui.remove.dropdown", "请选择删除禁言对象:"}
     }}
 };
 
