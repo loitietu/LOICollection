@@ -5,12 +5,14 @@
 #include "Plugins/include/language.h"
 #include "Plugins/include/blacklist.h"
 #include "Plugins/include/mute.h"
+#include "Plugins/include/cdk.h"
 #include "lang.h"
 #include "version.h"
 extern Logger logger;
 const std::string PluginDirectory = "./plugins/LOICollection";
 bool blacklistPlugin = false;
 bool mutePlugin = false;
+bool cdkPlugin = false;
 
 void update(std::string& versionInfo) {
     logger.info("开始加载配置文件");
@@ -41,6 +43,7 @@ void update(std::string& versionInfo) {
     }
     blacklistPlugin = config["Blacklist"].template get<bool>();
     mutePlugin = config["Mute"].template get<bool>();
+    cdkPlugin = config["Cdk"].template get<bool>();
     std::ofstream configNewFile(PluginDirectory + "/config.json");
     configNewFile << config.dump(4);
     configNewFile.close();
@@ -72,6 +75,7 @@ void load() {
     language::load(&OpenPlugin);
     if (blacklistPlugin) blacklist::load(&OpenPlugin);
     if (mutePlugin) mute::load(&OpenPlugin);
+    if (cdkPlugin) cdk::load(&OpenPlugin);
     logger.info("加载成功，已加载内置插件数量: " + std::to_string(OpenPlugin));
 }
 
