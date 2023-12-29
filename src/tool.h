@@ -6,7 +6,9 @@
 #include <vector>
 #include <llapi/mc/ServerPlayer.hpp>
 #include <llapi/mc/Player.hpp>
+#include <llapi/mc/Scoreboard.hpp>
 #include "Storage/SQLiteDatabase.h"
+#include "include/LLMoney.h"
 const std::string PluginData = "./plugins/LOICollection/data";
 
 namespace tool {
@@ -17,6 +19,17 @@ namespace tool {
     bool isReach(const std::string& timeString);
     bool isMute(Player* player);
     bool isMute(ServerPlayer* player);
+
+    namespace llmoney {
+        int get(Player* player);
+        int get(ServerPlayer* player);
+        bool add(Player* player, int amount);
+        bool add(ServerPlayer* player, int amount);
+        bool reduce(Player* player, int amount);
+        bool reduce(ServerPlayer* player, int amount);
+        bool set(Player* player, int amount);
+        bool set(ServerPlayer* player, int amount);
+    }
 }
 
 #endif

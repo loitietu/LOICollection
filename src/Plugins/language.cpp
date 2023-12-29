@@ -19,7 +19,6 @@ namespace language {
     namespace {
         void database() {
             if (!std::filesystem::exists(PluginData + "/language.db")) {
-                logger.info("<language>: 数据库已创建");
                 SQLiteDatabase db(PluginData + "/language.db");
                 db.close();
             }

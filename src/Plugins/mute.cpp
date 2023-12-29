@@ -15,7 +15,6 @@ namespace mute {
     namespace {
         void database() {
             if (!std::filesystem::exists(PluginData + "/mute.db")) {
-                logger.info("<Mute>: 数据库已创建");
                 SQLiteDatabase db(PluginData + "/mute.db");
                 db.close();
             }

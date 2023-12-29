@@ -17,7 +17,6 @@ namespace blacklist {
     namespace {
         void database() {
             if (!std::filesystem::exists(PluginData + "/blacklist.db")) {
-                logger.info("<Blacklist>: 数据库已创建");
                 SQLiteDatabase db(PluginData + "/blacklist.db");
                 db.close();
             }
