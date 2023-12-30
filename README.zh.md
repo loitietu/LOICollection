@@ -3,6 +3,22 @@
 
 ### [English](README.md) | [简体中文](README.zh.md)
 
+实现功能 | 完成
+--- | :---:
+Blacklist | $\color{#00FF00}{√}$
+Mute | $\color{#00FF00}{√}$
+Cdk | $\color{#00FF00}{√}$
+Menu | $\color{#FF0000}{×}$
+Tpa | $\color{#FF0000}{×}$
+Shop | $\color{#FF0000}{×}$
+Monitor | $\color{#FF0000}{×}$
+Pvp | $\color{#FF0000}{×}$
+Wallet | $\color{#FF0000}{×}$
+Chat | $\color{#FF0000}{×}$
+Command | $\color{#FF0000}{×}$
+ServerTips | $\color{#FF0000}{×}$
+AnnounCement | $\color{#FF0000}{×}$
+
 ### 如何安装插件？
 1. 将文件 `LOICollection.dll` 放置在服务器目录的 `plugins` 文件夹中。
 - `LOICollection.dll`（您可以在发布页面下载）。

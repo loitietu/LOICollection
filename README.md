@@ -3,6 +3,23 @@
 
 ### [English](README.md) | [简体中文](README.zh.md)
 
+## Implementation plug-in
+Realize the function | accomplish
+--- | :---:
+Blacklist | $\color{#00FF00}{√}$
+Mute | $\color{#00FF00}{√}$
+Cdk | $\color{#00FF00}{√}$
+Menu | $\color{#FF0000}{×}$
+Tpa | $\color{#FF0000}{×}$
+Shop | $\color{#FF0000}{×}$
+Monitor | $\color{#FF0000}{×}$
+Pvp | $\color{#FF0000}{×}$
+Wallet | $\color{#FF0000}{×}$
+Chat | $\color{#FF0000}{×}$
+Command | $\color{#FF0000}{×}$
+ServerTips | $\color{#FF0000}{×}$
+AnnounCement | $\color{#FF0000}{×}$
+
 ### How to install the plugin?
 1. Place the file `LOICollection.dll` in the server directory `plugins`.
 - `LOICollection.dll` (You can download it in the Release page.).
