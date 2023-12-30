@@ -3,10 +3,12 @@
 #include <llapi/EventAPI.h>
 #include <llapi/LoggerAPI.h>
 #include <llapi/RegCommandAPI.h>
+#include <llapi/GlobalServiceAPI.h>
 #include <llapi/mc/ServerPlayer.hpp>
 #include <llapi/mc/Player.hpp>
 #include <llapi/mc/Scoreboard.hpp>
 #include <llapi/mc/ItemStack.hpp>
+#include <llapi/mc/Level.hpp>
 #include <Nlohmann/json.hpp>
 #include "../tool.h"
 #include "../Storage/JsonManager.h"
@@ -35,7 +37,7 @@ namespace cdk {
                 for (nlohmann::ordered_json::iterator it = ScoreboardList.begin(); it != ScoreboardList.end(); ++it) {
                     int score = ScoreboardList[it.key()].template get<int>();
                     Scoreboard::newObjective(it.key(), "");
-                    Scoreboard::addScore(it.key(), tool::toServerPlayer(player), score);
+                    Global<Level>->runcmdEx("scoreboard players add " + player->getName() + " " + it.key() + " " + std::to_string(score));
                 }
                 for (nlohmann::ordered_json::iterator it = ItemList.begin(); it != ItemList.end(); ++it) {
                     auto* item = ItemStack::create(it.key(), it.value()["quantity"]);
