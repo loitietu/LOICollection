@@ -41,6 +41,14 @@ bool JsonManager::isKey(const std::string& key) {
     return json.find(key) != json.end();
 }
 
+std::vector<std::string> JsonManager::list() {
+    std::vector<std::string> keys;
+    for (nlohmann::ordered_json::iterator it = json.begin(); it != json.end(); ++it) {
+        keys.push_back(it.key());
+    }
+    return keys;
+}
+
 void JsonManager::save() {
     std::ofstream file(jsonFilePath);
     file << json.dump(4);

@@ -4,6 +4,8 @@
 #include <ctime>
 #include <string>
 #include <vector>
+#include <llapi/GlobalServiceAPI.h>
+#include <llapi/mc/Level.hpp>
 #include <llapi/mc/ServerPlayer.hpp>
 #include <llapi/mc/Player.hpp>
 #include <llapi/mc/Scoreboard.hpp>
@@ -19,16 +21,13 @@ namespace tool {
     bool isReach(const std::string& timeString);
     bool isMute(Player* player);
     bool isMute(ServerPlayer* player);
+    Player* toServerPlayer(ServerPlayer* player);
 
     namespace llmoney {
         int get(Player* player);
-        int get(ServerPlayer* player);
         bool add(Player* player, int amount);
-        bool add(ServerPlayer* player, int amount);
         bool reduce(Player* player, int amount);
-        bool reduce(ServerPlayer* player, int amount);
         bool set(Player* player, int amount);
-        bool set(ServerPlayer* player, int amount);
     }
 }
 

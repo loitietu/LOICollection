@@ -61,12 +61,12 @@ namespace tool {
         return is_mute;
     }
 
+    Player* toServerPlayer(ServerPlayer* player) {
+        return Global<Level>->getPlayer(player->getXuid());
+    }
+
     namespace llmoney {
         int get(Player* player) {
-            return LLMoneyGet(player->getXuid());
-        }
-
-        int get(ServerPlayer* player) {
             return LLMoneyGet(player->getXuid());
         }
 
@@ -74,23 +74,11 @@ namespace tool {
             return LLMoneyAdd(player->getXuid(), amount);
         }
 
-        bool add(ServerPlayer* player, int amount) {
-            return LLMoneyAdd(player->getXuid(), amount);
-        }
-
         bool reduce(Player* player, int amount) {
             return LLMoneyReduce(player->getXuid(), amount);
         }
 
-        bool reduce(ServerPlayer* player, int amount) {
-            return LLMoneyReduce(player->getXuid(), amount);
-        }
-
         bool set(Player* player, int amount) {
-            return LLMoneySet(player->getXuid(), amount);
-        }
-
-        bool set(ServerPlayer* player, int amount) {
             return LLMoneySet(player->getXuid(), amount);
         }
     }

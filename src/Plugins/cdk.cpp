@@ -22,17 +22,17 @@ namespace cdk {
             JsonManager database(PluginData + "/cdk.json");
             if (database.isKey(convertString)) {
                 nlohmann::ordered_json cdkJson(database.get(convertString));
-                nlohmann::ordered_json PlayerList = cdkJson.at("players");
+                nlohmann::ordered_json PlayerList = cdkJson.at("player");
                 if (PlayerList.contains(player->getXuid())) {
                     player->sendTextPacket(lang.tr(PlayerLanguage, "cdk.convert.tip2"));
                     lang.close();
                     database.clear();
                     return;
                 }
-                tool::llmoney::add(player, cdkJson["llmoney"]);
+                tool::llmoney::add(tool::toServerPlayer(player), cdkJson["llmoney"]);
                 nlohmann::ordered_json ScoreboardList = cdkJson.at("scores");
                 nlohmann::ordered_json ItemList = cdkJson.at("item");
-                for (nlohmann::ordered_json::iterator it = ScoreboardList.begin(); it != ScoreboardList.end(); ++it) Scoreboard::addScore(player, it.key(), it.value());
+                for (nlohmann::ordered_json::iterator it = ScoreboardList.begin(); it != ScoreboardList.end(); ++it) Scoreboard::addScore(tool::toServerPlayer(player), it.key(), it.value());
                 for (nlohmann::ordered_json::iterator it = ItemList.begin(); it != ItemList.end(); ++it) {
                     auto* item = ItemStack::create(it.key(), it.value()["quantity"]);
                     item->setAuxValue(it.value()["specialvalue"]);
@@ -43,7 +43,7 @@ namespace cdk {
                 if (cdkJson["personal"]) database.remove(convertString);
                 else {
                     PlayerList.push_back(player->getXuid());
-                    cdkJson["players"] = PlayerList;
+                    cdkJson["player"] = PlayerList;
                     database.set(convertString, cdkJson);
                 }
                 player->sendTextPacket(lang.tr(PlayerLanguage, "cdk.convert.tip3"));
@@ -78,8 +78,196 @@ namespace cdk {
             });
         }
 
+        void cdkNewGui(Player* player) {
+            std::string PlayerLanguage = tool::get(player);
+            i18nLang lang("./plugins/LOICollection/language.json");
+            auto form = Form::CustomForm(lang.tr(PlayerLanguage, "cdk.gui.title"));
+            form.append(Form::Label("label", lang.tr(PlayerLanguage, "cdk.gui.label")));
+            form.append(Form::Input("input1", lang.tr(PlayerLanguage, "cdk.gui.new.input1")));
+            form.append(Form::Input("input2", lang.tr(PlayerLanguage, "cdk.gui.new.input2")));
+            form.append(Form::Toggle("Toggle", lang.tr(PlayerLanguage, "cdk.gui.new.switch")));
+            lang.close();
+            form.sendTo(player, [](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
+                if (mp.empty()) {
+                    std::string PlayerLanguage = tool::get(pl);
+                    i18nLang lang("./plugins/LOICollection/language.json");
+                    pl->sendTextPacket(lang.tr(PlayerLanguage, "exit"));
+                    lang.close();
+                    return;
+                }
+                JsonManager database(PluginData + "/cdk.json");
+                nlohmann::ordered_json emptyArray = nlohmann::ordered_json::array();
+                nlohmann::ordered_json emptyObject = nlohmann::ordered_json::object();
+                int money = 0;
+                try {
+                    money = std::stoi(mp["input2"]->getString());
+                } catch (std::exception& e) { 
+                    money = 0;
+                }
+                nlohmann::ordered_json dataList = {
+                    {"personal", mp["Toggle"]->getBool()},
+                    {"player", emptyArray},
+                    {"scores", emptyObject},
+                    {"item", emptyObject},
+                    {"llmoney", money}
+                };
+                database.set(mp["input1"]->getString(), dataList);
+                database.save();
+            });
+        }
+
+        void cdkRemoveGui(Player* player) {
+            std::string PlayerLanguage = tool::get(player);
+            i18nLang lang("./plugins/LOICollection/language.json");
+            JsonManager database(PluginData + "/cdk.json");
+            auto form = Form::CustomForm(lang.tr(PlayerLanguage, "cdk.gui.title"));
+            form.append(Form::Label("label", lang.tr(PlayerLanguage, "cdk.gui.label")));
+            form.append(Form::Dropdown("dropdown", lang.tr(PlayerLanguage, "cdk.gui.remove.dropdown"), database.list()));
+            database.clear();
+            lang.close();
+            form.sendTo(player, [](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
+                if (mp.empty()) {
+                    std::string PlayerLanguage = tool::get(pl);
+                    i18nLang lang("./plugins/LOICollection/language.json");
+                    pl->sendTextPacket(lang.tr(PlayerLanguage, "exit"));
+                    lang.close();
+                    return;
+                }
+                JsonManager database(PluginData + "/cdk.json");
+                database.remove(mp["dropdown"]->getString());
+                database.save();
+            });
+        }
+
+        void cdkAwardScoreGui(Player* player) {
+            std::string PlayerLanguage = tool::get(player);
+            i18nLang lang("./plugins/LOICollection/language.json");
+            JsonManager database(PluginData + "/cdk.json");
+            auto form = Form::CustomForm(lang.tr(PlayerLanguage, "cdk.gui.title"));
+            form.append(Form::Label("label", lang.tr(PlayerLanguage, "cdk.gui.label")));
+            form.append(Form::Dropdown("dropdown", lang.tr(PlayerLanguage, "cdk.gui.award.dropdown"), database.list()));
+            form.append(Form::Input("input1", lang.tr(PlayerLanguage, "cdk.gui.award.score.input1")));
+            form.append(Form::Input("input2", lang.tr(PlayerLanguage, "cdk.gui.award.score.input2")));
+            database.clear();
+            lang.close();
+            form.sendTo(player, [](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
+                if (mp.empty()) {
+                    std::string PlayerLanguage = tool::get(pl);
+                    i18nLang lang("./plugins/LOICollection/language.json");
+                    pl->sendTextPacket(lang.tr(PlayerLanguage, "exit"));
+                    lang.close();
+                    return;
+                }
+                int money = 0;
+                try {
+                    money = std::stoi(mp["input2"]->getString());
+                } catch (std::exception& e) { 
+                    money = 0;
+                }
+                JsonManager database(PluginData + "/cdk.json");
+                nlohmann::ordered_json cdkData = database.get(mp["dropdown"]->getString());
+                cdkData["scores"][mp["input1"]->getString()] = money;
+                database.set(mp["dropdown"]->getString(), cdkData);
+                database.save();
+            });
+        }
+
+        void cdkAwardItemGui(Player* player) {
+            std::string PlayerLanguage = tool::get(player);
+            i18nLang lang("./plugins/LOICollection/language.json");
+            JsonManager database(PluginData + "/cdk.json");
+            auto form = Form::CustomForm(lang.tr(PlayerLanguage, "cdk.gui.title"));
+            form.append(Form::Label("label", lang.tr(PlayerLanguage, "cdk.gui.label")));
+            form.append(Form::Dropdown("dropdown", lang.tr(PlayerLanguage, "cdk.gui.award.dropdown"), database.list()));
+            form.append(Form::Input("input1", lang.tr(PlayerLanguage, "cdk.gui.award.item.input1")));
+            form.append(Form::Input("input2", lang.tr(PlayerLanguage, "cdk.gui.award.item.input2")));
+            form.append(Form::Input("input3", lang.tr(PlayerLanguage, "cdk.gui.award.item.input3")));
+            form.append(Form::Input("input4", lang.tr(PlayerLanguage, "cdk.gui.award.item.input4")));
+            database.clear();
+            lang.close();
+            form.sendTo(player, [](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
+                if (mp.empty()) {
+                    std::string PlayerLanguage = tool::get(pl);
+                    i18nLang lang("./plugins/LOICollection/language.json");
+                    pl->sendTextPacket(lang.tr(PlayerLanguage, "exit"));
+                    lang.close();
+                    return;
+                }
+                int aux = 0;
+                int count = 1;
+                try {
+                    count = std::stoi(mp["input3"]->getString());
+                    aux = std::stoi(mp["input4"]->getString());
+                } catch (std::exception& e) { 
+                    aux = 0;
+                    count = 1;
+                }
+                JsonManager database(PluginData + "/cdk.json");
+                nlohmann::ordered_json cdkData = database.get(mp["dropdown"]->getString());
+                cdkData["item"][mp["input1"]->getString()] = {
+                    {"name", mp["input2"]->getString()},
+                    {"quantity", count},
+                    {"specialvalue", aux}
+                };
+                database.set(mp["dropdown"]->getString(), cdkData);
+                database.save();
+            });
+        }
+
+        void cdkAwardGui(Player* player) {
+            std::string PlayerLanguage = tool::get(player);
+            i18nLang lang("./plugins/LOICollection/language.json");
+            auto form = Form::SimpleForm(lang.tr(PlayerLanguage, "cdk.gui.title"), lang.tr(PlayerLanguage, "cdk.gui.label"));
+            form.addButton(lang.tr(PlayerLanguage, "cdk.gui.award.score"), "textures/items/diamond_sword");
+            form.addButton(lang.tr(PlayerLanguage, "cdk.gui.award.item"), "textures/items/diamond");
+            lang.close();
+            form.sendTo(player, [](Player* pl, int id) {
+                if (id == -1) {
+                    std::string PlayerLanguage = tool::get(pl);
+                    i18nLang lang("./plugins/LOICollection/language.json");
+                    pl->sendTextPacket(lang.tr(PlayerLanguage, "exit"));
+                    lang.close();
+                    return;
+                }
+                switch (id) {
+                    case 0:
+                        cdkAwardScoreGui(pl);
+                        break;
+                    case 1:
+                        cdkAwardItemGui(pl);
+                        break;
+                }
+            });
+        }
+
         void cdkSetting(ServerPlayer* player) {
-            
+            std::string PlayerLanguage = tool::get(player);
+            i18nLang lang("./plugins/LOICollection/language.json");
+            auto form = Form::SimpleForm(lang.tr(PlayerLanguage, "cdk.gui.title"), lang.tr(PlayerLanguage, "cdk.gui.label"));
+            form.addButton(lang.tr(PlayerLanguage, "cdk.gui.addCdk"), "textures/ui/book_addtextpage_default");
+            form.addButton(lang.tr(PlayerLanguage, "cdk.gui.removeCdk"), "textures/ui/cancel");
+            form.addButton(lang.tr(PlayerLanguage, "cdk.gui.addAward"), "textures/ui/color_picker");
+            lang.close();
+            form.sendTo(player, [](Player* pl, int id) {
+                if (id == -1) {
+                    std::string PlayerLanguage = tool::get(pl);
+                    i18nLang lang("./plugins/LOICollection/language.json");
+                    pl->sendTextPacket(lang.tr(PlayerLanguage, "exit"));
+                    lang.close();
+                    return;
+                }
+                switch (id) {
+                    case 0:
+                        cdkNewGui(pl);
+                        break;
+                    case 1:
+                        cdkRemoveGui(pl);
+                        break;
+                    case 2:
+                        cdkAwardGui(pl);
+                        break;
+                }
+            });
         }
 
         class CdkCommand : public Command {
@@ -98,11 +286,17 @@ namespace cdk {
                                 outp.error("Cdk: No player selected.");
                                 break;
                             }
-                            if (setting && ori.getPlayer()->isOP()) cdkSetting(ori.getPlayer());
-                            else if(setting && !ori.getPlayer()->isOP()) outp.error("Cdk: No permission to open the Setting.");
-                            else cdkGui(ori.getPlayer());
-                            std::string playerName = ori.getName();
-                            outp.success("The UI has been opened to player " + playerName);
+                            if (setting && ori.getPlayer()->isOP()) {
+                                std::string playerName = ori.getName();
+                                outp.success("The UI has been opened to player " + playerName);
+                                cdkSetting(ori.getPlayer());
+                            } else if(setting && !ori.getPlayer()->isOP()) {
+                                outp.error("Cdk: No permission to open the Setting.");
+                            } else {
+                                std::string playerName = ori.getName();
+                                outp.success("The UI has been opened to player " + playerName);
+                                cdkGui(ori.getPlayer());
+                            }
                             break;
                         }
                         case CDKOP::convert: {

@@ -38,7 +38,23 @@ static const nlohmann::ordered_json defultLangData = {
         {"cdk.convert.tip3", "§a总换成功"},
         {"cdk.gui.title", "§eLOICdk §b-> §a总换码"},
         {"cdk.gui.label", "§b功能如下:"},
-        {"cdk.gui.convert.input", "§e请输入CDK"}
+        {"cdk.gui.convert.input", "§e请输入CDK"},
+        {"cdk.gui.addCdk", "§a创建CDK\n§7添加一个空白CDK"},
+        {"cdk.gui.removeCdk", "§4删除CDK\n§7删除一个CDK"},
+        {"cdk.gui.addAward", "§a添加奖励\n§7将奖励添加至CDK中"},
+        {"cdk.gui.new.input1", "§e请输入CDK"},
+        {"cdk.gui.new.input2", "§aLLmoney金钱奖励"},
+        {"cdk.gui.new.switch", "§e是否只能总换一次"},
+        {"cdk.gui.remove.dropdown", "§b请选择要删除的CDK"},
+        {"cdk.gui.award.score", "§a添加计分板奖励"},
+        {"cdk.gui.award.item", "§e添加物品奖励"},
+        {"cdk.gui.award.dropdown", "§a请选择要添加的CDK"},
+        {"cdk.gui.award.score.input1", "§e请输入计分板名称"},
+        {"cdk.gui.award.score.input2", "§b请输入奖励数量"},
+        {"cdk.gui.award.item.input1", "§b请输入物品ID"},
+        {"cdk.gui.award.item.input2", "§e请输入物品名称"},
+        {"cdk.gui.award.item.input3", "§e请输入物品数量"},
+        {"cdk.gui.award.item.input4", "§e请输入物品特殊值"}
     }}
 };
 

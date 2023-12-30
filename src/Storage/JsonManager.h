@@ -2,6 +2,7 @@
 #define LOICOLLECTION_JSONMANAGER_H
 
 #include <string>
+#include <vector>
 #include <fstream>
 #include <filesystem>
 #include <nlohmann/json.hpp>
@@ -20,6 +21,7 @@ public:
     int getInt(const std::string& key);
     bool getBool(const std::string& key);
     bool isKey(const std::string& key);
+    std::vector<std::string> list();
     void save();
     void clear();
 };
