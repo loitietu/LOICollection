@@ -65,6 +65,11 @@ namespace tool {
         return Global<Level>->getPlayer(player->getXuid());
     }
 
+    bool isJsonArrayFind(const nlohmann::ordered_json& json, const std::string& find) {
+        auto it = std::find(json.begin(), json.end(), find);
+        return it != json.end();
+    }
+
     namespace llmoney {
         int get(Player* player) {
             return LLMoneyGet(player->getXuid());

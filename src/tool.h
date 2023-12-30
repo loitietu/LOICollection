@@ -9,6 +9,7 @@
 #include <llapi/mc/ServerPlayer.hpp>
 #include <llapi/mc/Player.hpp>
 #include <llapi/mc/Scoreboard.hpp>
+#include <Nlohmann/json.hpp>
 #include "Storage/SQLiteDatabase.h"
 #include "include/LLMoney.h"
 const std::string PluginData = "./plugins/LOICollection/data";
@@ -22,6 +23,7 @@ namespace tool {
     bool isMute(Player* player);
     bool isMute(ServerPlayer* player);
     Player* toServerPlayer(ServerPlayer* player);
+    bool isJsonArrayFind(const nlohmann::ordered_json& json, const std::string& find);
 
     namespace llmoney {
         int get(Player* player);

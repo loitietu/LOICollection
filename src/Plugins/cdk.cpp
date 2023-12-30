@@ -23,7 +23,7 @@ namespace cdk {
             if (database.isKey(convertString)) {
                 nlohmann::ordered_json cdkJson(database.get(convertString));
                 nlohmann::ordered_json PlayerList = cdkJson.at("player");
-                if (PlayerList.contains(player->getXuid())) {
+                if (tool::isJsonArrayFind(PlayerList, player->getXuid())) {
                     player->sendTextPacket(lang.tr(PlayerLanguage, "cdk.convert.tip2"));
                     lang.close();
                     database.clear();
@@ -32,7 +32,10 @@ namespace cdk {
                 tool::llmoney::add(tool::toServerPlayer(player), cdkJson["llmoney"]);
                 nlohmann::ordered_json ScoreboardList = cdkJson.at("scores");
                 nlohmann::ordered_json ItemList = cdkJson.at("item");
-                for (nlohmann::ordered_json::iterator it = ScoreboardList.begin(); it != ScoreboardList.end(); ++it) Scoreboard::addScore(tool::toServerPlayer(player), it.key(), it.value());
+                for (nlohmann::ordered_json::iterator it = ScoreboardList.begin(); it != ScoreboardList.end(); ++it) {
+                    int score = ScoreboardList[it.key()].template get<int>();
+                    Scoreboard::addScore(tool::toServerPlayer(player), it.key(), score);
+                }
                 for (nlohmann::ordered_json::iterator it = ItemList.begin(); it != ItemList.end(); ++it) {
                     auto* item = ItemStack::create(it.key(), it.value()["quantity"]);
                     item->setAuxValue(it.value()["specialvalue"]);
