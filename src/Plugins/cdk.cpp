@@ -6,47 +6,55 @@
 #include <llapi/mc/ServerPlayer.hpp>
 #include <llapi/mc/Player.hpp>
 #include <llapi/mc/Scoreboard.hpp>
+#include <llapi/mc/ItemStack.hpp>
 #include <Nlohmann/json.hpp>
 #include "../tool.h"
-#include "../Storage/SQLiteDatabase.h"
+#include "../Storage/JsonManager.h"
 #include "include/i18nLang.h"
 #include "include/cdk.h"
 extern Logger logger;
 
 namespace cdk {
     namespace {
-        void database() {
-            if (!std::filesystem::exists(PluginData + "/cdk.db")) {
-                SQLiteDatabase db(PluginData + "/cdk.db");
-                db.close();
-            }
-        }
-
         void cdkConvert(ServerPlayer* player, const std::string& convertString) {
             std::string PlayerLanguage = tool::get(player);
-            SQLiteDatabase db(PluginData + "/cdk.db");
             i18nLang lang("./plugins/LOICollection/language.json");
-            if (db.existsTable(convertString)) {
-                db.setTable(convertString);
-                nlohmann::ordered_json PlayerList(db.get("players"));
+            JsonManager database(PluginData + "/cdk.json");
+            if (database.isKey(convertString)) {
+                nlohmann::ordered_json cdkJson(database.get(convertString));
+                nlohmann::ordered_json PlayerList = cdkJson.at("players");
                 if (PlayerList.contains(player->getXuid())) {
                     player->sendTextPacket(lang.tr(PlayerLanguage, "cdk.convert.tip2"));
                     lang.close();
-                    db.close();
+                    database.clear();
                     return;
                 }
-                PlayerList.push_back(player->getXuid());
-                db.set("players", PlayerList.dump());
-                tool::llmoney::add(player, std::stoi(db.get("llmoney")));
-                nlohmann::ordered_json ScoreboardList(db.get("scores"));
-                for (nlohmann::ordered_json::iterator it = ScoreboardList.begin(); it != ScoreboardList.end(); ++it) Scoreboard::addScore(player, it.key(), ScoreboardList[it.key()]);
+                tool::llmoney::add(player, cdkJson["llmoney"]);
+                nlohmann::ordered_json ScoreboardList = cdkJson.at("scores");
+                nlohmann::ordered_json ItemList = cdkJson.at("item");
+                for (nlohmann::ordered_json::iterator it = ScoreboardList.begin(); it != ScoreboardList.end(); ++it) Scoreboard::addScore(player, it.key(), it.value());
+                for (nlohmann::ordered_json::iterator it = ItemList.begin(); it != ItemList.end(); ++it) {
+                    auto* item = ItemStack::create(it.key(), it.value()["quantity"]);
+                    item->setAuxValue(it.value()["specialvalue"]);
+                    item->setCustomName(it.value()["name"]);
+                    player->giveItem(item);
+                    delete item;
+                }
+                if (cdkJson["personal"]) database.remove(convertString);
+                else {
+                    PlayerList.push_back(player->getXuid());
+                    cdkJson["players"] = PlayerList;
+                    database.set(convertString, cdkJson);
+                }
                 player->sendTextPacket(lang.tr(PlayerLanguage, "cdk.convert.tip3"));
                 lang.close();
-                db.close();
+                database.save();
+                return;
             } else {
                 player->sendTextPacket(lang.tr(PlayerLanguage, "cdk.convert.tip1"));
                 lang.close();
-                db.close();
+                database.clear();
+                return;
             }
         }
 
@@ -138,8 +146,9 @@ namespace cdk {
 
     void load(int* OpenPlugin) {
         (*OpenPlugin)++;
-        database();
         listen();
+        JsonManager database(PluginData + "/cdk.json");
+        database.save();
         logger.info("<cdk>: 插件已加载");
     }
 }

@@ -3,6 +3,8 @@
  * @note DO NOT modify or remove this file!
  */
 
+#include <filesystem>
+
 #include <llapi/LoggerAPI.h>
 #include <llapi/ServerAPI.h>
 
@@ -56,8 +58,15 @@ extern "C"
 {
     _declspec(dllexport) void onPostInit()
     {
-        std::ios::sync_with_stdio(false);
-        CheckProtocolVersion();
-        PluginInit();
+        if (std::filesystem::exists("./plugins/LLMoney.dll")) {
+            std::ios::sync_with_stdio(false);
+            CheckProtocolVersion();
+            PluginInit();
+        } else {
+            logger.warn("LLMoney.dll 没有找到");
+            logger.warn("插件初始化任务已取消");
+            logger.warn("请安装插件 LLMoney.dll 到目录 plugins");
+            logger.warn("如果插件没有安装，则无法正常使用部分功能");
+        }
     }
 }
