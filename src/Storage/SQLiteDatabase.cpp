@@ -1,3 +1,5 @@
+#define LOICOLLECTION_SQLITEDATABASE_API __declspec(dllexport)
+
 #include "SQLiteDatabase.h"
 
 SQLiteDatabase::SQLiteDatabase(const std::string& db_name) : db(db_name, SQLite::OPEN_CREATE | SQLite::OPEN_READWRITE) {

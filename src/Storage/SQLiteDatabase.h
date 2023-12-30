@@ -1,11 +1,18 @@
-#ifndef LOICOLLECTION_SQLITEDATABASE_H
-#define LOICOLLECTION_SQLITEDATABASE_H
+#pragma once
+
+#ifdef LOICOLLECTION_SQLITEDATABASE_API
+#else
+#define LOICOLLECTION_SQLITEDATABASE_API __declspec(dllimport)
+#endif
 
 #include <string>
 #include <vector>
 #include <SQLiteCpp/SQLiteCpp.h>
 
-class SQLiteDatabase {
+#ifdef __cplusplus
+extern "C" {
+#endif
+class LOICOLLECTION_SQLITEDATABASE_API SQLiteDatabase {
 private:
     SQLite::Database db;
     std::string table = "data";
@@ -25,5 +32,6 @@ public:
     void removeTable(const std::string& tableName);
     void close();
 };
-
+#ifdef __cplusplus
+}
 #endif
