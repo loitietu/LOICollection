@@ -1,6 +1,8 @@
 # LOICollection
 ## Minecraft Bedrock Server LiteLoaderBDS Plugin
 
+### [English](README.md) | [简体中文](README.zh.md)
+
 ### How to install the plugin?
 1. Place the file `LOICollection.dll` in the server directory `plugins`.
 - `LOICollection.dll` (You can download it in the Release page.).
@@ -51,3 +53,16 @@
 ```
 - Please follow the Json specification (https://www.json.org/) for changes.
 4. You can change it freely and save it.
+
+### How to compile locally?
+1. Open the local cmd and execute the command:
+```cmd
+git clone --recursive https://github.com/loitietu/LOICollection.git
+```
+2. Open ide (It is recommended to use Visual Studio Code).
+3. Open the cloned project.
+4. Wait for the automatic configuration to complete and then compile.
+
+
+### LICENSE
+- This plugin is licensed under the [GPL-3.0](LICENSE) license.
