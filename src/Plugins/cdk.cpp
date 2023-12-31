@@ -80,7 +80,7 @@ namespace cdk {
                     return;
                 }
                 std::string cdk = mp["input"]->getString();
-                pl->runcmd("cdk convert " + cdk);
+                Level::runcmdEx("cdk convert " + cdk);
             });
         }
 

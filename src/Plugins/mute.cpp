@@ -7,6 +7,7 @@
 #include <llapi/mc/ServerPlayer.hpp>
 #include <llapi/mc/Player.hpp>
 #include "../tool.h"
+#include "../Storage/SQLiteDatabase.h"
 #include "include/i18nLang.h"
 #include "include/mute.h"
 extern Logger logger;
@@ -43,7 +44,7 @@ namespace mute {
                 std::string PlayerSelectName = mp["dropdown"]->getString();
                 std::string PlayerInputCause = mp["input1"]->getString();
                 std::string PlayerInputTime = mp["input2"]->getString();
-                pl->runcmd("mute add " + PlayerSelectName + " " + PlayerInputCause + " " + PlayerInputTime);
+                Level::runcmdEx("mute add " + PlayerSelectName + " " + PlayerInputCause + " " + PlayerInputTime);
             });
         }
 
@@ -66,7 +67,7 @@ namespace mute {
                     return;
                 }
                 std::string PlayerSelectString = mp["dropdown"]->getString();
-                pl->runcmd("mute remove " + PlayerSelectString);
+                Level::runcmdEx("mute remove " + PlayerSelectString);
             });
         }
 

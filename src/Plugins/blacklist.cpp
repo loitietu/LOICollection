@@ -9,6 +9,7 @@
 #include <llapi/mc/ServerPlayer.hpp>
 #include <llapi/mc/Player.hpp>
 #include "../tool.h"
+#include "../Storage/SQLiteDatabase.h"
 #include "include/i18nLang.h"
 #include "include/blacklist.h"
 extern Logger logger;
@@ -48,7 +49,7 @@ namespace blacklist {
                 std::string PlayerSelectType = mp["dropdown2"]->getString();
                 std::string PlayerInputCause = mp["input1"]->getString();
                 std::string PlayerInputTime = mp["input2"]->getString();
-                pl->runcmd("blacklist add " + PlayerSelectType + " " + PlayerSelectName + " " + PlayerInputCause + " " + PlayerInputTime);
+                Level::runcmdEx("blacklist add " + PlayerSelectType + " " + PlayerSelectName + " " + PlayerInputCause + " " + PlayerInputTime);
             });
         }
 
@@ -70,7 +71,7 @@ namespace blacklist {
                     return;
                 }
                 std::string PlayerSelectString = mp["dropdown"]->getString();
-                pl->runcmd("blacklist remove " + PlayerSelectString);
+                Level::runcmdEx("blacklist remove " + PlayerSelectString);
             });
         }
 

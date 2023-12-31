@@ -1,3 +1,14 @@
+#include <ctime>
+#include <string>
+#include <vector>
+#include <llapi/GlobalServiceAPI.h>
+#include <llapi/mc/Level.hpp>
+#include <llapi/mc/ServerPlayer.hpp>
+#include <llapi/mc/Player.hpp>
+#include <llapi/mc/Scoreboard.hpp>
+#include <Nlohmann/json.hpp>
+#include "Storage/SQLiteDatabase.h"
+#include "include/LLMoney.h"
 #include "tool.h"
 
 namespace tool {
@@ -68,6 +79,18 @@ namespace tool {
     bool isJsonArrayFind(const nlohmann::ordered_json& json, const std::string& find) {
         auto it = std::find(json.begin(), json.end(), find);
         return it != json.end();
+    }
+
+    string replaceString(string str, const string& from, const string& to) {
+        for (string::size_type pos(0); pos != string::npos; pos += to.length()) {
+            if ((pos = str.find(from, pos)) != string::npos) str.replace(pos, from.length(), to);
+            else break;
+        }
+        return str;
+    }
+
+    string vec3ToString(Vec3 vec3) {
+        return std::to_string(vec3[0]) + "," + std::to_string(vec3[1]) + "," + std::to_string(vec3[2]);
     }
 
     namespace llmoney {

@@ -1,17 +1,9 @@
 #ifndef LOICOLLECTION_TOOL_H
 #define LOICOLLECTION_TOOL_H
 
-#include <ctime>
 #include <string>
 #include <vector>
-#include <llapi/GlobalServiceAPI.h>
-#include <llapi/mc/Level.hpp>
-#include <llapi/mc/ServerPlayer.hpp>
-#include <llapi/mc/Player.hpp>
-#include <llapi/mc/Scoreboard.hpp>
 #include <Nlohmann/json.hpp>
-#include "Storage/SQLiteDatabase.h"
-#include "include/LLMoney.h"
 const std::string PluginData = "./plugins/LOICollection/data";
 
 namespace tool {
@@ -24,6 +16,8 @@ namespace tool {
     bool isMute(ServerPlayer* player);
     Player* toServerPlayer(ServerPlayer* player);
     bool isJsonArrayFind(const nlohmann::ordered_json& json, const std::string& find);
+    string replaceString(string str, const string& from, const string& to);
+    string vec3ToString(Vec3 vec3);
 
     namespace llmoney {
         int get(Player* player);

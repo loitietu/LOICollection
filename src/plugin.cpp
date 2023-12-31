@@ -1,11 +1,13 @@
 #include <fstream>
 #include <string>
 #include <llapi/LoggerAPI.h>
+#include <llapi/EventAPI.h>
 #include <Nlohmann/json.hpp>
 #include "Plugins/include/language.h"
 #include "Plugins/include/blacklist.h"
 #include "Plugins/include/mute.h"
 #include "Plugins/include/cdk.h"
+#include "API.h"
 #include "lang.h"
 #include "version.h"
 extern Logger logger;
@@ -77,6 +79,10 @@ void load() {
     if (mutePlugin) mute::load(&OpenPlugin);
     if (cdkPlugin) cdk::load(&OpenPlugin);
     logger.info("加载成功，已加载内置插件数量: " + std::to_string(OpenPlugin));
+    Event::ServerStartedEvent::subscribe([](const Event::ServerStartedEvent& e) {
+        LOICollectionAPI::init();
+        return true;
+    });
 }
 
 void PluginInit() {
