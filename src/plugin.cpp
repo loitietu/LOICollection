@@ -7,6 +7,7 @@
 #include "Plugins/include/blacklist.h"
 #include "Plugins/include/mute.h"
 #include "Plugins/include/cdk.h"
+#include "Plugins/include/menu.h"
 #include "API.h"
 #include "lang.h"
 #include "version.h"
@@ -15,6 +16,7 @@ const std::string PluginDirectory = "./plugins/LOICollection";
 bool blacklistPlugin = false;
 bool mutePlugin = false;
 bool cdkPlugin = false;
+bool menuPlugin = false;
 
 void update(std::string& versionInfo) {
     logger.info("开始加载配置文件");
@@ -46,6 +48,7 @@ void update(std::string& versionInfo) {
     blacklistPlugin = config["Blacklist"].template get<bool>();
     mutePlugin = config["Mute"].template get<bool>();
     cdkPlugin = config["Cdk"].template get<bool>();
+    menuPlugin = config["Menu"]["Enable"].template get<bool>();
     std::ofstream configNewFile(PluginDirectory + "/config.json");
     configNewFile << config.dump(4);
     configNewFile.close();
@@ -78,6 +81,7 @@ void load() {
     if (blacklistPlugin) blacklist::load(&OpenPlugin);
     if (mutePlugin) mute::load(&OpenPlugin);
     if (cdkPlugin) cdk::load(&OpenPlugin);
+    if (menuPlugin) menu::load(&OpenPlugin);
     logger.info("加载成功，已加载内置插件数量: " + std::to_string(OpenPlugin));
     Event::ServerStartedEvent::subscribe([](const Event::ServerStartedEvent& e) {
         LOICollectionAPI::init();

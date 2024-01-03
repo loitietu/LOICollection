@@ -294,13 +294,13 @@ namespace cdk {
                             }
                             if (setting && ori.getPlayer()->isOP()) {
                                 std::string playerName = ori.getName();
-                                outp.success("The UI has been opened to player " + playerName);
+                                outp.success("Cdk: The UI has been opened to player " + playerName);
                                 cdkSetting(ori.getPlayer());
                             } else if(setting && !ori.getPlayer()->isOP()) {
                                 outp.error("Cdk: No permission to open the Setting.");
                             } else {
                                 std::string playerName = ori.getName();
-                                outp.success("The UI has been opened to player " + playerName);
+                                outp.success("Cdk: The UI has been opened to player " + playerName);
                                 cdkGui(ori.getPlayer());
                             }
                             break;
@@ -313,7 +313,7 @@ namespace cdk {
                             std::string cdk = cdkString;
                             if (cdkString.empty()) cdk = std::to_string(cdkInt);
                             std::string playerName = ori.getName();
-                            outp.success("The player " + playerName + " has been converted to cdk: " + cdk);
+                            outp.success("Cdk: The player " + playerName + " has been converted to cdk: " + cdk);
                             cdkConvert(ori.getPlayer(), cdk);
                             break;
                         }
