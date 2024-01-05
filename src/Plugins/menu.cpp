@@ -213,7 +213,7 @@ namespace menu {
 
                 static void setup(CommandRegistry* registry) {
                     using RegisterCommandHelper::makeMandatory;
-                    registry->registerCommand("menu", "§e§lLOICollection -> §b菜单", CommandPermissionLevel::Any, {(CommandFlagValue)0},{(CommandFlagValue)0x80});
+                    registry->registerCommand("menu", "§e§lLOICollection -> §b服务器菜单", CommandPermissionLevel::Any, {(CommandFlagValue)0},{(CommandFlagValue)0x80});
                     registry->addEnum<MENUOP>("gui", {{"gui", MENUOP::gui}});
                     registry->addEnum<MENUOP>("clock", {{"clock", MENUOP::clock}});
                     registry->registerOverload<MenuCommand>("menu", makeMandatory<CommandParameterDataType::ENUM>(&MenuCommand::op, "op", "gui"));
