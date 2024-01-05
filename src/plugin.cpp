@@ -43,7 +43,16 @@ void update(std::string& versionInfo) {
         logger.info("配置文件版本: " + configVersion);
         logger.info("插件版本: " + versionInfo);
         config["version"] = versionInfo;
-        logger.info("配置文件已更新");
+        nlohmann::ordered_json langData;
+        std::ifstream languageFile(PluginDirectory + "/language.json");
+        languageFile >> langData;
+        languageFile.close();
+        langData["zh_CN"] = CNLangData;
+        std::ofstream languageNewFile(PluginDirectory + "/language.json");
+        languageNewFile << langData.dump(4);
+        languageNewFile.close();
+        langData.clear();
+        logger.info("数据文件已更新");
     }
     blacklistPlugin = config["Blacklist"].template get<bool>();
     mutePlugin = config["Mute"].template get<bool>();

@@ -6,7 +6,6 @@
 #include <llapi/GlobalServiceAPI.h>
 #include <llapi/mc/ServerPlayer.hpp>
 #include <llapi/mc/Player.hpp>
-#include <llapi/mc/Scoreboard.hpp>
 #include <llapi/mc/ItemStack.hpp>
 #include <llapi/mc/Level.hpp>
 #include <Nlohmann/json.hpp>
@@ -36,8 +35,7 @@ namespace cdk {
                 nlohmann::ordered_json ItemList = cdkJson.at("item");
                 for (nlohmann::ordered_json::iterator it = ScoreboardList.begin(); it != ScoreboardList.end(); ++it) {
                     int score = ScoreboardList[it.key()].template get<int>();
-                    Scoreboard::newObjective(it.key(), "");
-                    Global<Level>->runcmdEx("scoreboard players add " + player->getName() + " " + it.key() + " " + std::to_string(score));
+                    player->addScore(it.key(), score);
                 }
                 for (nlohmann::ordered_json::iterator it = ItemList.begin(); it != ItemList.end(); ++it) {
                     auto* item = ItemStack::create(it.key(), it.value()["quantity"]);
