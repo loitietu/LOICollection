@@ -15,6 +15,7 @@
 extern Logger logger;
 const std::string PluginDirectory = "./plugins/LOICollection";
 bool blacklistPlugin, mutePlugin, cdkPlugin, menuPlugin, tpaPlugin = false;
+int64_t FakeSeed = 0;
 
 void update(std::string& versionInfo) {
     logger.info("开始加载配置文件");
@@ -23,6 +24,7 @@ void update(std::string& versionInfo) {
     nlohmann::ordered_json configArray = nlohmann::ordered_json::array();
     configFile >> config;
     configFile.close();
+    if (!config.contains("FakeSeed")) config["FakeSeed"] = 114514;
     if (!config.contains("Blacklist")) config["Blacklist"] = false;
     if (!config.contains("Mute")) config["Mute"] = false;
     if (!config.contains("Cdk")) config["Cdk"] = false;
@@ -57,6 +59,7 @@ void update(std::string& versionInfo) {
     cdkPlugin = config["Cdk"].template get<bool>();
     menuPlugin = config["Menu"]["Enable"].template get<bool>();
     tpaPlugin = config["Tpa"].template get<bool>();
+    FakeSeed = config["FakeSeed"].template get<int64_t>();
     std::ofstream configNewFile(PluginDirectory + "/config.json");
     configNewFile << config.dump(4);
     configNewFile.close();
@@ -105,4 +108,14 @@ void PluginInit() {
     logger.info("感谢您使用本插件，版本:" + versionString + "，作者:贴图");
     Init(versionString);
     load();
+}
+
+/*
+* Plugin: FakeSeed
+* @ 参考仓库: https://github.com/LiteLDev/LLEssentials
+* @ Reference repositories: https://github.com/LiteLDev/LLEssentials
+*/
+THook(void*, "?write@StartGamePacket@@UEBAXAEAVBinaryStream@@@Z", void* a, void* b) {
+    if (FakeSeed) dAccess<int64_t, 48>(a) = FakeSeed;
+    return original(a, b);
 }

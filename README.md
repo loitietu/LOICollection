@@ -9,8 +9,8 @@ Realize the function | accomplish
 Blacklist | $\color{#00FF00}{√}$
 Mute | $\color{#00FF00}{√}$
 Cdk | $\color{#00FF00}{√}$
-Menu | $\color{#FF0000}{×}$
-Tpa | $\color{#FF0000}{×}$
+Menu | $\color{#00FF00}{√}$
+Tpa | $\color{#00FF00}{√}$
 Shop | $\color{#FF0000}{×}$
 Monitor | $\color{#FF0000}{×}$
 Pvp | $\color{#FF0000}{×}$
@@ -33,7 +33,8 @@ AnnounCement | $\color{#FF0000}{×}$
 3. When you open it, you'll see something like this:
 ```json
 {
-    "version": "1.2.0",
+    "version": "1.2.4",
+    "FakeSeed": 114514,
     "Blacklist": false,
     "Mute": false, 
     "Cdk": false,

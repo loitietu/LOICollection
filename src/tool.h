@@ -15,9 +15,10 @@ namespace tool {
     bool isMute(Player* player);
     bool isMute(ServerPlayer* player);
     Player* toServerPlayer(ServerPlayer* player);
+    Player* toNamePlayer(const std::string& name);
     bool isJsonArrayFind(const nlohmann::ordered_json& json, const std::string& find);
-    string replaceString(string str, const string& from, const string& to);
-    string vec3ToString(Vec3 vec3);
+    std::string replaceString(std::string str, const std::string& from, const std::string& to);
+    std::string vec3ToString(Vec3 vec3);
 
     namespace llmoney {
         int get(Player* player);

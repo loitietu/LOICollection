@@ -147,7 +147,7 @@ namespace mute {
                             break;
                         case MUTEOP::gui: {
                             if (ori.getPlayer() == nullptr) {
-                                outp.error("Blacklist: No player selected.");
+                                outp.error("Mute: No player selected.");
                                 break;
                             }
                             std::string playerName = ori.getName();

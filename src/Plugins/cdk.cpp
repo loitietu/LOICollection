@@ -88,8 +88,8 @@ namespace cdk {
             auto form = Form::CustomForm(lang.tr(PlayerLanguage, "cdk.gui.title"));
             form.append(Form::Label("label", lang.tr(PlayerLanguage, "cdk.gui.label")));
             form.append(Form::Input("input1", lang.tr(PlayerLanguage, "cdk.gui.new.input1")));
-            form.append(Form::Input("input2", lang.tr(PlayerLanguage, "cdk.gui.new.input2")));
             form.append(Form::Toggle("Toggle", lang.tr(PlayerLanguage, "cdk.gui.new.switch")));
+            form.append(Form::Input("input2", lang.tr(PlayerLanguage, "cdk.gui.new.input2")));
             lang.close();
             form.sendTo(player, [](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
                 if (mp.empty()) {

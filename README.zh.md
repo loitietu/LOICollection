@@ -8,8 +8,8 @@
 Blacklist | $\color{#00FF00}{√}$
 Mute | $\color{#00FF00}{√}$
 Cdk | $\color{#00FF00}{√}$
-Menu | $\color{#FF0000}{×}$
-Tpa | $\color{#FF0000}{×}$
+Menu | $\color{#00FF00}{√}$
+Tpa | $\color{#00FF00}{√}$
 Shop | $\color{#FF0000}{×}$
 Monitor | $\color{#FF0000}{×}$
 Pvp | $\color{#FF0000}{×}$
@@ -32,13 +32,14 @@ AnnounCement | $\color{#FF0000}{×}$
 3. 打开后，您会看到类似以下内容的内容：
 ```json
 {
-    "version": "1.2.0",
+    "version": "1.2.4",
+    "FakeSeed": 114514,
     "Blacklist": false,
-    "Mute": false,
+    "Mute": false, 
     "Cdk": false,
     "Menu": {
         "Enable": false,
-        "ItemId": "minecraft:clock"
+        "ItemId": "minecraft:clock" 
     },
     "Tpa": false,
     "Shop": false,
@@ -48,7 +49,7 @@ AnnounCement | $\color{#FF0000}{×}$
         "Enable": false,
         "llmoney": true,
         "score": "money",
-        "tax": 0.1
+        "tax": 0.1 
     },
     "Chat": {
         "Enable": false,
@@ -57,12 +58,12 @@ AnnounCement | $\color{#FF0000}{×}$
     "Command": {
         "Enable": false,
         "command": [],
-        "tips": "该指令已被禁用"
+        "tips": "该指令已被禁用" 
     },
     "ServerTips": {
         "Enable": false,
         "join": "{player}加入了服务器",
-        "left": "{player}退出了服务器"
+        "left": "{player}退出了服务器" 
     },
     "AnnounCement": false
 }

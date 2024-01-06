@@ -5,7 +5,6 @@
 
 static const nlohmann::ordered_json CNLangData = {
     {"exit", "§e[LOICollection] §c已退出"},
-    {"language.log", "玩家 {} 已更改语言为: {}"},
     {"language.gui.title", "§e§lLOICollection -> §a语言设置"},
     {"language.gui.label", "§a个人语言设置"},
     {"language.gui.dropdown", "§e语言选择"},
@@ -53,7 +52,19 @@ static const nlohmann::ordered_json CNLangData = {
     {"cdk.gui.award.item.input1", "§b请输入物品ID"},
     {"cdk.gui.award.item.input2", "§e请输入物品名称"},
     {"cdk.gui.award.item.input3", "§e请输入物品数量"},
-    {"cdk.gui.award.item.input4", "§e请输入物品特殊值"}
+    {"cdk.gui.award.item.input4", "§e请输入物品特殊值"},
+    {"tpa.here", "§e玩家 §b{player} §e邀请你传送到他的位置"},
+    {"tpa.there", "§e玩家 §f{player} §e请求传送到你的位置"},
+    {"tpa.yes", "§a同意传送"},
+    {"tpa.no", "§c拒绝传送"},
+    {"tpa.no.tips", "§c对方拒绝了你的请求"},
+    {"tpa.gui.title", "§eLOITpa §b-> §a玩家互传"},
+    {"tpa.gui.label", "§b功能如下:"},
+    {"tpa.gui.dropdown1", "§e请选择玩家:"},
+    {"tpa.gui.dropdown2", "§b请选择类型:"},
+    {"tpa.gui.setting.title", "§eLOITpa §b-> §a个人设置"},
+    {"tpa.gui.setting.label", "§b功能如下:"},
+    {"tpa.gui.setting.switch1", "§b拒绝所有人的tpa请求"}
 };
 
 static const nlohmann::ordered_json defultLangData = {

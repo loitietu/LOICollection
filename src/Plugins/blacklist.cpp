@@ -5,7 +5,6 @@
 #include <llapi/RegCommandAPI.h>
 #include <llapi/EventAPI.h>
 #include <llapi/mc/Level.hpp>
-#include <llapi/mc/Types.hpp>
 #include <llapi/mc/ServerPlayer.hpp>
 #include <llapi/mc/Player.hpp>
 #include "../tool.h"

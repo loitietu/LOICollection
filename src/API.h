@@ -16,7 +16,7 @@ namespace LOICollectionAPI {
     LOICOLLECTION_API void init();
     LOICOLLECTION_API unsigned short getTransactionPerSecond();
     LOICOLLECTION_API unsigned short getTransactionPerMinute();
-    LOICOLLECTION_API void translateString(std::string* str, Player* player);
+    LOICOLLECTION_API const char* translateString(std::string str, Player* player, bool enable);
 }
 #ifdef __cplusplus
 }

@@ -33,9 +33,9 @@ namespace language {
             form.append(Form::Dropdown("dropdown", lang.tr(PlayerLanguage, "language.gui.dropdown"), lang.list()));
             lang.close();
             form.sendTo(player, [](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
-                std::string PlayerLanguage = tool::get(pl);
-                i18nLang lang("./plugins/LOICollection/language.json");
                 if (mp.empty()) {
+                    std::string PlayerLanguage = tool::get(pl);
+                    i18nLang lang("./plugins/LOICollection/language.json");
                     pl->sendTextPacket(lang.tr(PlayerLanguage, "exit"));
                     lang.close();
                     return;
@@ -44,8 +44,6 @@ namespace language {
                 SQLiteDatabase db(PluginData + "/language.db");
                 db.update(pl->getXuid(), PlayerSelectLanguage);
                 db.close();
-                logger.info(lang.tr(PlayerLanguage, "language.log"), pl->getRealName(), PlayerSelectLanguage);
-                lang.close();
             });
         }
 
@@ -72,7 +70,7 @@ namespace language {
                     std::unordered_map<std::string, DynamicCommand::Result>& results
                 ) {
                     if (origin.getPlayer() == nullptr) {
-                        output.error("Blacklist: No player selected.");
+                        output.error("Language: No player selected.");
                         return;
                     }
                     std::string playerName = origin.getName();

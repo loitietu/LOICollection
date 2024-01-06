@@ -76,20 +76,30 @@ namespace tool {
         return Global<Level>->getPlayer(player->getXuid());
     }
 
+    Player* toNamePlayer(const std::string& name) {
+        std::vector<Player*> players = Global<Level>->getAllPlayers();
+        for (auto player : players) {
+            if (player->getName() == name) {
+                return player;
+            }
+        }
+        return nullptr;
+    }
+    
     bool isJsonArrayFind(const nlohmann::ordered_json& json, const std::string& find) {
         auto it = std::find(json.begin(), json.end(), find);
         return it != json.end();
     }
 
-    string replaceString(string str, const string& from, const string& to) {
-        for (string::size_type pos(0); pos != string::npos; pos += to.length()) {
-            if ((pos = str.find(from, pos)) != string::npos) str.replace(pos, from.length(), to);
+    std::string replaceString(std::string str, const std::string& from, const std::string& to) {
+        for (std::string::size_type pos(0); pos != std::string::npos; pos += to.length()) {
+            if ((pos = str.find(from, pos)) != std::string::npos) str.replace(pos, from.length(), to);
             else break;
         }
         return str;
     }
 
-    string vec3ToString(Vec3 vec3) {
+    std::string vec3ToString(Vec3 vec3) {
         return std::to_string(vec3[0]) + "," + std::to_string(vec3[1]) + "," + std::to_string(vec3[2]);
     }
 
