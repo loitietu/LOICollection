@@ -2,6 +2,8 @@
 #include <string>
 #include <vector>
 #include <llapi/GlobalServiceAPI.h>
+#include <llapi/mc/Container.hpp>
+#include <llapi/mc/ItemStack.hpp>
 #include <llapi/mc/Level.hpp>
 #include <llapi/mc/ServerPlayer.hpp>
 #include <llapi/mc/Player.hpp>
@@ -89,6 +91,19 @@ namespace tool {
     bool isJsonArrayFind(const nlohmann::ordered_json& json, const std::string& find) {
         auto it = std::find(json.begin(), json.end(), find);
         return it != json.end();
+    }
+
+    bool isItemPlayerInventory(Player* player, ItemStack* item) {
+        Container& itemInventory = player->getInventory();
+        for (int i = 0; i < itemInventory.getSize(); i++) {
+            ItemStack itemObject = itemInventory.getItem(i);
+            if (item->getTypeName() == itemObject.getTypeName()) {
+                if (item->getCount() <= itemObject.getCount()) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     std::string replaceString(std::string str, const std::string& from, const std::string& to) {

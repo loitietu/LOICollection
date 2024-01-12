@@ -34,8 +34,7 @@ namespace menu {
                         }
                         nlohmann::ordered_json button = buttonIdList[id];
                         if (button["type"] == "button") {
-                            bool ScoreboardEnough = true;
-                            bool LLMoneyEnough = true;
+                            bool ScoreboardEnough, LLMoneyEnough = true;
                             for (nlohmann::ordered_json::iterator it = button["scores"].begin(); it != button["scores"].end(); ++it) {
                                 int score = button["scores"][it.key()].template get<int>();
                                 if (score > pl->getScore(it.key())) ScoreboardEnough = false;
@@ -54,8 +53,7 @@ namespace menu {
                                 return;
                             } 
                         } else if (button["type"] == "from") {
-                            bool ScoreboardEnough = true;
-                            bool LLMoneyEnough = true;
+                            bool ScoreboardEnough, LLMoneyEnough = true;
                             for (nlohmann::ordered_json::iterator it = button["scores"].begin(); it != button["scores"].end(); ++it) {
                                 int score = button["scores"][it.key()].template get<int>();
                                 if (score > pl->getScore(it.key())) ScoreboardEnough = false;
@@ -101,8 +99,7 @@ namespace menu {
                         if (isConfirm) button = data["confirmButton"];
                         else button = data["cancelButton"];
                         if (button["type"] == "button") {
-                            bool ScoreboardEnough = true;
-                            bool LLMoneyEnough = true;
+                            bool ScoreboardEnough, LLMoneyEnough = true;
                             for (nlohmann::ordered_json::iterator it = button["scores"].begin(); it != button["scores"].end(); ++it) {
                                 int score = button["scores"][it.key()].template get<int>();
                                 if (score > pl->getScore(it.key())) ScoreboardEnough = false;
@@ -121,8 +118,7 @@ namespace menu {
                                 return;
                             } 
                         } else if (button["type"] == "from") {
-                            bool ScoreboardEnough = true;
-                            bool LLMoneyEnough = true;
+                            bool ScoreboardEnough, LLMoneyEnough = true;
                             for (nlohmann::ordered_json::iterator it = button["scores"].begin(); it != button["scores"].end(); ++it) {
                                 int score = button["scores"][it.key()].template get<int>();
                                 if (score > pl->getScore(it.key())) ScoreboardEnough = false;
@@ -181,9 +177,17 @@ namespace menu {
                                 outp.error("Menu: No player selected.");
                                 break;
                             }
-                            std::string playerName = ori.getName();
-                            outp.success("Menu: The UI has been opened to player " + playerName);
-                            menuGui(tool::toServerPlayer(ori.getPlayer()), uiName);
+                            if (uiName == "main") {
+                                std::string playerName = ori.getName();
+                                outp.success("Menu: The UI has been opened to player " + playerName);
+                                menuGui(tool::toServerPlayer(ori.getPlayer()), uiName);
+                            } else if (ori.getPlayer()->isOP()) {
+                                std::string playerName = ori.getName();
+                                outp.success("Menu: The UI has been opened to player " + playerName);
+                                menuGui(tool::toServerPlayer(ori.getPlayer()), uiName);
+                            } else {
+                                outp.error("Menu: No permission to open the Setting.");
+                            }
                             break;
                         }
                         case MENUOP::clock: {

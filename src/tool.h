@@ -3,6 +3,9 @@
 
 #include <string>
 #include <vector>
+#include <llapi/mc/ItemStack.hpp>
+#include <llapi/mc/Player.hpp>
+#include <llapi/mc/ServerPlayer.hpp>
 #include <Nlohmann/json.hpp>
 const std::string PluginData = "./plugins/LOICollection/data";
 
@@ -17,6 +20,7 @@ namespace tool {
     Player* toServerPlayer(ServerPlayer* player);
     Player* toNamePlayer(const std::string& name);
     bool isJsonArrayFind(const nlohmann::ordered_json& json, const std::string& find);
+    bool isItemPlayerInventory(Player* player, ItemStack* item);
     std::string replaceString(std::string str, const std::string& from, const std::string& to);
     std::string vec3ToString(Vec3 vec3);
 

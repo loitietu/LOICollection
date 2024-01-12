@@ -9,12 +9,13 @@
 #include "Plugins/include/cdk.h"
 #include "Plugins/include/menu.h"
 #include "Plugins/include/tpa.h"
+#include "Plugins/include/shop.h"
 #include "API.h"
 #include "lang.h"
 #include "version.h"
 extern Logger logger;
 const std::string PluginDirectory = "./plugins/LOICollection";
-bool blacklistPlugin, mutePlugin, cdkPlugin, menuPlugin, tpaPlugin = false;
+bool blacklistPlugin, mutePlugin, cdkPlugin, menuPlugin, tpaPlugin, shopPlugin = false;
 int64_t FakeSeed = 0;
 
 void update(std::string& versionInfo) {
@@ -59,6 +60,7 @@ void update(std::string& versionInfo) {
     cdkPlugin = config["Cdk"].template get<bool>();
     menuPlugin = config["Menu"]["Enable"].template get<bool>();
     tpaPlugin = config["Tpa"].template get<bool>();
+    shopPlugin = config["Shop"].template get<bool>();
     FakeSeed = config["FakeSeed"].template get<int64_t>();
     std::ofstream configNewFile(PluginDirectory + "/config.json");
     configNewFile << config.dump(4);
@@ -94,6 +96,7 @@ void load() {
     if (cdkPlugin) cdk::load(&OpenPlugin);
     if (menuPlugin) menu::load(&OpenPlugin);
     if (tpaPlugin) tpa::load(&OpenPlugin);
+    if (shopPlugin) shop::load(&OpenPlugin);
     logger.info("加载成功，已加载内置插件数量: " + std::to_string(OpenPlugin));
     Event::ServerStartedEvent::subscribe([](const Event::ServerStartedEvent& e) {
         LOICollectionAPI::init();
