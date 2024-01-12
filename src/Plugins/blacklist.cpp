@@ -279,6 +279,5 @@ namespace blacklist {
         (*OpenPlugin)++;
         listen();
         database();
-        logger.info("<Blacklist>: 插件已加载");
     }
 }

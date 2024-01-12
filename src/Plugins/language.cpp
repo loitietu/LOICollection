@@ -86,6 +86,5 @@ namespace language {
         listen();
         command();
         database();
-        logger.info("<language>: 插件已加载");
     }
 }

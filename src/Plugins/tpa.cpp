@@ -190,6 +190,5 @@ namespace tpa {
         (*OpenPlugin)++;
         database();
         listen();
-        logger.info("<Tpa>: 插件已加载");
     }
 }

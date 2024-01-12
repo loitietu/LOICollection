@@ -347,6 +347,5 @@ namespace cdk {
         listen();
         JsonManager database(PluginData + "/cdk.json");
         database.save();
-        logger.info("<cdk>: 插件已加载");
     }
 }

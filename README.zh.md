@@ -10,13 +10,12 @@ Mute | $\color{#00FF00}{√}$
 Cdk | $\color{#00FF00}{√}$
 Menu | $\color{#00FF00}{√}$
 Tpa | $\color{#00FF00}{√}$
-Shop | $\color{#FF0000}{×}$
-Monitor | $\color{#FF0000}{×}$
+Shop | $\color{#00FF00}{√}$
+Monitor | $\color{#00FF00}{√}$
 Pvp | $\color{#FF0000}{×}$
 Wallet | $\color{#FF0000}{×}$
 Chat | $\color{#FF0000}{×}$
 Command | $\color{#FF0000}{×}$
-ServerTips | $\color{#FF0000}{×}$
 AnnounCement | $\color{#FF0000}{×}$
 
 ### 如何安装插件？
@@ -32,7 +31,7 @@ AnnounCement | $\color{#FF0000}{×}$
 3. 打开后，您会看到类似以下内容的内容：
 ```json
 {
-    "version": "1.2.4",
+    "version": "1.2.6",
     "FakeSeed": 114514,
     "Blacklist": false,
     "Mute": false, 
@@ -43,7 +42,12 @@ AnnounCement | $\color{#FF0000}{×}$
     },
     "Tpa": false,
     "Shop": false,
-    "Monitor": false,
+    "Monitor": {
+        "Enable": true,
+        "join": "{player}加入了服务器",
+        "left": "{player}退出了服务器",
+        "llmoney": "§e§l检测到金钱发生变化 §b原值: §f${OriMoney} §a更改: §f${SetMoney} §e现值: §f${GetMoney}"
+    },
     "Pvp": false,
     "Wallet": {
         "Enable": false,
@@ -59,11 +63,6 @@ AnnounCement | $\color{#FF0000}{×}$
         "Enable": false,
         "command": [],
         "tips": "该指令已被禁用" 
-    },
-    "ServerTips": {
-        "Enable": false,
-        "join": "{player}加入了服务器",
-        "left": "{player}退出了服务器" 
     },
     "AnnounCement": false
 }

@@ -247,6 +247,5 @@ namespace menu {
         listen();
         JsonManager database(PluginData + "/menu.json");
         database.save();
-        logger.info("<Menu>: 插件已加载");
     }
 }

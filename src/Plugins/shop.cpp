@@ -220,6 +220,5 @@ namespace shop {
         listen();
         JsonManager database(PluginData + "/shop.json");
         database.save();
-        logger.info("<Shop>: 插件已加载");
     }
 }

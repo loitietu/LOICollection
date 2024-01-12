@@ -210,6 +210,5 @@ namespace mute {
         (*OpenPlugin)++;
         database();
         listen();
-        logger.info("<Mute>: 插件已加载");
     }
 }

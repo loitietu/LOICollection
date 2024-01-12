@@ -1,6 +1,7 @@
 #include <ctime>
 #include <string>
 #include <vector>
+#include <filesystem>
 #include <llapi/GlobalServiceAPI.h>
 #include <llapi/mc/Container.hpp>
 #include <llapi/mc/ItemStack.hpp>
@@ -26,6 +27,26 @@ namespace tool {
         std::string playerLang = db.get(player->getXuid());
         db.close();
         return playerLang;
+    }
+
+    bool isBlacklist(Player* player) {
+        if (std::filesystem::exists(PluginData + "/blacklist.db")) {
+            SQLiteDatabase db(PluginData + "/blacklist.db");
+            std::string xuid = player->getXuid();
+            std::string ip = tool::split(player->getIP(), ':')[0];
+            std::replace(ip.begin(), ip.end(), '.', 'A');
+            if (db.existsTable("XUID" + xuid)) {
+                db.close();
+                return true;
+            } else if(db.existsTable("IP" + ip)) {
+                db.close();
+                return true;
+            }
+            db.close();
+            return false;
+        } else {
+            return false;
+        }
     }
 
     std::vector<std::string> split(const std::string& s, char delimiter) {
@@ -74,8 +95,16 @@ namespace tool {
         return is_mute;
     }
 
+    void BroadcastText(const std::string& text) {
+        Level::broadcastText(text, TextType::SYSTEM);
+    }
+
     Player* toServerPlayer(ServerPlayer* player) {
         return Global<Level>->getPlayer(player->getXuid());
+    }
+
+    Player* toXuidPlayer(const std::string& xuid) {
+        return Global<Level>->getPlayer(xuid);
     }
 
     Player* toNamePlayer(const std::string& name) {
