@@ -1,5 +1,6 @@
 #include <string>
 #include <fstream>
+#include <filesystem>
 #include <llapi/EventAPI.h>
 #include <llapi/FormUI.h>
 #include <llapi/LoggerAPI.h>
@@ -154,8 +155,8 @@ namespace announcement {
                     registry->registerCommand("announcement", "§e§lLOICollection -> §a公告系统", CommandPermissionLevel::Any, {(CommandFlagValue)0},{(CommandFlagValue)0x80});
                     registry->addEnum<ANNOUNCEMENTOP>("gui", {{"gui", ANNOUNCEMENTOP::gui}});
                     registry->addEnum<ANNOUNCEMENTOP>("setting", {{"setting", ANNOUNCEMENTOP::setting}});
-                    registry->registerOverload<AnnounCementCommand>("tpa", makeMandatory<CommandParameterDataType::ENUM>(&AnnounCementCommand::op, "op", "gui"));
-                    registry->registerOverload<AnnounCementCommand>("tpa", makeMandatory<CommandParameterDataType::ENUM>(&AnnounCementCommand::op, "op", "setting"));
+                    registry->registerOverload<AnnounCementCommand>("announcement", makeMandatory<CommandParameterDataType::ENUM>(&AnnounCementCommand::op, "op", "gui"));
+                    registry->registerOverload<AnnounCementCommand>("announcement", makeMandatory<CommandParameterDataType::ENUM>(&AnnounCementCommand::op, "op", "setting"));
                 }
         };
 
@@ -175,8 +176,15 @@ namespace announcement {
 
     void load(int* OpenPlugin) {
         (*OpenPlugin)++;
-        JsonManager database(PluginData + "/announcement.json");
-        database.save();
+        if (!std::filesystem::exists(PluginData + "/announcement.json")) {
+            nlohmann::ordered_json contentArray = nlohmann::ordered_json::array();
+            contentArray.push_back("这是一条测试公告，欢迎使用本插件！");
+            JsonManager database(PluginData + "/announcement.json");
+            database.set("title", "测试公告");
+            database.set("content", contentArray);
+            database.save();
+            contentArray.clear();
+        }
         listen();
     }
 }
