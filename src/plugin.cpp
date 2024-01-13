@@ -11,13 +11,14 @@
 #include "Plugins/include/tpa.h"
 #include "Plugins/include/shop.h"
 #include "Plugins/include/monitor.h"
+#include "Plugins/include/pvp.h"
 #include "Plugins/include/chat.h"
 #include "API.h"
 #include "lang.h"
 #include "version.h"
 extern Logger logger;
 const std::string PluginDirectory = "./plugins/LOICollection";
-bool blacklistPlugin, mutePlugin, cdkPlugin, menuPlugin, tpaPlugin, shopPlugin, monitorPlugin, chatPlugin = false;
+bool blacklistPlugin, mutePlugin, cdkPlugin, menuPlugin, tpaPlugin, shopPlugin, monitorPlugin, pvpPlugin, chatPlugin = false;
 int64_t FakeSeed = 0;
 
 void update(std::string& versionInfo) {
@@ -63,6 +64,7 @@ void update(std::string& versionInfo) {
     tpaPlugin = config["Tpa"].template get<bool>();
     shopPlugin = config["Shop"].template get<bool>();
     monitorPlugin = config["Monitor"]["Enable"].template get<bool>();
+    pvpPlugin = config["Pvp"].template get<bool>();
     chatPlugin = config["Chat"]["Enable"].template get<bool>();
     FakeSeed = config["FakeSeed"].template get<int64_t>();
     std::ofstream configNewFile(PluginDirectory + "/config.json");
@@ -101,6 +103,7 @@ void load() {
     if (tpaPlugin) tpa::load(&OpenPlugin);
     if (shopPlugin) shop::load(&OpenPlugin);
     if (monitorPlugin) monitor::load(&OpenPlugin);
+    if (pvpPlugin) pvp::load(&OpenPlugin);
     if (chatPlugin) chat::load(&OpenPlugin);
     logger.info("加载成功，已加载内置插件数量: " + std::to_string(OpenPlugin));
     Event::ServerStartedEvent::subscribe([](const Event::ServerStartedEvent& e) {

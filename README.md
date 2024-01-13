@@ -13,7 +13,7 @@ Menu | $\color{#00FF00}{√}$
 Tpa | $\color{#00FF00}{√}$
 Shop | $\color{#00FF00}{√}$
 Monitor | $\color{#00FF00}{√}$
-Pvp | $\color{#FF0000}{×}$
+Pvp | $\color{#00FF00}{√}$
 Wallet | $\color{#FF0000}{×}$
 Chat | $\color{#00FF00}{√}$
 Command | $\color{#FF0000}{×}$
