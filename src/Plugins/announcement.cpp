@@ -83,7 +83,7 @@ namespace announcement {
                     data.clear();
                     settingGui(pl);
                 } else if (removeLine) {
-                    data.erase(data.begin());
+                    data.erase(data.end());
                     nlohmann::ordered_json dataNew = {
                         {"title", title},
                         {"content", data}
