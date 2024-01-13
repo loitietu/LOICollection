@@ -6,10 +6,12 @@
 #include <regex>
 #include <optional>
 #include <algorithm>
+#include <filesystem>
 #include <llapi/ScheduleAPI.h>
 #include <llapi/mc/Scoreboard.hpp>
 #include <llapi/mc/ItemStack.hpp>
 #include <llapi/mc/Player.hpp>
+#include "Storage/SQLiteDatabase.h"
 #include "tool.h"
 #include "API.h"
 
@@ -58,6 +60,16 @@ namespace LOICollectionAPI {
     }
 
     const char* translateString(std::string str, Player* player, bool enable) {
+        if (std::filesystem::exists(PluginData + "/chat.db")) {
+            SQLiteDatabase db(PluginData + "/chat.db");
+            if (db.existsTable("XUID" + player->getXuid())) {
+                db.setTable("XUID" + player->getXuid());
+                str = tool::replaceString(str, "{title}", db.get("title"));
+            } else {
+                str = tool::replaceString(str, "{title}", "None");
+            }
+            db.close();
+        }
         str = tool::replaceString(str, "{tps}", std::to_string(tickPerSecond));
         str = tool::replaceString(str, "{tpm}", std::to_string(tickPerMinute));
         str = tool::replaceString(str, "{player}", player->getName());

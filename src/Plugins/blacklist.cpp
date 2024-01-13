@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include <filesystem>
 #include <llapi/FormUI.h>
 #include <llapi/LoggerAPI.h>
 #include <llapi/RegCommandAPI.h>
@@ -15,13 +16,6 @@ extern Logger logger;
 
 namespace blacklist {
     namespace {
-        void database() {
-            if (!std::filesystem::exists(PluginData + "/blacklist.db")) {
-                SQLiteDatabase db(PluginData + "/blacklist.db");
-                db.close();
-            }
-        }
-
         void addGui(Player* player) {
             std::vector<Player*> playerList =  Level::getAllPlayers();
             std::vector<std::string> playerListName;
@@ -277,7 +271,10 @@ namespace blacklist {
 
     void load(int* OpenPlugin) {
         (*OpenPlugin)++;
+        if (!std::filesystem::exists(PluginData + "/blacklist.db")) {
+            SQLiteDatabase db(PluginData + "/blacklist.db");
+            db.close();
+        }
         listen();
-        database();
     }
 }

@@ -74,7 +74,7 @@
         "title": "Sell Title Shop",
         "content": "This is a title shop",
         "exit": "Exit Title Shop",
-        "NoItem": "You do not have enough item to sell",
+        "NoTitle": "You do not have enough title to sell",
         "classiflcation": [
             {
                 "title": "Test Title",

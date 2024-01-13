@@ -2,7 +2,6 @@
 #include <map>
 #include <unordered_map>
 #include <filesystem>
-#include <llapi/LoggerAPI.h>
 #include <llapi/EventAPI.h>
 #include <llapi/DynamicCommandAPI.h>
 #include <llapi/FormUI.h>
@@ -14,17 +13,9 @@
 #include "../Storage/SQLiteDatabase.h"
 #include "include/i18nLang.h"
 #include "include/language.h"
-extern Logger logger;
 
 namespace language {
     namespace {
-        void database() {
-            if (!std::filesystem::exists(PluginData + "/language.db")) {
-                SQLiteDatabase db(PluginData + "/language.db");
-                db.close();
-            }
-        }
-
         void ui(ServerPlayer* player) {
             std::string PlayerLanguage = tool::get(player);
             i18nLang lang("./plugins/LOICollection/language.json");
@@ -83,8 +74,11 @@ namespace language {
 
     void load(int* OpenPlugin) {
         (*OpenPlugin)++;
+        if (!std::filesystem::exists(PluginData + "/language.db")) {
+            SQLiteDatabase db(PluginData + "/language.db");
+            db.close();
+        }
         listen();
         command();
-        database();
     }
 }

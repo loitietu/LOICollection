@@ -15,7 +15,7 @@ Shop | $\color{#00FF00}{√}$
 Monitor | $\color{#00FF00}{√}$
 Pvp | $\color{#FF0000}{×}$
 Wallet | $\color{#FF0000}{×}$
-Chat | $\color{#FF0000}{×}$
+Chat | $\color{#00FF00}{√}$
 Command | $\color{#FF0000}{×}$
 AnnounCement | $\color{#FF0000}{×}$
 
@@ -58,7 +58,7 @@ AnnounCement | $\color{#FF0000}{×}$
     },
     "Chat": {
         "Enable": false,
-        "chat": "<{player}> {chat}"
+        "chat": "<{player}> ${chat}"
     },
     "Command": {
         "Enable": false,

@@ -64,7 +64,12 @@ static const nlohmann::ordered_json CNLangData = {
     {"tpa.gui.dropdown2", "§b请选择类型:"},
     {"tpa.gui.setting.title", "§eLOITpa §b-> §a个人设置"},
     {"tpa.gui.setting.label", "§b功能如下:"},
-    {"tpa.gui.setting.switch1", "§b拒绝所有人的tpa请求"}
+    {"tpa.gui.setting.switch1", "§b拒绝所有人的tpa请求"},
+    {"chat.gui.title", "§eLOIChat §b-> §a个人称号"},
+    {"chat.gui.label", "§b功能如下:"},
+    {"chat.gui.setTitle", "§a设置称号\n§4设置自己的称号显示"},
+    {"chat.gui.setTitle.label", "§a当前配戴称号: §f{title}"},
+    {"chat.gui.setTitle.dropdown", "§b请选择配戴称号"}
 };
 
 static const nlohmann::ordered_json defultLangData = {

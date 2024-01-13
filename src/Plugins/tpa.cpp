@@ -16,13 +16,6 @@ extern Logger logger;
 
 namespace tpa {
     namespace {
-        void database() {
-            if (!std::filesystem::exists(PluginData + "/tpa.db")) {
-                SQLiteDatabase db(PluginData + "/tpa.db");
-                db.close();
-            }
-        }
-
         bool getInvite(Player* player) {
             SQLiteDatabase db(PluginData + "/tpa.db");
             if (db.existsTable(player->getName())) {
@@ -174,13 +167,15 @@ namespace tpa {
                 return true;
             });
             Event::PlayerJoinEvent::subscribe([](const Event::PlayerJoinEvent& e) {
-                SQLiteDatabase db(PluginData + "/tpa.db");
-                if (!db.existsTable(e.mPlayer->getName())) {
-                    db.setTable(e.mPlayer->getName());
-                    db.createTable();
-                    db.set("Toggle1", "false");
+                if (!tool::isBlacklist(e.mPlayer)) {
+                    SQLiteDatabase db(PluginData + "/tpa.db");
+                    if (!db.existsTable("XUID" + e.mPlayer->getXuid())) {
+                        db.setTable("XUID" + e.mPlayer->getXuid());
+                        db.createTable();
+                        db.set("Toggle1", "false");
+                    }
+                    db.close();
                 }
-                db.close();
                 return true;
             });
         }
@@ -188,7 +183,10 @@ namespace tpa {
 
     void load(int* OpenPlugin) {
         (*OpenPlugin)++;
-        database();
+        if (!std::filesystem::exists(PluginData + "/tpa.db")) {
+            SQLiteDatabase db(PluginData + "/tpa.db");
+            db.close();
+        }
         listen();
     }
 }

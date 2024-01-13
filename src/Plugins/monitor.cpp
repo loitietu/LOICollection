@@ -1,14 +1,13 @@
 #include <string>
-#include <llapi/LoggerAPI.h>
 #include <llapi/EventAPI.h>
 #include <llapi/mc/Player.hpp>
 #include <llapi/mc/ServerPlayer.hpp>
+#include <Nlohmann/json.hpp>
 #include "../Storage/JsonManager.h"
 #include "../include/LLMoney.h"
 #include "../tool.h"
 #include "../API.h"
 #include "include/monitor.h"
-extern Logger logger;
 
 namespace monitor {
     namespace {
@@ -68,7 +67,7 @@ namespace monitor {
                     MonitorString = std::string(LOICollectionAPI::translateString(MonitorString, e.mPlayer, false));
                     tool::BroadcastText(MonitorString);
                 }
-                return false;
+                return true;
             });
             Event::PlayerLeftEvent::subscribe([](const Event::PlayerLeftEvent& e) {
                 JsonManager config("./plugins/LOICollection/config.json");
@@ -77,7 +76,7 @@ namespace monitor {
                 std::string MonitorString = data["left"];
                 MonitorString = std::string(LOICollectionAPI::translateString(MonitorString, e.mPlayer, false));
                 tool::BroadcastText(MonitorString);
-                return false;
+                return true;
             });
         }
     }

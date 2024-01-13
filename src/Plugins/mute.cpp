@@ -1,4 +1,5 @@
 #include <string>
+#include <filesystem>
 #include <llapi/LoggerAPI.h>
 #include <llapi/RegCommandAPI.h>
 #include <llapi/EventAPI.h>
@@ -14,13 +15,6 @@ extern Logger logger;
 
 namespace mute {
     namespace {
-        void database() {
-            if (!std::filesystem::exists(PluginData + "/mute.db")) {
-                SQLiteDatabase db(PluginData + "/mute.db");
-                db.close();
-            }
-        }
-
         void addGui(Player* player) {
             std::vector<Player*> playerList =  Level::getAllPlayers();
             std::vector<std::string> playerListName;
@@ -208,7 +202,10 @@ namespace mute {
 
     void load(int* OpenPlugin) {
         (*OpenPlugin)++;
-        database();
+        if (!std::filesystem::exists(PluginData + "/mute.db")) {
+            SQLiteDatabase db(PluginData + "/mute.db");
+            db.close();
+        }
         listen();
     }
 }

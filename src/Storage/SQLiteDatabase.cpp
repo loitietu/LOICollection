@@ -1,5 +1,8 @@
 #define LOICOLLECTION_SQLITEDATABASE_API __declspec(dllexport)
 
+#include <string>
+#include <vector>
+#include <SQLiteCpp/SQLiteCpp.h>
 #include "SQLiteDatabase.h"
 
 SQLiteDatabase::SQLiteDatabase(const std::string& db_name) : db(db_name, SQLite::OPEN_CREATE | SQLite::OPEN_READWRITE) {
@@ -54,9 +57,9 @@ std::vector<std::string> SQLiteDatabase::list() {
 
 std::vector<std::string> SQLiteDatabase::listTabe(const std::string& tableName) {
     std::vector<std::string> listName;
-    SQLite::Statement query(db, "PRAGMA table_info(" + tableName + ");");
+    SQLite::Statement query(db, "SELECT * FROM " + tableName + ";");
     while (query.executeStep()) {
-        listName.push_back(query.getColumn(1).getString());
+        listName.push_back(query.getColumn(0).getString());
     }
     return listName;
 }

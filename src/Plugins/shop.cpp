@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include <filesystem>
 #include <llapi/LoggerAPI.h>
 #include <llapi/FormUI.h>
 #include <llapi/EventAPI.h>
@@ -8,6 +9,7 @@
 #include <llapi/mc/Player.hpp>
 #include <llapi/mc/ServerPlayer.hpp>
 #include <Nlohmann/json.hpp>
+#include "../Storage/SQLiteDatabase.h"
 #include "../Storage/JsonManager.h"
 #include "../tool.h"
 #include "../API.h"
@@ -85,7 +87,58 @@ namespace shop {
                                 } 
                             });
                         } else if (item["type"] == "title") {
-                            //Chat Plugin
+                            if (std::filesystem::exists(PluginData + "/chat.db")) {
+                                int llmoney = item["llmoney"].template get<int>();
+                                nlohmann::ordered_json ScoreboardBase = item["scores"];
+                                std::string ScoreboardListString;
+                                if (!ScoreboardBase.empty()) {
+                                    for (nlohmann::ordered_json::iterator it = ScoreboardBase.begin(); it != ScoreboardBase.end(); ++it) {
+                                        int score = it.value().template get<int>();
+                                        ScoreboardListString += it.key() + ":" + std::to_string(score) + ",";
+                                    }
+                                    ScoreboardListString.pop_back();
+                                } else {
+                                    ScoreboardListString = "None";
+                                }
+                                std::string introduce = item["introduce"];
+                                introduce = std::string(tool::replaceString(introduce, "${llmoney}", std::to_string(llmoney)));
+                                introduce = std::string(tool::replaceString(introduce, "${scores}", ScoreboardListString));
+                                auto form = Form::ModalForm(shopDatabase["title"], introduce, item["confirmButton"], item["cancelButton"]);
+                                form.sendTo(pl, [shopDatabase, item, llmoney](Player* pl2, bool isConfirm) {
+                                    if (isConfirm) {
+                                        bool ScoreboardEnough, LLMoneyEnough = true;
+                                        nlohmann::ordered_json ScoreboardList = item.at("scores");
+                                        for (nlohmann::ordered_json::iterator it = ScoreboardList.begin(); it != ScoreboardList.end(); ++it) {
+                                            int score = ScoreboardList[it.key()].template get<int>();
+                                            if (score > pl2->getScore(it.key())) ScoreboardEnough = false;
+                                        }
+                                        if (llmoney > tool::llmoney::get(pl2)) LLMoneyEnough = false;
+                                        if (ScoreboardEnough && LLMoneyEnough) {
+                                            tool::llmoney::reduce(pl2, item["llmoney"]);
+                                            for (nlohmann::ordered_json::iterator it = ScoreboardList.begin(); it != ScoreboardList.end(); ++it) {
+                                                int score = ScoreboardList[it.key()].template get<int>();
+                                                pl2->reduceScore(it.key(), score);
+                                            }
+                                            ScoreboardList.clear();
+                                            std::string titleId = item["id"].template get<std::string>();
+                                            SQLiteDatabase db(PluginData + "/chat.db");
+                                            db.setTable("XUID" + pl2->getXuid() + "TITLE");
+                                            db.set(titleId, "true");
+                                            db.close();
+                                        } else {
+                                            pl2->sendTextPacket(shopDatabase["NoScore"]);
+                                            ScoreboardList.clear();
+                                            return;
+                                        } 
+                                    } else {
+                                        pl2->sendTextPacket(shopDatabase["exit"]);
+                                        return;
+                                    }
+                                });
+                            } else {
+                                pl->sendTextPacket("Shop: Please open plug-in Chat.");
+                                return;
+                            }
                         } else if (item["type"] == "from") {
                             ShopGui(pl, item["menu"]);
                         }
@@ -148,7 +201,55 @@ namespace shop {
                                 }
                             });
                         } else if (item["type"] == "title") {
-                            //Chat Plugin
+                            if (std::filesystem::exists(PluginData + "/chat.db")) {
+                                int llmoney = item["llmoney"].template get<int>();
+                                nlohmann::ordered_json ScoreboardBase = item["scores"];
+                                std::string ScoreboardListString;
+                                if (!ScoreboardBase.empty()) {
+                                    for (nlohmann::ordered_json::iterator it = ScoreboardBase.begin(); it != ScoreboardBase.end(); ++it) {
+                                        int score = it.value().template get<int>();
+                                        ScoreboardListString += it.key() + ":" + std::to_string(score) + ",";
+                                    }
+                                    ScoreboardListString.pop_back();
+                                } else {
+                                    ScoreboardListString = "None";
+                                }
+                                std::string introduce = item["introduce"];
+                                introduce = std::string(tool::replaceString(introduce, "${llmoney}", std::to_string(llmoney)));
+                                introduce = std::string(tool::replaceString(introduce, "${scores}", ScoreboardListString));
+                                auto form = Form::ModalForm(shopDatabase["title"], introduce, item["confirmButton"], item["cancelButton"]);
+                                form.sendTo(pl, [shopDatabase, item](Player* pl2, bool isConfirm) {
+                                    if (isConfirm) {
+                                        int llmoney = item["llmoney"].template get<int>();
+                                        std::string titleId = item["id"].template get<std::string>();
+                                        SQLiteDatabase db(PluginData + "/chat.db");
+                                        db.setTable("XUID" + pl2->getXuid() + "TITLE");
+                                        if (db.exists(titleId)) {
+                                            db.remove(titleId);
+                                            db.setTable("XUID" + pl2->getXuid());
+                                            if (db.get("title") == titleId) db.update("title", "None");
+                                            tool::llmoney::add(pl2, llmoney);
+                                            nlohmann::ordered_json ScoreboardList = item.at("scores");
+                                            for (nlohmann::ordered_json::iterator it = ScoreboardList.begin(); it != ScoreboardList.end(); ++it) {
+                                                int score = ScoreboardList[it.key()].template get<int>();
+                                                pl2->addScore(it.key(), score);
+                                            }
+                                            ScoreboardList.clear();
+                                            db.close();
+                                        } else {
+                                            pl2->sendTextPacket(shopDatabase["NoTitle"]);
+                                            db.close();
+                                            return;
+                                        }
+                                    } else {
+                                        pl2->sendTextPacket(shopDatabase["exit"]);
+                                        return;
+                                    }
+                                });
+                            } else {
+                                pl->sendTextPacket("Shop: Please open plug-in Chat.");
+                                return;
+                            }
                         } else if (item["type"] == "from") {
                             ShopGui(pl, item["menu"]);
                         }
