@@ -99,6 +99,10 @@ namespace tool {
         Level::broadcastText(text, TextType::SYSTEM);
     }
 
+    void createScoreboardObject(const std::string& id) {
+        Level::runcmdEx("scoreboard objectives add " + id + " dummy");
+    }
+
     Player* toServerPlayer(ServerPlayer* player) {
         return Global<Level>->getPlayer(player->getXuid());
     }

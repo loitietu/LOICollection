@@ -1,4 +1,5 @@
 #include <string>
+#include <vector>
 #include <llapi/EventAPI.h>
 #include <llapi/mc/Player.hpp>
 #include <llapi/mc/ServerPlayer.hpp>
@@ -76,6 +77,17 @@ namespace monitor {
                 std::string MonitorString = data["left"];
                 MonitorString = std::string(LOICollectionAPI::translateString(MonitorString, e.mPlayer, false));
                 tool::BroadcastText(MonitorString);
+                return true;
+            });
+            Event::PlayerCmdEvent::subscribe([](const Event::PlayerCmdEvent& e) {
+                JsonManager config("./plugins/LOICollection/config.json");
+                nlohmann::ordered_json data = config.get("Monitor");
+                config.clear();
+                std::vector<std::string> commandArray = tool::split(e.mCommand, ' ');
+                if (tool::isJsonArrayFind(data["command"], commandArray[0])) {
+                    e.mPlayer->sendTextPacket(data["tips"]);
+                    return false;
+                }
                 return true;
             });
         }

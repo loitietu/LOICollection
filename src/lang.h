@@ -71,11 +71,23 @@ static const nlohmann::ordered_json CNLangData = {
     {"pvp.gui.label", "§b功能如下:"},
     {"pvp.gui.on", "§4开启PVP"},
     {"pvp.gui.off", "§a关闭PVP"},
+    {"wallet.showOff", "{player}炫出了自己的钱包: ${money}"},
+    {"wallet.gui.title", "§eLOIWallet §b-> §a个人钱包"},
+    {"wallet.gui.label", "§b拥有金钱: ${money}\n§e今日税率: ${tax}"},
+    {"wallet.gui.stepslider", "§a请选择类型§r"},
+    {"wallet.gui.stepslider.dropdown", "请选择玩家"},
+    {"wallet.gui.stepslider.input", "请输入金额"},
     {"chat.gui.title", "§eLOIChat §b-> §a个人称号"},
     {"chat.gui.label", "§b功能如下:"},
     {"chat.gui.setTitle", "§a设置称号\n§4设置自己的称号显示"},
     {"chat.gui.setTitle.label", "§a当前配戴称号: §f{title}"},
-    {"chat.gui.setTitle.dropdown", "§b请选择配戴称号"}
+    {"chat.gui.setTitle.dropdown", "§b请选择配戴称号"},
+    {"announcement.gui.title", "§eLOIAnnounCement §b-> §a公告系统"},
+    {"announcement.gui.label", "§b功能如下:"},
+    {"announcement.gui.setTitle", "§e设置标题"},
+    {"announcement.gui.line", "§a第${index}行"},
+    {"announcement.gui.addLine", "§b添加一行"},
+    {"announcement.gui.removeLine", "§c删除一行"}
 };
 
 static const nlohmann::ordered_json defultLangData = {

@@ -13,10 +13,9 @@ Tpa | $\color{#00FF00}{√}$
 Shop | $\color{#00FF00}{√}$
 Monitor | $\color{#00FF00}{√}$
 Pvp | $\color{#00FF00}{√}$
-Wallet | $\color{#FF0000}{×}$
+Wallet | $\color{#00FF00}{√}$
 Chat | $\color{#00FF00}{√}$
-Command | $\color{#FF0000}{×}$
-AnnounCement | $\color{#FF0000}{×}$
+AnnounCement | $\color{#00FF00}{√}$
 
 ### 如何安装插件？
 1. 将文件 `LOICollection.dll` 放置在服务器目录的 `plugins` 文件夹中。
@@ -31,7 +30,7 @@ AnnounCement | $\color{#FF0000}{×}$
 3. 打开后，您会看到类似以下内容的内容：
 ```json
 {
-    "version": "1.2.6",
+    "version": "1.2.9",
     "FakeSeed": 114514,
     "Blacklist": false,
     "Mute": false, 
@@ -46,7 +45,9 @@ AnnounCement | $\color{#FF0000}{×}$
         "Enable": false,
         "join": "{player}加入了服务器",
         "left": "{player}退出了服务器",
-        "llmoney": "§e§l检测到金钱发生变化 §b原值: §f${OriMoney} §a更改: §f${SetMoney} §e现值: §f${GetMoney}"
+        "llmoney": "§e§l检测到金钱发生变化 §b原值: §f${OriMoney} §a更改: §f${SetMoney} §e现值: §f${GetMoney}",
+        "command": [],
+        "tips": "该指令已被禁用" 
     },
     "Pvp": false,
     "Wallet": {
@@ -58,11 +59,6 @@ AnnounCement | $\color{#FF0000}{×}$
     "Chat": {
         "Enable": false,
         "chat": "<{player}> ${chat}"
-    },
-    "Command": {
-        "Enable": false,
-        "command": [],
-        "tips": "该指令已被禁用" 
     },
     "AnnounCement": false
 }

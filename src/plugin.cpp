@@ -12,13 +12,15 @@
 #include "Plugins/include/shop.h"
 #include "Plugins/include/monitor.h"
 #include "Plugins/include/pvp.h"
+#include "Plugins/include/wallet.h"
 #include "Plugins/include/chat.h"
+#include "Plugins/include/announcement.h"
 #include "API.h"
 #include "lang.h"
 #include "version.h"
 extern Logger logger;
 const std::string PluginDirectory = "./plugins/LOICollection";
-bool blacklistPlugin, mutePlugin, cdkPlugin, menuPlugin, tpaPlugin, shopPlugin, monitorPlugin, pvpPlugin, chatPlugin = false;
+bool blacklistPlugin, mutePlugin, cdkPlugin, menuPlugin, tpaPlugin, shopPlugin, monitorPlugin, pvpPlugin, walletPlugin, chatPlugin, announcementPlugin = false;
 int64_t FakeSeed = 0;
 
 void update(std::string& versionInfo) {
@@ -35,11 +37,10 @@ void update(std::string& versionInfo) {
     if (!config.contains("Menu")) config["Menu"] = {{"Enable", false},{"ItemId", "minecraft:clock"}};
     if (!config.contains("Tpa")) config["Tpa"] = false;
     if (!config.contains("Shop")) config["Shop"] = false;
-    if (!config.contains("Monitor")) config["Monitor"] = {{"Enable", false},{"join", "{player}加入了服务器"},{"left", "{player}退出了服务器"},{"llmoney", "§e§l检测到金钱发生变化 §b原值: §f${OriMoney} §a更改: §f${SetMoney} §e现值: §f${GetMoney}"}};
+    if (!config.contains("Monitor")) config["Monitor"] = {{"Enable", false},{"join", "{player}加入了服务器"},{"left", "{player}退出了服务器"},{"llmoney", "§e§l检测到金钱发生变化 §b原值: §f${OriMoney} §a更改: §f${SetMoney} §e现值: §f${GetMoney}"},{"command", configArray},{"tips", "该指令已被禁用"}};
     if (!config.contains("Pvp")) config["Pvp"] = false;
     if (!config.contains("Wallet")) config["Wallet"] = {{"Enable", false},{"llmoney", true},{"score", "money"},{"tax", 0.1}};
     if (!config.contains("Chat")) config["Chat"] = {{"Enable", false},{"chat","<{player}> ${chat}"}};
-    if (!config.contains("Command")) config["Command"] = {{"Enable", false},{"command", configArray},{"tips", "该指令已被禁用"}};
     if (!config.contains("AnnounCement")) config["AnnounCement"] = false;
     std::string configVersion = config["version"].template get<std::string>();
     if (configVersion != versionInfo) {
@@ -65,7 +66,9 @@ void update(std::string& versionInfo) {
     shopPlugin = config["Shop"].template get<bool>();
     monitorPlugin = config["Monitor"]["Enable"].template get<bool>();
     pvpPlugin = config["Pvp"].template get<bool>();
+    walletPlugin = config["Wallet"]["Enable"].template get<bool>();
     chatPlugin = config["Chat"]["Enable"].template get<bool>();
+    announcementPlugin = config["AnnounCement"].template get<bool>();
     FakeSeed = config["FakeSeed"].template get<int64_t>();
     std::ofstream configNewFile(PluginDirectory + "/config.json");
     configNewFile << config.dump(4);
@@ -104,7 +107,9 @@ void load() {
     if (shopPlugin) shop::load(&OpenPlugin);
     if (monitorPlugin) monitor::load(&OpenPlugin);
     if (pvpPlugin) pvp::load(&OpenPlugin);
+    if (walletPlugin) wallet::load(&OpenPlugin);
     if (chatPlugin) chat::load(&OpenPlugin);
+    if (announcementPlugin) announcement::load(&OpenPlugin);
     logger.info("加载成功，已加载内置插件数量: " + std::to_string(OpenPlugin));
     Event::ServerStartedEvent::subscribe([](const Event::ServerStartedEvent& e) {
         LOICollectionAPI::init();

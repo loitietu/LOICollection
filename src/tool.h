@@ -18,6 +18,7 @@ namespace tool {
     bool isReach(const std::string& timeString);
     bool isMute(Player* player);
     bool isMute(ServerPlayer* player);
+    void createScoreboardObject(const std::string& id);
     void BroadcastText(const std::string& text);
     Player* toServerPlayer(ServerPlayer* player);
     Player* toXuidPlayer(const std::string& xuid);

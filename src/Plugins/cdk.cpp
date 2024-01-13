@@ -35,6 +35,7 @@ namespace cdk {
                 nlohmann::ordered_json ItemList = cdkJson.at("item");
                 for (nlohmann::ordered_json::iterator it = ScoreboardList.begin(); it != ScoreboardList.end(); ++it) {
                     int score = ScoreboardList[it.key()].template get<int>();
+                    tool::createScoreboardObject(it.key());
                     player->addScore(it.key(), score);
                 }
                 for (nlohmann::ordered_json::iterator it = ItemList.begin(); it != ItemList.end(); ++it) {
