@@ -44,7 +44,7 @@ AnnounCement | $\color{#FF0000}{×}$
     "Tpa": false,
     "Shop": false,
     "Monitor": {
-        "Enable": true,
+        "Enable": false,
         "join": "{player}加入了服务器",
         "left": "{player}退出了服务器",
         "llmoney": "§e§l检测到金钱发生变化 §b原值: §f${OriMoney} §a更改: §f${SetMoney} §e现值: §f${GetMoney}"
