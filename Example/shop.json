@@ -49,6 +49,7 @@
         "title": "Sell Shop Example",
         "content": "This is a shop example",
         "exit": "Exit Shop",
+        "NoTitle": "You do not have enough title to sell",
         "NoItem": "You do not have enough item to sell",
         "classiflcation": [
             {
@@ -75,6 +76,7 @@
         "content": "This is a title shop",
         "exit": "Exit Title Shop",
         "NoTitle": "You do not have enough title to sell",
+        "NoItem": "You do not have enough item to sell",
         "classiflcation": [
             {
                 "title": "Test Title",
