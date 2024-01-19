@@ -1,3 +1,8 @@
+#include <string>
+#include <vector>
+#include <fstream>
+#include <filesystem>
+#include <nlohmann/json.hpp>
 #include "JsonManager.h"
 
 JsonManager::JsonManager(const std::string& filePath) {

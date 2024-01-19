@@ -10,8 +10,8 @@
 #include <llapi/mc/Player.hpp>
 #include <llapi/mc/Scoreboard.hpp>
 #include <Nlohmann/json.hpp>
-#include "Storage/SQLiteDatabase.h"
-#include "include/LLMoney.h"
+#include "../Storage/SQLiteDatabase.h"
+#include "../include/LLMoney.h"
 #include "tool.h"
 
 namespace tool {

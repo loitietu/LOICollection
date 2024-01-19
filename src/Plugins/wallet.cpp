@@ -9,7 +9,7 @@
 #include <llapi/mc/ServerPlayer.hpp>
 #include <Nlohmann/json.hpp>
 #include "../Storage/JsonManager.h"
-#include "../tool.h"
+#include "../tools/tool.h"
 #include "../API.h"
 #include "include/i18nLang.h"
 #include "include/wallet.h"

@@ -1,3 +1,10 @@
+/*
+* @file plugin.cpp
+* @note Plugin Main
+* @author Tietu
+* @copyright Copyright (C) 2024 Tietu
+*/
+
 #include <fstream>
 #include <string>
 #include <llapi/LoggerAPI.h>
@@ -23,6 +30,7 @@ const std::string PluginDirectory = "./plugins/LOICollection";
 bool blacklistPlugin, mutePlugin, cdkPlugin, menuPlugin, tpaPlugin, shopPlugin, monitorPlugin, pvpPlugin, walletPlugin, chatPlugin, announcementPlugin = false;
 int64_t FakeSeed = 0;
 
+//Update version data
 void update(std::string& versionInfo) {
     logger.info("开始加载配置文件");
     std::ifstream configFile(PluginDirectory + "/config.json");
@@ -76,6 +84,7 @@ void update(std::string& versionInfo) {
     config.clear();
 }
 
+//Initialize the plugin
 void Init(std::string& versionInfo) {
     std::filesystem::path dir(PluginDirectory);
     if (!std::filesystem::exists(dir)) {
@@ -96,6 +105,7 @@ void Init(std::string& versionInfo) {
     update(versionInfo);
 }
 
+//Load built-in data features
 void load() {
     int OpenPlugin = 0;
     language::load(&OpenPlugin);
@@ -117,6 +127,7 @@ void load() {
     });
 }
 
+//Plug-in entry
 void PluginInit() {
     std::stringstream ss;
     ss << PLUGIN_VERSION_MAJOR << "." << PLUGIN_VERSION_MINOR << "." << PLUGIN_VERSION_REVISION;

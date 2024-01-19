@@ -9,7 +9,7 @@
 #include <llapi/mc/ItemStack.hpp>
 #include <llapi/mc/Level.hpp>
 #include <Nlohmann/json.hpp>
-#include "../tool.h"
+#include "../tools/tool.h"
 #include "../Storage/JsonManager.h"
 #include "include/i18nLang.h"
 #include "include/cdk.h"

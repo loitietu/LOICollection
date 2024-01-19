@@ -9,7 +9,7 @@
 #include <llapi/mc/CommandOrigin.hpp>
 #include <llapi/mc/CommandOutput.hpp>
 #include <llapi/mc/Player.hpp>
-#include "../tool.h"
+#include "../tools/tool.h"
 #include "../Storage/SQLiteDatabase.h"
 #include "include/i18nLang.h"
 #include "include/language.h"
