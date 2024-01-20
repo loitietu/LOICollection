@@ -73,11 +73,11 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
     "${CMAKE_SOURCE_DIR}/SDK/lib/bedrock_server_api.lib"
 	"${CMAKE_SOURCE_DIR}/SDK/lib/bedrock_server_var.lib"
 	"${CMAKE_SOURCE_DIR}/SDK/lib/SymDBHelper.lib"
-    "${CMAKE_SOURCE_DIR}/lib/SQLiteCpp/SQLiteCpp.lib"
-    "${CMAKE_SOURCE_DIR}/lib/SQLiteCpp/sqlite3.lib"
-    "${CMAKE_SOURCE_DIR}/lib/openssl/libssl.lib"
-    "${CMAKE_SOURCE_DIR}/lib/openssl/libcrypto.lib"
-    "${CMAKE_SOURCE_DIR}/lib/LLMOney/LLMoney.lib"
+    "${CMAKE_SOURCE_DIR}/SDK/lib/SQLiteCpp/SQLiteCpp.lib"
+    "${CMAKE_SOURCE_DIR}/SDK/lib/SQLiteCpp/sqlite3.lib"
+    "${CMAKE_SOURCE_DIR}/SDK/lib/openssl/libssl.lib"
+    "${CMAKE_SOURCE_DIR}/SDK/lib/openssl/libcrypto.lib"
+    "${CMAKE_SOURCE_DIR}/SDK/lib/LLMOney/LLMoney.lib"
 )
 
 add_custom_command(TARGET ${CMAKE_PROJECT_NAME} PRE_BUILD

@@ -5,8 +5,11 @@
 * @copyright Copyright (C) 2024 Tietu
 */
 
+#define CPPHTTPLIB_OPENSSL_SUPPORT
+
 #include <fstream>
 #include <string>
+#include <httplib/httplib.h>
 #include <llapi/LoggerAPI.h>
 #include <llapi/EventAPI.h>
 #include <Nlohmann/json.hpp>
@@ -28,9 +31,52 @@
 extern Logger logger;
 const std::string PluginDirectory = "./plugins/LOICollection";
 bool blacklistPlugin, mutePlugin, cdkPlugin, menuPlugin, tpaPlugin, shopPlugin, monitorPlugin, pvpPlugin, walletPlugin, chatPlugin, announcementPlugin = false;
+std::string UPDATEURLAPI;
+std::string UPDATEURL;
+bool UPDATE = false;
 int64_t FakeSeed = 0;
 
-//Update version data
+//Update Plugin
+void updatePlugin(std::string& versionInfo) {
+    if (UPDATE) {
+        std::string apiString = "https://" + UPDATEURLAPI + "/repos/" + UPDATEURL + "/releases/latest";
+        logger.info("<Update> Response URL: " + apiString);
+        httplib::SSLClient client(UPDATEURLAPI);
+        auto response = client.Get("/repos/" + UPDATEURL + "/releases/latest");
+        if (response && response->status == 200) {
+            nlohmann::ordered_json body(response->body);
+            std::string body_tagName = body["tag_name"];
+            std::string body_commitish = body["target_commitish"];
+            nlohmann::ordered_json body_assets = body["assets"];
+            body.clear();
+            if (versionInfo != body_tagName) {
+                for (nlohmann::ordered_json& assets : body_assets) {
+                    if (assets["name"] == "LOICollection.dll") {
+                        std::string body_browser_download_url = assets["browser_download_url"];
+                        logger.info("<Update> Download URL: " + body_browser_download_url);
+                        std::ofstream file("./plugins/LOICollection.bin", std::ios::binary);
+                        httplib::SSLClient client(body_browser_download_url);
+                        auto response = client.Get(body_browser_download_url, [&](const char* data, size_t dataSize) {
+                            if (!file.is_open()) return false;
+                            file.write(data, dataSize);
+                            return true;
+                        });
+                        file.close();
+                        break;
+                    }
+                }
+                body_assets.clear();
+                return;
+            }
+            body_assets.clear();
+        } else {
+            logger.warn("<Update> Connection failed, unable to connect to the server.");
+            logger.warn("<Update> Update plan cancellation");
+        }
+    }
+}
+
+//Update Version data
 void update(std::string& versionInfo) {
     logger.info("开始加载配置文件");
     std::ifstream configFile(PluginDirectory + "/config.json");
@@ -38,6 +84,7 @@ void update(std::string& versionInfo) {
     nlohmann::ordered_json configArray = nlohmann::ordered_json::array();
     configFile >> config;
     configFile.close();
+    if (!config.contains("Update")) config["Update"] = {{"Enable", false},{"Api", "api.github.com"},{"Repo", "loitietu/LOICollection"}};
     if (!config.contains("FakeSeed")) config["FakeSeed"] = 114514;
     if (!config.contains("Blacklist")) config["Blacklist"] = false;
     if (!config.contains("Mute")) config["Mute"] = false;
@@ -66,6 +113,9 @@ void update(std::string& versionInfo) {
         langData.clear();
         logger.info("数据文件已更新");
     }
+    UPDATEURLAPI = config["Update"]["Api"].template get<std::string>();
+    UPDATEURL = config["Update"]["Repo"].template get<std::string>();
+    UPDATE = config["Update"]["Enable"].template get<bool>();
     blacklistPlugin = config["Blacklist"].template get<bool>();
     mutePlugin = config["Mute"].template get<bool>();
     cdkPlugin = config["Cdk"].template get<bool>();
@@ -134,6 +184,7 @@ void PluginInit() {
     std::string versionString = ss.str();
     logger.info("感谢您使用本插件，版本:" + versionString + "，作者:贴图");
     Init(versionString);
+    updatePlugin(versionString);
     load();
 }
 
