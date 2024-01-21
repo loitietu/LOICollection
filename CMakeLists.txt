@@ -29,6 +29,7 @@ add_definitions(
     -D"TEMPLATE_EXPORTS"
     -D"UNICODE"
     -D"WIN32_LEAN_AND_MEAN"
+    -D"CURL_SHAREDLIB"
     -D"_AMD64_"
     -D"_CRT_SECURE_NO_WARNINGS"
     -D"_UNICODE"
