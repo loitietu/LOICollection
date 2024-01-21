@@ -134,7 +134,6 @@ void PluginInit() {
     std::string versionString = ss.str();
     logger.info("感谢您使用本插件，版本:" + versionString + "，作者:贴图");
     Init(versionString);
-    updatePlugin(versionString);
     load();
 }
 
