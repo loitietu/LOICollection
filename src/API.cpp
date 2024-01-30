@@ -4,6 +4,8 @@
 #include <chrono>
 #include <string>
 #include <regex>
+#include <Windows.h>
+#include <Psapi.h>
 #include <optional>
 #include <algorithm>
 #include <filesystem>
@@ -47,18 +49,39 @@ void scheduleTask() {
 }
 
 namespace LOICollectionAPI {
+    //Initialize the API
     void init() {
         scheduleTask();
     }
 
+    //Get Server Second TPS
     unsigned short getTransactionPerSecond() {
         return tickPerSecond;
     }
-
+    
+    //Get Server Minute TPS
     unsigned short getTransactionPerMinute() {
         return tickPerMinute;
     }
 
+    //Get Memory Usage
+    unsigned int GetMemory() {
+        PROCESS_MEMORY_COUNTERS_EX pmc;
+        memset(&pmc, 0, sizeof(pmc));
+        pmc.cb = sizeof(pmc);
+        if (GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc))) {
+            return pmc.WorkingSetSize;
+        }
+        return 0;
+    }
+
+    //Get Memory MB Usage
+    double GetMemoryMB() {
+        int size = GetMemory();
+        return static_cast<double>(size / 1024 / 1024);
+    }
+
+    //Plugin API: translate String
     const char* translateString(std::string str, Player* player, bool enable) {
         if (std::filesystem::exists(PluginData + "/chat.db")) {
             SQLiteDatabase db(PluginData + "/chat.db");

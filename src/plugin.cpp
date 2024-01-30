@@ -32,7 +32,7 @@ bool blacklistPlugin, mutePlugin, cdkPlugin, menuPlugin, tpaPlugin, shopPlugin, 
 int64_t FakeSeed = 0;
 
 //Update Version data
-void update(std::string& versionInfo) {
+void update(const std::string* versionInfo) {
     logger.info("开始加载配置文件");
     std::ifstream configFile(PluginDirectory + "/config.json");
     nlohmann::ordered_json config;
@@ -53,10 +53,10 @@ void update(std::string& versionInfo) {
     if (!config.contains("AnnounCement")) config["AnnounCement"] = false;
     if (!config.contains("Market")) config["Market"] = false;
     std::string configVersion = config["version"].template get<std::string>();
-    if (configVersion != versionInfo) {
+    if (configVersion != (*versionInfo)) {
         logger.info("配置文件版本: " + configVersion);
-        logger.info("插件版本: " + versionInfo);
-        config["version"] = versionInfo;
+        logger.info("插件版本: " + (*versionInfo));
+        config["version"] = (*versionInfo);
         nlohmann::ordered_json langData;
         std::ifstream languageFile(PluginDirectory + "/language.json");
         languageFile >> langData;
@@ -88,14 +88,14 @@ void update(std::string& versionInfo) {
 }
 
 //Initialize the plugin
-void Init(std::string& versionInfo) {
+void Init(const std::string* versionInfo) {
     std::filesystem::path dir(PluginDirectory);
     if (!std::filesystem::exists(dir)) {
         logger.info("初次运行，正在初始化插件");
         std::filesystem::create_directory(dir);
         std::filesystem::create_directory(dir.append("data"));
         nlohmann::ordered_json config;
-        config["version"] = versionInfo;
+        config["version"] = (*versionInfo);
         std::ofstream configFile(PluginDirectory + "/config.json");
         configFile << config.dump(4);
         configFile.close();
@@ -105,11 +105,11 @@ void Init(std::string& versionInfo) {
         languageFile.close();
         logger.info("初始化成功!");
     }
-    update(versionInfo);
+    update(&(*versionInfo));
 }
 
 //Load built-in data features
-void load() {
+void loadBuilt() {
     int OpenPlugin = 0;
     language::load(&OpenPlugin);
     if (blacklistPlugin) blacklist::load(&OpenPlugin);
@@ -137,8 +137,8 @@ void PluginInit() {
     ss << PLUGIN_VERSION_MAJOR << "." << PLUGIN_VERSION_MINOR << "." << PLUGIN_VERSION_REVISION;
     std::string versionString = ss.str();
     logger.info("感谢您使用本插件，版本:" + versionString + "，作者:贴图");
-    Init(versionString);
-    load();
+    Init(&versionString);
+    loadBuilt();
 }
 
 /**

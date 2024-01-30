@@ -4,11 +4,8 @@ project(LOICollection)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_BUILD_TYPE Release)
-if (APPLE)
-  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Oz")
-else ()
-  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Os")
-endif ()
+set(CMAKE_CXX_COMPILER g++)
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Os")
 
 file(GLOB_RECURSE SRC_FILES_DIR
     ${PROJECT_SOURCE_DIR}/src/*.cpp
@@ -21,6 +18,7 @@ include_directories(
 
 link_directories(
     ${CMAKE_SOURCE_DIR}/SDK/lib
+    psapi
 )
 
 add_definitions(
