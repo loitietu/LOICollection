@@ -19,7 +19,7 @@ namespace chat {
     namespace {
         void settingTitleGui(Player* player) {
             SQLiteDatabase db(PluginData + "/chat.db");
-            std::vector<std::string> titleList = db.listTabe("XUID" + player->getXuid() + "TITLE");
+            std::vector<std::string> titleList = db.listTable("XUID" + player->getXuid() + "TITLE");
             db.close();
             std::string PlayerLanguage = tool::get(player);
             i18nLang lang("./plugins/LOICollection/language.json");

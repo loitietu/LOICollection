@@ -40,7 +40,7 @@ namespace wallet {
             auto form = Form::CustomForm(lang.tr(PlayerLanguage, "wallet.gui.title"));
             form.append(Form::Label("label", labelString));
             form.append(Form::Dropdown("dropdown", lang.tr(PlayerLanguage, "wallet.gui.stepslider.dropdown"), playerListName));
-            form.append(Form::Input("input", lang.tr(PlayerLanguage, "wallet.gui.stepslider.input")));
+            form.append(Form::Input("input", lang.tr(PlayerLanguage, "wallet.gui.stepslider.input"), "", "100"));
             lang.close();
             form.sendTo(player, [data, tax, ScoreboardId, enableMoney](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
                 if (mp.empty()) {

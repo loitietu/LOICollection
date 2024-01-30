@@ -68,7 +68,7 @@ namespace cdk {
             i18nLang lang("./plugins/LOICollection/language.json");
             auto form = Form::CustomForm(lang.tr(PlayerLanguage, "cdk.gui.title"));
             form.append(Form::Label("label", lang.tr(PlayerLanguage, "cdk.gui.label")));
-            form.append(Form::Input("input", lang.tr(PlayerLanguage, "cdk.gui.convert.input")));
+            form.append(Form::Input("input", lang.tr(PlayerLanguage, "cdk.gui.convert.input"), "", "convert"));
             lang.close();
             form.sendTo(player, [](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
                 if (mp.empty()) {
@@ -88,9 +88,9 @@ namespace cdk {
             i18nLang lang("./plugins/LOICollection/language.json");
             auto form = Form::CustomForm(lang.tr(PlayerLanguage, "cdk.gui.title"));
             form.append(Form::Label("label", lang.tr(PlayerLanguage, "cdk.gui.label")));
-            form.append(Form::Input("input1", lang.tr(PlayerLanguage, "cdk.gui.new.input1")));
+            form.append(Form::Input("input1", lang.tr(PlayerLanguage, "cdk.gui.new.input1"), "", "cdk"));
             form.append(Form::Toggle("Toggle", lang.tr(PlayerLanguage, "cdk.gui.new.switch")));
-            form.append(Form::Input("input2", lang.tr(PlayerLanguage, "cdk.gui.new.input2")));
+            form.append(Form::Input("input2", lang.tr(PlayerLanguage, "cdk.gui.new.input2"), "", "100"));
             lang.close();
             form.sendTo(player, [](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
                 if (mp.empty()) {
@@ -151,8 +151,8 @@ namespace cdk {
             auto form = Form::CustomForm(lang.tr(PlayerLanguage, "cdk.gui.title"));
             form.append(Form::Label("label", lang.tr(PlayerLanguage, "cdk.gui.label")));
             form.append(Form::Dropdown("dropdown", lang.tr(PlayerLanguage, "cdk.gui.award.dropdown"), database.list()));
-            form.append(Form::Input("input1", lang.tr(PlayerLanguage, "cdk.gui.award.score.input1")));
-            form.append(Form::Input("input2", lang.tr(PlayerLanguage, "cdk.gui.award.score.input2")));
+            form.append(Form::Input("input1", lang.tr(PlayerLanguage, "cdk.gui.award.score.input1"), "", "money"));
+            form.append(Form::Input("input2", lang.tr(PlayerLanguage, "cdk.gui.award.score.input2"), "", "100"));
             database.clear();
             lang.close();
             form.sendTo(player, [](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
@@ -184,10 +184,10 @@ namespace cdk {
             auto form = Form::CustomForm(lang.tr(PlayerLanguage, "cdk.gui.title"));
             form.append(Form::Label("label", lang.tr(PlayerLanguage, "cdk.gui.label")));
             form.append(Form::Dropdown("dropdown", lang.tr(PlayerLanguage, "cdk.gui.award.dropdown"), database.list()));
-            form.append(Form::Input("input1", lang.tr(PlayerLanguage, "cdk.gui.award.item.input1")));
-            form.append(Form::Input("input2", lang.tr(PlayerLanguage, "cdk.gui.award.item.input2")));
-            form.append(Form::Input("input3", lang.tr(PlayerLanguage, "cdk.gui.award.item.input3")));
-            form.append(Form::Input("input4", lang.tr(PlayerLanguage, "cdk.gui.award.item.input4")));
+            form.append(Form::Input("input1", lang.tr(PlayerLanguage, "cdk.gui.award.item.input1"), "", "minecraft:apple"));
+            form.append(Form::Input("input2", lang.tr(PlayerLanguage, "cdk.gui.award.item.input2"), "", "apple"));
+            form.append(Form::Input("input3", lang.tr(PlayerLanguage, "cdk.gui.award.item.input3"), "", "1"));
+            form.append(Form::Input("input4", lang.tr(PlayerLanguage, "cdk.gui.award.item.input4"), "", "0"));
             database.clear();
             lang.close();
             form.sendTo(player, [](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {

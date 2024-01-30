@@ -16,6 +16,7 @@ Pvp | $\color{#00FF00}{√}$
 Wallet | $\color{#00FF00}{√}$
 Chat | $\color{#00FF00}{√}$
 AnnounCement | $\color{#00FF00}{√}$
+Market | $\color{#00FF00}{√}$
 
 ### 如何安装插件？
 1. 将文件 `LOICollection.dll` 放置在服务器目录的 `plugins` 文件夹中。
@@ -30,7 +31,7 @@ AnnounCement | $\color{#00FF00}{√}$
 3. 打开后，您会看到类似以下内容的内容：
 ```json
 {
-    "version": "1.2.9",
+    "version": "1.2.11",
     "FakeSeed": 114514,
     "Blacklist": false,
     "Mute": false, 
@@ -60,7 +61,8 @@ AnnounCement | $\color{#00FF00}{√}$
         "Enable": false,
         "chat": "<{player}> ${chat}"
     },
-    "AnnounCement": false
+    "AnnounCement": false,
+    "Market": false
 }
 ```
 - 请按照 Json 规范（https://www.json.org/）进行更改。

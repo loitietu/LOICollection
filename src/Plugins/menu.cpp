@@ -34,14 +34,18 @@ namespace menu {
                         }
                         nlohmann::ordered_json button = buttonIdList[id];
                         if (button["type"] == "button") {
+                            int llmoney = button["llmoney"].template get<int>();
                             bool ScoreboardEnough, LLMoneyEnough = true;
                             for (nlohmann::ordered_json::iterator it = button["scores"].begin(); it != button["scores"].end(); ++it) {
                                 int score = button["scores"][it.key()].template get<int>();
-                                if (score > pl->getScore(it.key())) ScoreboardEnough = false;
+                                if (score > pl->getScore(it.key())) {
+                                    ScoreboardEnough = false;
+                                    break;
+                                }
                             }
-                            if (button["llmoney"] > tool::llmoney::get(pl)) LLMoneyEnough = false;
+                            if (llmoney > tool::llmoney::get(pl)) LLMoneyEnough = false;
                             if (ScoreboardEnough && LLMoneyEnough) {
-                                tool::llmoney::reduce(pl, button["llmoney"]);
+                                tool::llmoney::reduce(pl, llmoney);
                                 for (nlohmann::ordered_json::iterator it = button["scores"].begin(); it != button["scores"].end(); ++it) {
                                     int score = button["scores"][it.key()].template get<int>();
                                     pl->reduceScore(it.key(), score);
@@ -53,14 +57,18 @@ namespace menu {
                                 return;
                             } 
                         } else if (button["type"] == "from") {
+                            int llmoney = button["llmoney"].template get<int>();
                             bool ScoreboardEnough, LLMoneyEnough = true;
                             for (nlohmann::ordered_json::iterator it = button["scores"].begin(); it != button["scores"].end(); ++it) {
                                 int score = button["scores"][it.key()].template get<int>();
-                                if (score > pl->getScore(it.key())) ScoreboardEnough = false;
+                                if (score > pl->getScore(it.key())) {
+                                    ScoreboardEnough = false;
+                                    break;
+                                }
                             }
-                            if (button["llmoney"] > tool::llmoney::get(pl)) LLMoneyEnough = false;
+                            if (llmoney > tool::llmoney::get(pl)) LLMoneyEnough = false;
                             if (ScoreboardEnough && LLMoneyEnough) {
-                                tool::llmoney::reduce(pl, button["llmoney"]);
+                                tool::llmoney::reduce(pl, llmoney);
                                 for (nlohmann::ordered_json::iterator it = button["scores"].begin(); it != button["scores"].end(); ++it) {
                                     int score = button["scores"][it.key()].template get<int>();
                                     pl->reduceScore(it.key(), score);
@@ -99,14 +107,18 @@ namespace menu {
                         if (isConfirm) button = data["confirmButton"];
                         else button = data["cancelButton"];
                         if (button["type"] == "button") {
+                            int llmoney = button["llmoney"].template get<int>();
                             bool ScoreboardEnough, LLMoneyEnough = true;
                             for (nlohmann::ordered_json::iterator it = button["scores"].begin(); it != button["scores"].end(); ++it) {
                                 int score = button["scores"][it.key()].template get<int>();
-                                if (score > pl->getScore(it.key())) ScoreboardEnough = false;
+                                if (score > pl->getScore(it.key())) {
+                                    ScoreboardEnough = false;
+                                    break;
+                                }
                             }
-                            if (button["llmoney"] > tool::llmoney::get(pl)) LLMoneyEnough = false;
+                            if (llmoney > tool::llmoney::get(pl)) LLMoneyEnough = false;
                             if (ScoreboardEnough && LLMoneyEnough) {
-                                tool::llmoney::reduce(pl, button["llmoney"]);
+                                tool::llmoney::reduce(pl, llmoney);
                                 for (nlohmann::ordered_json::iterator it = button["scores"].begin(); it != button["scores"].end(); ++it) {
                                     int score = button["scores"][it.key()].template get<int>();
                                     pl->reduceScore(it.key(), score);
@@ -118,14 +130,18 @@ namespace menu {
                                 return;
                             } 
                         } else if (button["type"] == "from") {
+                            int llmoney = button["llmoney"].template get<int>();
                             bool ScoreboardEnough, LLMoneyEnough = true;
                             for (nlohmann::ordered_json::iterator it = button["scores"].begin(); it != button["scores"].end(); ++it) {
                                 int score = button["scores"][it.key()].template get<int>();
-                                if (score > pl->getScore(it.key())) ScoreboardEnough = false;
+                                if (score > pl->getScore(it.key())) {
+                                    ScoreboardEnough = false;
+                                    break;
+                                }
                             }
-                            if (button["llmoney"] > tool::llmoney::get(pl)) LLMoneyEnough = false;
+                            if (llmoney > tool::llmoney::get(pl)) LLMoneyEnough = false;
                             if (ScoreboardEnough && LLMoneyEnough) {
-                                tool::llmoney::reduce(pl, button["llmoney"]);
+                                tool::llmoney::reduce(pl, llmoney);
                                 for (nlohmann::ordered_json::iterator it = button["scores"].begin(); it != button["scores"].end(); ++it) {
                                     int score = button["scores"][it.key()].template get<int>();
                                     pl->reduceScore(it.key(), score);

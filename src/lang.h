@@ -87,7 +87,22 @@ static const nlohmann::ordered_json CNLangData = {
     {"announcement.gui.setTitle", "§e设置标题"},
     {"announcement.gui.line", "§a第${index}行"},
     {"announcement.gui.addLine", "§b添加一行"},
-    {"announcement.gui.removeLine", "§c删除一行"}
+    {"announcement.gui.removeLine", "§c删除一行"},
+    {"market.gui.title", "§e§lLOIMarket -> §b玩家市场"},
+    {"market.gui.label", "§b功能如下:"},
+    {"market.gui.sell.introduce", "§b物品介绍: §r${introduce}\n§e物品价格: §r${llmoney}\n§a物品Nbt: §r${nbt}\n§d上传玩家: §r${player}"},
+    {"market.gui.sell.sellItem", "§a售出物品\n§4售出自己的手持物品"},
+    {"market.gui.sell.sellItemContent", "§b查看售出物品\n§4查看自己售出的物品"},
+    {"market.gui.sell.sellItem.input1", "§e请输入物品名称"},
+    {"market.gui.sell.sellItem.input2", "§e请输入物品图标路径"},
+    {"market.gui.sell.sellItem.input3", "§e请输入物品介绍"},
+    {"market.gui.sell.sellItem.input4", "§e请输入物品售卖LLMoney价格"},
+    {"market.gui.sell.sellItem.tips1", "§4请手持物品"},
+    {"market.gui.sell.sellItem.tips2", "§a您的物品§f${item}§a已售出"},
+    {"market.gui.sell.sellItem.tips3", "§a物品§f${item}§a已下架"},
+    {"market.gui.sell.sellItem.tips4", "§c您没有足够的分数购买这个物品"},
+    {"market.gui.sell.sellItemContent.button1", "§c下架物品\n§4下架该物品"},
+    {"market.gui.sell.buy.button1", "§e购买物品\n§4购买当前物品"},
 };
 
 static const nlohmann::ordered_json defultLangData = {

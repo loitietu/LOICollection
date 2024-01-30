@@ -10,8 +10,8 @@
 const std::string PluginData = "./plugins/LOICollection/data";
 
 namespace tool {
-    std::string get(ServerPlayer* player);
     std::string get(Player* player);
+    std::string get(ServerPlayer* player);
     bool isBlacklist(Player* player);
     std::vector<std::string> split(const std::string& s, char delimiter);
     std::string timeCalculate(int hours);

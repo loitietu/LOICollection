@@ -1,9 +1,9 @@
-/*
-* @file plugin.cpp
-* @note Plugin Main
-* @author Tietu
-* @copyright Copyright (C) 2024 Tietu
-*/
+/**
+ * @file plugin.cpp
+ * @note Plugin Main
+ * @author Tietu
+ * @copyright Copyright (C) 2024 Tietu
+ */
 
 #include <fstream>
 #include <string>
@@ -22,12 +22,13 @@
 #include "Plugins/include/wallet.h"
 #include "Plugins/include/chat.h"
 #include "Plugins/include/announcement.h"
+#include "Plugins/include/market.h"
 #include "API.h"
 #include "lang.h"
 #include "version.h"
 extern Logger logger;
 const std::string PluginDirectory = "./plugins/LOICollection";
-bool blacklistPlugin, mutePlugin, cdkPlugin, menuPlugin, tpaPlugin, shopPlugin, monitorPlugin, pvpPlugin, walletPlugin, chatPlugin, announcementPlugin = false;
+bool blacklistPlugin, mutePlugin, cdkPlugin, menuPlugin, tpaPlugin, shopPlugin, monitorPlugin, pvpPlugin, walletPlugin, chatPlugin, announcementPlugin, marketPlugin = false;
 int64_t FakeSeed = 0;
 
 //Update Version data
@@ -50,6 +51,7 @@ void update(std::string& versionInfo) {
     if (!config.contains("Wallet")) config["Wallet"] = {{"Enable", false},{"llmoney", true},{"score", "money"},{"tax", 0.1}};
     if (!config.contains("Chat")) config["Chat"] = {{"Enable", false},{"chat","<{player}> ${chat}"}};
     if (!config.contains("AnnounCement")) config["AnnounCement"] = false;
+    if (!config.contains("Market")) config["Market"] = false;
     std::string configVersion = config["version"].template get<std::string>();
     if (configVersion != versionInfo) {
         logger.info("配置文件版本: " + configVersion);
@@ -77,6 +79,7 @@ void update(std::string& versionInfo) {
     walletPlugin = config["Wallet"]["Enable"].template get<bool>();
     chatPlugin = config["Chat"]["Enable"].template get<bool>();
     announcementPlugin = config["AnnounCement"].template get<bool>();
+    marketPlugin = config["Market"].template get<bool>();
     FakeSeed = config["FakeSeed"].template get<int64_t>();
     std::ofstream configNewFile(PluginDirectory + "/config.json");
     configNewFile << config.dump(4);
@@ -120,6 +123,7 @@ void load() {
     if (walletPlugin) wallet::load(&OpenPlugin);
     if (chatPlugin) chat::load(&OpenPlugin);
     if (announcementPlugin) announcement::load(&OpenPlugin);
+    if (marketPlugin) market::load(&OpenPlugin);
     logger.info("加载成功，已加载内置插件数量: " + std::to_string(OpenPlugin));
     Event::ServerStartedEvent::subscribe([](const Event::ServerStartedEvent& e) {
         LOICollectionAPI::init();
@@ -137,10 +141,10 @@ void PluginInit() {
     load();
 }
 
-/*
-* Plugin: FakeSeed
-* @ Reference repositories: https://github.com/LiteLDev/LLEssentials
-*/
+/**
+ * @Plugin FakeSeed
+ * @Reference repositories: https://github.com/LiteLDev/LLEssentials
+ */
 THook(void*, "?write@StartGamePacket@@UEBAXAEAVBinaryStream@@@Z", void* a, void* b) {
     if (FakeSeed) dAccess<int64_t, 48>(a) = FakeSeed;
     return original(a, b);

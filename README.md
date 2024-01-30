@@ -17,6 +17,7 @@ Pvp | $\color{#00FF00}{√}$
 Wallet | $\color{#00FF00}{√}$
 Chat | $\color{#00FF00}{√}$
 AnnounCement | $\color{#00FF00}{√}$
+Market | $\color{#00FF00}{√}$
 
 ### How to install the plugin?
 1. Place the file `LOICollection.dll` in the server directory `plugins`.
@@ -31,7 +32,7 @@ AnnounCement | $\color{#00FF00}{√}$
 3. When you open it, you'll see something like this:
 ```json
 {
-    "version": "1.2.9",
+    "version": "1.2.11",
     "FakeSeed": 114514,
     "Blacklist": false,
     "Mute": false, 
@@ -61,7 +62,8 @@ AnnounCement | $\color{#00FF00}{√}$
         "Enable": false,
         "chat": "<{player}> ${chat}"
     },
-    "AnnounCement": false
+    "AnnounCement": false,
+    "Market": false
 }
 ```
 - Please follow the Json specification (https://www.json.org/) for changes.

@@ -15,18 +15,19 @@
 #include "tool.h"
 
 namespace tool {
-    std::string get(ServerPlayer* player) {
-        SQLiteDatabase db(PluginData + "/language.db");
-        std::string playerLang = db.get(player->getXuid());
-        db.close();
-        return playerLang;
+    std::string get(Player* player) {
+        if (std::filesystem::exists(PluginData + "/language.db")) {
+            SQLiteDatabase db(PluginData + "/language.db");
+            std::string playerLang = db.get(player->getXuid());
+            db.close();
+            return playerLang;
+        } else {
+            return "zh_CN";
+        }
     }
 
-    std::string get(Player* player) {
-        SQLiteDatabase db(PluginData + "/language.db");
-        std::string playerLang = db.get(player->getXuid());
-        db.close();
-        return playerLang;
+    std::string get(ServerPlayer* player) {
+        return get(toServerPlayer(player));
     }
 
     bool isBlacklist(Player* player) {
@@ -82,17 +83,18 @@ namespace tool {
     }
 
     bool isMute(Player* player) {
-        SQLiteDatabase db(PluginData + "/mute.db");
-        bool is_mute = db.existsTable("XUID" + player->getXuid());
-        db.close();
-        return is_mute;
+        if (std::filesystem::exists(PluginData + "/mute.db")) {
+            SQLiteDatabase db(PluginData + "/mute.db");
+            bool is_mute = db.existsTable("XUID" + player->getXuid());
+            db.close();
+            return is_mute;
+        } else {
+            return false;
+        }
     }
 
     bool isMute(ServerPlayer* player) {
-        SQLiteDatabase db(PluginData + "/mute.db");
-        bool is_mute = db.existsTable("XUID" + player->getXuid());
-        db.close();
-        return is_mute;
+        return isMute(toServerPlayer(player));
     }
 
     void BroadcastText(const std::string& text) {
@@ -129,10 +131,12 @@ namespace tool {
     bool isItemPlayerInventory(Player* player, ItemStack* item) {
         Container& itemInventory = player->getInventory();
         for (int i = 0; i < itemInventory.getSize(); i++) {
-            ItemStack itemObject = itemInventory.getItem(i);
-            if (item->getTypeName() == itemObject.getTypeName()) {
-                if (item->getCount() <= itemObject.getCount()) {
-                    return true;
+            auto& itemObject = itemInventory.getItem(i);
+            if (!itemObject.isNull()) {
+                if (item->getTypeName() == itemObject.getTypeName()) {
+                    if (item->getCount() <= itemObject.getCount()) {
+                        return true;
+                    }
                 }
             }
         }

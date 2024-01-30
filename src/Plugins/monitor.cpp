@@ -80,13 +80,15 @@ namespace monitor {
                 return true;
             });
             Event::PlayerCmdEvent::subscribe([](const Event::PlayerCmdEvent& e) {
-                JsonManager config("./plugins/LOICollection/config.json");
-                nlohmann::ordered_json data = config.get("Monitor");
-                config.clear();
-                std::vector<std::string> commandArray = tool::split(e.mCommand, ' ');
-                if (tool::isJsonArrayFind(data["command"], commandArray[0])) {
-                    e.mPlayer->sendTextPacket(data["tips"]);
-                    return false;
+                if (!e.mCommand.empty()) {
+                    JsonManager config("./plugins/LOICollection/config.json");
+                    nlohmann::ordered_json data = config.get("Monitor");
+                    config.clear();
+                    std::vector<std::string> commandArray = tool::split(e.mCommand, ' ');
+                    if (tool::isJsonArrayFind(data["command"], commandArray[0])) {
+                        e.mPlayer->sendTextPacket(data["tips"]);
+                        return false;
+                    }
                 }
                 return true;
             });
