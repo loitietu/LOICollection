@@ -65,7 +65,7 @@ Market | $\color{#00FF00}{√}$
     "Market": false
 }
 ```
-- 请按照 Json 规范（https://www.json.org/）进行更改。
+- 请按照 Json 规范 (https://www.json.org/) 进行更改。
 4. 您可以自由地进行更改并保存。
 
 ### 如何在本地编译？
