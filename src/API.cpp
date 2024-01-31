@@ -65,20 +65,14 @@ namespace LOICollectionAPI {
     }
 
     //Get Memory Usage
-    unsigned int GetMemory() {
+    unsigned int GetMemoryUsage() {
         PROCESS_MEMORY_COUNTERS_EX pmc;
         memset(&pmc, 0, sizeof(pmc));
         pmc.cb = sizeof(pmc);
         if (GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc))) {
             return pmc.WorkingSetSize;
         }
-        return 0;
-    }
-
-    //Get Memory MB Usage
-    double GetMemoryMB() {
-        int size = GetMemory();
-        return static_cast<double>(size / 1024 / 1024);
+        return -1;
     }
 
     //Plugin API: translate String

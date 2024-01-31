@@ -89,11 +89,10 @@ void update(const std::string* versionInfo) {
 
 //Initialize the plugin
 void Init(const std::string* versionInfo) {
-    std::filesystem::path dir(PluginDirectory);
-    if (!std::filesystem::exists(dir)) {
+    if (!std::filesystem::exists(PluginDirectory)) {
         logger.info("初次运行，正在初始化插件");
-        std::filesystem::create_directory(dir);
-        std::filesystem::create_directory(dir.append("data"));
+        std::filesystem::create_directory(PluginDirectory);
+        std::filesystem::create_directory(PluginDirectory + "data");
         nlohmann::ordered_json config;
         config["version"] = (*versionInfo);
         std::ofstream configFile(PluginDirectory + "/config.json");
