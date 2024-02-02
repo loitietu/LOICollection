@@ -29,25 +29,25 @@ Command | Description | Permission
 --- | :---: | :---:
 blacklist gui | Open blacklist UI | OP
 blacklist list | Show blacklist list | OP
-blacklist add <type(xuid/ip)> <player> ([cause]/[time]) [time] | Add a player to the blacklist | OP
-blacklist remove <string> | Remove a player from the blacklist | OP
+blacklist add \<type(xuid/ip)> \<player> ([cause]/[time]) [time] | Add a player to the blacklist | OP
+blacklist remove \<string> | Remove a player from the blacklist | OP
 #### Mute
 Command | Description | Permission
 --- | :---: | :---:
 mute gui | Open Mute UI | OP
-mute add <player> ([cause]/[time]) [time] | Mute a player | OP
-mute remove <player> | Unmute a player | OP
+mute add \<player> ([cause]/[time]) [time] | Mute a player | OP
+mute remove \<player> | Unmute a player | OP
 #### Cdk
 Command | Description | Permission
 --- | :---: | :---:
 cdk gui | Open CDK exchange UI | Any
 cdk gui true | Open CDK settings UI | OP
-cdk convert <string> | Convert CDK | Any
+cdk convert \<string> | Convert CDK | Any
 #### Menu
 Command | Description | Permission
 --- | :---: | :---:
 menu gui | Open menu UI | Any
-menu gui <string> | Open specific ID menu UI | OP
+menu gui \<string> | Open specific ID menu UI | OP
 menu clock | Get menu items | Any
 #### Tpa
 Command | Description | Permission

@@ -29,25 +29,25 @@ language | 切换语言 | Any
 --- | :---: | :---:
 blacklist gui | 打开黑名单UI | OP
 blacklist list | 显示黑名单列表 | OP
-blacklist add <type(xuid/ip)> <player> ([cause]/[time]) [time] | 添加玩家到黑名单 | OP
-blacklist remove <string> | 从黑名单中移除玩家 | OP
+blacklist add \<type(xuid/ip)> \<player> ([cause]/[time]) [time] | 添加玩家到黑名单 | OP
+blacklist remove \<string> | 从黑名单中移除玩家 | OP
 #### Mute
 命令 | 描述 | 权限
 --- | :---: | :---:
 mute gui | 打开Mute UI | OP
-mute add <player> ([cause]/[time]) [time] | 禁言玩家 | OP
-mute remove <player> | 解除禁言 | OP
+mute add \<player> ([cause]/[time]) [time] | 禁言玩家 | OP
+mute remove \<player> | 解除禁言 | OP
 #### Cdk
 命令 | 描述 | 权限
 --- | :---: | :---:
 cdk gui | 打开CDK总换UI | Any
 cdk gui true | 打开CDK设置UI | OP
-cdk convert <string> | 总换CDK | Any
+cdk convert \<string> | 总换CDK | Any
 #### Menu
 命令 | 描述 | 权限
 --- | :---: | :---:
 menu gui | 打开菜单UI | Any
-menu gui <string> | 打开指定ID菜单UI | OP
+menu gui \<string> | 打开指定ID菜单UI | OP
 menu clock | 获取菜单物品 | Any
 #### Tpa
 命令 | 描述 | 权限
