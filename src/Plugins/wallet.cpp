@@ -56,6 +56,7 @@ namespace wallet {
                 } catch (std::exception& e) { 
                     money = 0;
                 }
+                if (money < 0) money = (money * -1);
                 std::string PlayerSelectName = mp["dropdown"]->getString();
                 Player* PlayerSelect = tool::toNamePlayer(PlayerSelectName);
                 if (tool::llmoney::get(pl) >= money && enableMoney) {

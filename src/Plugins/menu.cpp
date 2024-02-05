@@ -35,7 +35,8 @@ namespace menu {
                         nlohmann::ordered_json button = buttonIdList[id];
                         if (button["type"] == "button") {
                             int llmoney = button["llmoney"].template get<int>();
-                            bool ScoreboardEnough, LLMoneyEnough = true;
+                            volatile bool ScoreboardEnough = true;
+                            volatile bool LLMoneyEnough = true;
                             for (nlohmann::ordered_json::iterator it = button["scores"].begin(); it != button["scores"].end(); ++it) {
                                 int score = button["scores"][it.key()].template get<int>();
                                 if (score > pl->getScore(it.key())) {
@@ -58,7 +59,8 @@ namespace menu {
                             } 
                         } else if (button["type"] == "from") {
                             int llmoney = button["llmoney"].template get<int>();
-                            bool ScoreboardEnough, LLMoneyEnough = true;
+                            volatile bool ScoreboardEnough = true;
+                            volatile bool LLMoneyEnough = true;
                             for (nlohmann::ordered_json::iterator it = button["scores"].begin(); it != button["scores"].end(); ++it) {
                                 int score = button["scores"][it.key()].template get<int>();
                                 if (score > pl->getScore(it.key())) {
@@ -108,7 +110,8 @@ namespace menu {
                         else button = data["cancelButton"];
                         if (button["type"] == "button") {
                             int llmoney = button["llmoney"].template get<int>();
-                            bool ScoreboardEnough, LLMoneyEnough = true;
+                            volatile bool ScoreboardEnough = true;
+                            volatile bool LLMoneyEnough = true;
                             for (nlohmann::ordered_json::iterator it = button["scores"].begin(); it != button["scores"].end(); ++it) {
                                 int score = button["scores"][it.key()].template get<int>();
                                 if (score > pl->getScore(it.key())) {
@@ -131,7 +134,8 @@ namespace menu {
                             } 
                         } else if (button["type"] == "from") {
                             int llmoney = button["llmoney"].template get<int>();
-                            bool ScoreboardEnough, LLMoneyEnough = true;
+                            volatile bool ScoreboardEnough = true;
+                            volatile bool LLMoneyEnough = true;
                             for (nlohmann::ordered_json::iterator it = button["scores"].begin(); it != button["scores"].end(); ++it) {
                                 int score = button["scores"][it.key()].template get<int>();
                                 if (score > pl->getScore(it.key())) {

@@ -5,7 +5,6 @@ project(LOICollection)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_CXX_COMPILER g++)
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Os")
 
 file(GLOB_RECURSE SRC_FILES_DIR
     ${PROJECT_SOURCE_DIR}/src/*.cpp
@@ -27,7 +26,6 @@ add_definitions(
     -D"TEMPLATE_EXPORTS"
     -D"UNICODE"
     -D"WIN32_LEAN_AND_MEAN"
-    -D"CURL_SHAREDLIB"
     -D"_AMD64_"
     -D"_CRT_SECURE_NO_WARNINGS"
     -D"_UNICODE"
@@ -48,6 +46,8 @@ add_compile_options(
     /utf-8
     /Zc:inline
     /Zi
+    /O1
+    /O2
 )
 
 add_link_options(
@@ -76,7 +76,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
     "${CMAKE_SOURCE_DIR}/lib/SQLiteCpp/sqlite3.lib"
     "${CMAKE_SOURCE_DIR}/lib/openssl/libssl.lib"
     "${CMAKE_SOURCE_DIR}/lib/openssl/libcrypto.lib"
-    "${CMAKE_SOURCE_DIR}/lib/LLMOney/LLMoney.lib"
+    "${CMAKE_SOURCE_DIR}/lib/LLMoney/LLMoney.lib"
 )
 
 add_custom_command(TARGET ${CMAKE_PROJECT_NAME} PRE_BUILD
