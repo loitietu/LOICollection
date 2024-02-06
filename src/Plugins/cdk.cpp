@@ -4,7 +4,6 @@
 #include <llapi/LoggerAPI.h>
 #include <llapi/RegCommandAPI.h>
 #include <llapi/GlobalServiceAPI.h>
-#include <llapi/mc/ServerPlayer.hpp>
 #include <llapi/mc/Player.hpp>
 #include <llapi/mc/ItemStack.hpp>
 #include <llapi/mc/Level.hpp>
@@ -17,7 +16,7 @@ extern Logger logger;
 
 namespace cdk {
     namespace {
-        void cdkConvert(ServerPlayer* player, const std::string& convertString) {
+        void cdkConvert(Player* player, const std::string& convertString) {
             std::string PlayerLanguage = tool::get(player);
             i18nLang lang("./plugins/LOICollection/language.json");
             JsonManager database(PluginData + "/cdk.json");
@@ -30,12 +29,12 @@ namespace cdk {
                     database.clear();
                     return;
                 }
-                tool::llmoney::add(tool::toServerPlayer(player), cdkJson["llmoney"]);
+                tool::llmoney::add(player, cdkJson["llmoney"]);
                 nlohmann::ordered_json ScoreboardList = cdkJson.at("scores");
                 nlohmann::ordered_json ItemList = cdkJson.at("item");
                 for (nlohmann::ordered_json::iterator it = ScoreboardList.begin(); it != ScoreboardList.end(); ++it) {
                     int score = ScoreboardList[it.key()].template get<int>();
-                    tool::createScoreboardObject(it.key());
+                    Level::runcmdEx("scoreboard objectives add " + it.key() + " dummy");
                     player->addScore(it.key(), score);
                 }
                 for (nlohmann::ordered_json::iterator it = ItemList.begin(); it != ItemList.end(); ++it) {
@@ -63,7 +62,7 @@ namespace cdk {
             }
         }
 
-        void cdkGui(ServerPlayer* player) {
+        void cdkGui(Player* player) {
             std::string PlayerLanguage = tool::get(player);
             i18nLang lang("./plugins/LOICollection/language.json");
             auto form = Form::CustomForm(lang.tr(PlayerLanguage, "cdk.gui.title"));
@@ -245,7 +244,7 @@ namespace cdk {
             });
         }
 
-        void cdkSetting(ServerPlayer* player) {
+        void cdkSetting(Player* player) {
             std::string PlayerLanguage = tool::get(player);
             i18nLang lang("./plugins/LOICollection/language.json");
             auto form = Form::SimpleForm(lang.tr(PlayerLanguage, "cdk.gui.title"), lang.tr(PlayerLanguage, "cdk.gui.label"));

@@ -6,7 +6,6 @@
 #include <llapi/RegCommandAPI.h>
 #include <llapi/mc/Level.hpp>
 #include <llapi/mc/Player.hpp>
-#include <llapi/mc/ServerPlayer.hpp>
 #include <Nlohmann/json.hpp>
 #include "../Storage/JsonManager.h"
 #include "../tools/tool.h"
@@ -22,7 +21,7 @@ namespace wallet {
             nlohmann::ordered_json data = config.get("Wallet");
             config.clear();
             std::string ScoreboardId = data["score"].template get<std::string>();
-            tool::createScoreboardObject(ScoreboardId);
+            Level::runcmdEx("scoreboard objectives add " + ScoreboardId + " dummy");
             int llmoney = tool::llmoney::get(player);
             int score = player->getScore(ScoreboardId);
             float tax = data["tax"].template get<float>();
@@ -76,7 +75,7 @@ namespace wallet {
             nlohmann::ordered_json data = config.get("Wallet");
             config.clear();
             std::string ScoreboardId = data["score"].template get<std::string>();
-            tool::createScoreboardObject(ScoreboardId);
+            Level::runcmdEx("scoreboard objectives add " + ScoreboardId + " dummy");
             int llmoney = tool::llmoney::get(player);
             int score = player->getScore(ScoreboardId);
             bool enableMoney = data["llmoney"].template get<bool>();
@@ -87,16 +86,16 @@ namespace wallet {
             if (enableMoney) wealthString = tool::replaceString(wealthString, "${money}", std::to_string(llmoney));
             else wealthString = tool::replaceString(wealthString, "${money}", std::to_string(score));
             lang.close();
-            tool::BroadcastText(wealthString);
+            Level::broadcastText(wealthString, TextType::SYSTEM);
         }
 
-        void menuGui(ServerPlayer* player) {
+        void menuGui(Player* player) {
             JsonManager config("./plugins/LOICollection/config.json");
             nlohmann::ordered_json data = config.get("Wallet");
             config.clear();
             std::string ScoreboardId = data["score"].template get<std::string>();
-            tool::createScoreboardObject(ScoreboardId);
-            int llmoney = tool::llmoney::get(tool::toServerPlayer(player));
+            Level::runcmdEx("scoreboard objectives add " + ScoreboardId + " dummy");
+            int llmoney = tool::llmoney::get(player);
             int score = player->getScore(ScoreboardId);
             float tax = data["tax"].template get<float>();
             bool enableMoney = data["llmoney"].template get<bool>();
@@ -104,7 +103,7 @@ namespace wallet {
             i18nLang lang("./plugins/LOICollection/language.json");
             std::vector<std::string> stepsliderList = { "transfer", "wealth" };
             std::string labelString = lang.tr(PlayerLanguage, "wallet.gui.label");
-            labelString = std::string(LOICollectionAPI::translateString(labelString, tool::toServerPlayer(player), true));
+            labelString = std::string(LOICollectionAPI::translateString(labelString, player, true));
             if (enableMoney) labelString = tool::replaceString(labelString, "${money}", std::to_string(llmoney));
             else labelString = tool::replaceString(labelString, "${money}", std::to_string(score));
             labelString = tool::replaceString(labelString, "${tax}", std::to_string(tax));

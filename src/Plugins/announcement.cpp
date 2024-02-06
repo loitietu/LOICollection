@@ -6,7 +6,6 @@
 #include <llapi/LoggerAPI.h>
 #include <llapi/RegCommandAPI.h>
 #include <llapi/mc/Player.hpp>
-#include <llapi/mc/ServerPlayer.hpp>
 #include <Nlohmann/json.hpp>
 #include "../Storage/JsonManager.h"
 #include "../tools/tool.h"
@@ -124,7 +123,7 @@ namespace announcement {
                                 outp.error("AnnounCement: No player selected.");
                                 break;
                             }
-                            menuGui(tool::toServerPlayer(ori.getPlayer()));
+                            menuGui(ori.getPlayer());
                             std::string playerName = ori.getName();
                             outp.success("The UI has been opened to player " + playerName);
                             break;
@@ -135,7 +134,7 @@ namespace announcement {
                                 break;
                             }
                             if (ori.getPlayer()->isOP()) {
-                                settingGui(tool::toServerPlayer(ori.getPlayer()));
+                                settingGui(ori.getPlayer());
                                 std::string playerName = ori.getName();
                                 outp.success("The UI has been opened to player " + playerName);
                             } else {

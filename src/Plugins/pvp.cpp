@@ -4,7 +4,6 @@
 #include <llapi/LoggerAPI.h>
 #include <llapi/EventAPI.h>
 #include <llapi/mc/Player.hpp>
-#include <llapi/mc/ServerPlayer.hpp>
 #include "../Storage/SQLiteDatabase.h"
 #include "../tools/tool.h"
 #include "include/i18nLang.h"
@@ -25,7 +24,7 @@ namespace pvp {
             return false;
         }
 
-        void menuGui(ServerPlayer* player) {
+        void menuGui(Player* player) {
             std::string PlayerLanguage = tool::get(player);
             i18nLang lang("./plugins/LOICollection/language.json");
             auto form = Form::SimpleForm(lang.tr(PlayerLanguage, "pvp.gui.title"), lang.tr(PlayerLanguage, "pvp.gui.label"));

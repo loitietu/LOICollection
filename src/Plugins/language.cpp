@@ -2,10 +2,9 @@
 #include <map>
 #include <unordered_map>
 #include <filesystem>
+#include <llapi/FormUI.h>
 #include <llapi/EventAPI.h>
 #include <llapi/DynamicCommandAPI.h>
-#include <llapi/FormUI.h>
-#include <llapi/mc/ServerPlayer.hpp>
 #include <llapi/mc/CommandOrigin.hpp>
 #include <llapi/mc/CommandOutput.hpp>
 #include <llapi/mc/Player.hpp>
@@ -16,7 +15,7 @@
 
 namespace language {
     namespace {
-        void ui(ServerPlayer* player) {
+        void ui(Player* player) {
             std::string PlayerLanguage = tool::get(player);
             i18nLang lang("./plugins/LOICollection/language.json");
             auto form = Form::CustomForm(lang.tr(PlayerLanguage, "language.gui.title"));

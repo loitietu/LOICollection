@@ -6,7 +6,6 @@
 #include <llapi/mc/Container.hpp>
 #include <llapi/mc/ItemStack.hpp>
 #include <llapi/mc/Level.hpp>
-#include <llapi/mc/ServerPlayer.hpp>
 #include <llapi/mc/Player.hpp>
 #include <llapi/mc/Scoreboard.hpp>
 #include <Nlohmann/json.hpp>
@@ -24,10 +23,6 @@ namespace tool {
         } else {
             return "zh_CN";
         }
-    }
-
-    std::string get(ServerPlayer* player) {
-        return get(toServerPlayer(player));
     }
 
     bool isBlacklist(Player* player) {
@@ -93,22 +88,6 @@ namespace tool {
         }
     }
 
-    bool isMute(ServerPlayer* player) {
-        return isMute(toServerPlayer(player));
-    }
-
-    void BroadcastText(const std::string& text) {
-        Level::broadcastText(text, TextType::SYSTEM);
-    }
-
-    void createScoreboardObject(const std::string& id) {
-        Level::runcmdEx("scoreboard objectives add " + id + " dummy");
-    }
-
-    Player* toServerPlayer(ServerPlayer* player) {
-        return Global<Level>->getPlayer(player->getXuid());
-    }
-
     Player* toXuidPlayer(const std::string& xuid) {
         return Global<Level>->getPlayer(xuid);
     }
@@ -161,15 +140,24 @@ namespace tool {
         }
 
         bool add(Player* player, int amount) {
-            return LLMoneyAdd(player->getXuid(), amount);
+            if (amount > 0) {
+                return LLMoneyAdd(player->getXuid(), amount);
+            }
+            return false;
         }
 
         bool reduce(Player* player, int amount) {
-            return LLMoneyReduce(player->getXuid(), amount);
+            if (amount > 0) {
+                return LLMoneyReduce(player->getXuid(), amount);
+            }
+            return false;
         }
 
         bool set(Player* player, int amount) {
-            return LLMoneySet(player->getXuid(), amount);
+            if (amount > 0) {
+                return LLMoneySet(player->getXuid(), amount);
+            }
+            return false;
         }
     }
 }

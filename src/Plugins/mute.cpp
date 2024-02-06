@@ -5,7 +5,6 @@
 #include <llapi/EventAPI.h>
 #include <llapi/FormUI.h>
 #include <llapi/mc/Level.hpp>
-#include <llapi/mc/ServerPlayer.hpp>
 #include <llapi/mc/Player.hpp>
 #include "../tools/tool.h"
 #include "../Storage/SQLiteDatabase.h"
@@ -65,7 +64,7 @@ namespace mute {
             });
         }
 
-        void menuGui(ServerPlayer* player) {
+        void menuGui(Player* player) {
             std::string PlayerLanguage = tool::get(player);
             i18nLang lang("./plugins/LOICollection/language.json");
             auto form = Form::SimpleForm(lang.tr(PlayerLanguage, "mute.gui.title"), lang.tr(PlayerLanguage, "mute.gui.label"));

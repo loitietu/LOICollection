@@ -8,7 +8,6 @@
 #include <llapi/RegCommandAPI.h>
 #include <llapi/mc/ItemStack.hpp>
 #include <llapi/mc/Player.hpp>
-#include <llapi/mc/ServerPlayer.hpp>
 #include "../Storage/SQLiteDatabase.h"
 #include "../tools/tool.h"
 #include "include/i18nLang.h"
@@ -17,7 +16,7 @@ extern Logger logger;
 
 namespace market {
     namespace {
-        void buyGui(ServerPlayer* player) {
+        void buyGui(Player* player) {
             std::string PlayerLanguage = tool::get(player);
             i18nLang lang("./plugins/LOICollection/language.json");
             SQLiteDatabase db(PluginData + "/market.db");
@@ -252,7 +251,7 @@ namespace market {
             });
         }
 
-        void sellGui(ServerPlayer* player) {
+        void sellGui(Player* player) {
             std::string PlayerLanguage = tool::get(player);
             i18nLang lang("./plugins/LOICollection/language.json");
             auto form = Form::SimpleForm(lang.tr(PlayerLanguage, "market.gui.title"), lang.tr(PlayerLanguage, "market.gui.label"));

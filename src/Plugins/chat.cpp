@@ -6,7 +6,7 @@
 #include <llapi/EventAPI.h>
 #include <llapi/RegCommandAPI.h>
 #include <llapi/mc/Player.hpp>
-#include <llapi/mc/ServerPlayer.hpp>
+#include <llapi/mc/Level.hpp>
 #include "../Storage/SQLiteDatabase.h"
 #include "../Storage/JsonManager.h"
 #include "../tools/tool.h"
@@ -45,7 +45,7 @@ namespace chat {
             });
         }
 
-        void settingGui(ServerPlayer* player) {
+        void settingGui(Player* player) {
             std::string PlayerLanguage = tool::get(player);
             i18nLang lang("./plugins/LOICollection/language.json");
             auto form = Form::SimpleForm(lang.tr(PlayerLanguage, "chat.gui.title"), lang.tr(PlayerLanguage, "chat.gui.label"));
@@ -129,7 +129,7 @@ namespace chat {
                     std::string MessageString = data["chat"];
                     MessageString = std::string(LOICollectionAPI::translateString(MessageString, e.mPlayer, true));
                     MessageString = tool::replaceString(MessageString, "${chat}", e.mMessage);
-                    tool::BroadcastText(MessageString);
+                    Level::broadcastText(MessageString, TextType::SYSTEM);
                     return false;
                 } else {
                     return true;

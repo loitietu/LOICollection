@@ -7,7 +7,6 @@
 #include <llapi/RegCommandAPI.h>
 #include <llapi/mc/ItemStack.hpp>
 #include <llapi/mc/Player.hpp>
-#include <llapi/mc/ServerPlayer.hpp>
 #include <Nlohmann/json.hpp>
 #include "../Storage/SQLiteDatabase.h"
 #include "../Storage/JsonManager.h"

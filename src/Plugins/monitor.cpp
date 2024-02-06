@@ -2,7 +2,7 @@
 #include <vector>
 #include <llapi/EventAPI.h>
 #include <llapi/mc/Player.hpp>
-#include <llapi/mc/ServerPlayer.hpp>
+#include <llapi/mc/Level.hpp>
 #include <Nlohmann/json.hpp>
 #include "../Storage/JsonManager.h"
 #include "../include/LLMoney.h"
@@ -66,7 +66,7 @@ namespace monitor {
                     config.clear();
                     std::string MonitorString = data["join"];
                     MonitorString = std::string(LOICollectionAPI::translateString(MonitorString, e.mPlayer, false));
-                    tool::BroadcastText(MonitorString);
+                    Level::broadcastText(MonitorString, TextType::SYSTEM);
                 }
                 return true;
             });
@@ -76,7 +76,7 @@ namespace monitor {
                 config.clear();
                 std::string MonitorString = data["left"];
                 MonitorString = std::string(LOICollectionAPI::translateString(MonitorString, e.mPlayer, false));
-                tool::BroadcastText(MonitorString);
+                Level::broadcastText(MonitorString, TextType::SYSTEM);
                 return true;
             });
             Event::PlayerCmdEvent::subscribe([](const Event::PlayerCmdEvent& e) {

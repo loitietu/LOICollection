@@ -4,7 +4,6 @@
 #include <llapi/LoggerAPI.h>
 #include <llapi/EventAPI.h>
 #include <llapi/RegCommandAPI.h>
-#include <llapi/mc/ServerPlayer.hpp>
 #include <llapi/mc/Player.hpp>
 #include <llapi/mc/ItemStack.hpp>
 #include <Nlohmann/json.hpp>
@@ -200,11 +199,11 @@ namespace menu {
                             if (uiName == "main") {
                                 std::string playerName = ori.getName();
                                 outp.success("Menu: The UI has been opened to player " + playerName);
-                                menuGui(tool::toServerPlayer(ori.getPlayer()), uiName);
+                                menuGui(ori.getPlayer(), uiName);
                             } else if (ori.getPlayer()->isOP()) {
                                 std::string playerName = ori.getName();
                                 outp.success("Menu: The UI has been opened to player " + playerName);
-                                menuGui(tool::toServerPlayer(ori.getPlayer()), uiName);
+                                menuGui(ori.getPlayer(), uiName);
                             } else {
                                 outp.error("Menu: No permission to open the Setting.");
                             }

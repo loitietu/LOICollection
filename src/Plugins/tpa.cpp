@@ -6,7 +6,7 @@
 #include <llapi/RegCommandAPI.h>
 #include <llapi/FormUI.h>
 #include <llapi/mc/Level.hpp>
-#include <llapi/mc/ServerPlayer.hpp>
+#include <llapi/mc/Player.hpp>
 #include "../Storage/SQLiteDatabase.h"
 #include "../tools/tool.h"
 #include "../API.h"
@@ -29,7 +29,7 @@ namespace tpa {
             }
         }
 
-        void menuGui(ServerPlayer* player) {
+        void menuGui(Player* player) {
             std::vector<Player*> playerList =  Level::getAllPlayers();
             std::vector<std::string> playerListName;
             for (auto p : playerList) playerListName.push_back(p->getName());
@@ -89,7 +89,7 @@ namespace tpa {
             });
         }
 
-        void settingGui(ServerPlayer* player) {
+        void settingGui(Player* player) {
             SQLiteDatabase db(PluginData + "/tpa.db");
             db.setTable(player->getName());
             bool defToggle1 = false;
