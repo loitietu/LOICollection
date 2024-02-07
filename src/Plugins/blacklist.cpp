@@ -229,11 +229,6 @@ namespace blacklist {
                 if (db.existsTable("XUID" + xuid)) {
                     db.setTable("XUID" + xuid);
                     std::string timeString = db.get("Time");
-                    if (timeString == "0") {
-                        e.mPlayer->kick(db.get("Cause"));
-                        db.close();
-                        return false;
-                    }
                     if (tool::isReach(timeString)) {
                         db.removeTable("XUID" + xuid);
                         db.close();
@@ -246,11 +241,6 @@ namespace blacklist {
                 } else if(db.existsTable("IP" + ip)) {
                     db.setTable("IP" + ip);
                     std::string timeString = db.get("Time");
-                    if (timeString == "0") {
-                        e.mPlayer->kick(db.get("Cause"));
-                        db.close();
-                        return false;
-                    }
                     if (tool::isReach(timeString)) {
                         db.removeTable("IP" + ip);
                         db.close();

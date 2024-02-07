@@ -17,7 +17,7 @@ static const nlohmann::ordered_json CNLangData = {
     {"blacklist.gui.add.dropdown1", "请选择添加至黑名单玩家:"},
     {"blacklist.gui.add.dropdown2", "请选择添加至黑名单类型:"},
     {"blacklist.gui.add.input1", "请输入加入黑名单原因:"},
-    {"blacklist.gui.add.input2", "请输入加入黑名单时间[/day](0为永久加入)"},
+    {"blacklist.gui.add.input2", "请输入加入黑名单时间[/hour](0为永久加入)"},
     {"blacklist.gui.remove.title", "§eLOIBlacklist §b-> §a删除黑名单"},
     {"blacklist.gui.remove.dropdown", "请选择删除黑名单对象:"},
     {"mute.cause", "§4您已被禁言，无法发送消息"},
@@ -28,7 +28,7 @@ static const nlohmann::ordered_json CNLangData = {
     {"mute.gui.add.title", "§eLOIMute §b-> §c添加禁言"},
     {"mute.gui.add.dropdown", "请选择添加至禁言玩家:"},
     {"mute.gui.add.input1", "请输入禁言原因:"},
-    {"mute.gui.add.input2", "请输入禁言时间[/day](0为永久禁言)"},
+    {"mute.gui.add.input2", "请输入禁言时间[/hour](0为永久禁言)"},
     {"mute.gui.remove.title", "§eLOIMute §b-> §a删除禁言"},
     {"mute.gui.remove.dropdown", "请选择删除禁言对象:"},
     {"cdk.convert.tip1", "§4CDK不存在，无法总换"},
@@ -42,6 +42,7 @@ static const nlohmann::ordered_json CNLangData = {
     {"cdk.gui.addAward", "§a添加奖励\n§4将奖励添加至CDK中"},
     {"cdk.gui.new.input1", "§e请输入CDK"},
     {"cdk.gui.new.input2", "§aLLmoney金钱奖励"},
+    {"cdk.gui.new.input3", "§bCDK存在时间[/hour](0为永久存在)"},
     {"cdk.gui.new.switch", "§e是否只能总换一次"},
     {"cdk.gui.remove.dropdown", "§b请选择要删除的CDK"},
     {"cdk.gui.award.score", "§a添加计分板奖励"},
@@ -105,7 +106,7 @@ static const nlohmann::ordered_json CNLangData = {
     {"market.gui.sell.buy.button1", "§e购买物品\n§4购买当前物品"},
 };
 
-static const nlohmann::ordered_json defultLangData = {
+static const nlohmann::ordered_json defaultLangData = {
     {"zh_CN", CNLangData}
 };
 

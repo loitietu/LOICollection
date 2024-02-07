@@ -22,6 +22,16 @@ namespace cdk {
             JsonManager database(PluginData + "/cdk.json");
             if (database.isKey(convertString)) {
                 nlohmann::ordered_json cdkJson(database.get(convertString));
+                if (cdkJson.contains("time")) {
+                    std::string time = cdkJson["time"].template get<std::string>();
+                    if (tool::isReach(time)) {
+                        database.remove(convertString);
+                        player->sendTextPacket(lang.tr(PlayerLanguage, "cdk.convert.tip1"));
+                        lang.close();
+                        database.save();
+                        return;
+                    }
+                }
                 nlohmann::ordered_json PlayerList = cdkJson.at("player");
                 if (tool::isJsonArrayFind(PlayerList, player->getXuid())) {
                     player->sendTextPacket(lang.tr(PlayerLanguage, "cdk.convert.tip2"));
@@ -78,7 +88,7 @@ namespace cdk {
                     return;
                 }
                 std::string cdk = mp["input"]->getString();
-                Level::runcmdEx("cdk convert " + cdk);
+                Level::runcmdAs(pl, "cdk convert " + cdk);
             });
         }
 
@@ -90,6 +100,7 @@ namespace cdk {
             form.append(Form::Input("input1", lang.tr(PlayerLanguage, "cdk.gui.new.input1"), "", "cdk"));
             form.append(Form::Toggle("Toggle", lang.tr(PlayerLanguage, "cdk.gui.new.switch")));
             form.append(Form::Input("input2", lang.tr(PlayerLanguage, "cdk.gui.new.input2"), "", "100"));
+            form.append(Form::Input("input3", lang.tr(PlayerLanguage, "cdk.gui.new.input3"), "", "0"));
             lang.close();
             form.sendTo(player, [](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
                 if (mp.empty()) {
@@ -103,17 +114,23 @@ namespace cdk {
                 nlohmann::ordered_json emptyArray = nlohmann::ordered_json::array();
                 nlohmann::ordered_json emptyObject = nlohmann::ordered_json::object();
                 int money = 0;
+                int time = 0;
                 try {
                     money = std::stoi(mp["input2"]->getString());
+                    time = std::stoi(mp["input3"]->getString());
                 } catch (std::exception& e) { 
                     money = 0;
+                    time = 0;
                 }
+                std::string timeString = tool::timeCalculate(time);
+                if (!time) timeString = "0";
                 nlohmann::ordered_json dataList = {
                     {"personal", mp["Toggle"]->getBool()},
                     {"player", emptyArray},
                     {"scores", emptyObject},
                     {"item", emptyObject},
-                    {"llmoney", money}
+                    {"llmoney", money},
+                    {"time", timeString}
                 };
                 database.set(mp["input1"]->getString(), dataList);
                 database.save();

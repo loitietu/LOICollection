@@ -27,8 +27,10 @@ void JsonManager::remove(const std::string& key) {
 }
 
 nlohmann::ordered_json JsonManager::get(const std::string& key) {
-    if (json.contains(key)) return json[key].template get<nlohmann::ordered_json>();
-    else return nullptr;
+    if (!json.contains(key)) {
+        return nullptr;
+    }
+    return json[key].template get<nlohmann::ordered_json>();
 }
 
 std::string JsonManager::getString(const std::string& key) {

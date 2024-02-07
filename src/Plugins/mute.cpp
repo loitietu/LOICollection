@@ -183,7 +183,7 @@ namespace mute {
                 if(db.existsTable("XUID" + xuid)) {
                     db.setTable("XUID" + xuid);
                     std::string timeString = db.get("Time");
-                    if (tool::isReach(timeString) && timeString != "0") {
+                    if (tool::isReach(timeString)) {
                         db.removeTable("XUID" + xuid);
                         db.close();
                         return true;

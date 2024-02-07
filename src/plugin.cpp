@@ -100,7 +100,7 @@ void Init(const std::string* versionInfo) {
         configFile.close();
         config.clear();
         std::ofstream languageFile(PluginDirectory + "/language.json");
-        languageFile << defultLangData.dump(4);
+        languageFile << defaultLangData.dump(4);
         languageFile.close();
         logger.info("初始化成功!");
     }

@@ -56,25 +56,33 @@ namespace tool {
     }
 
     std::string timeCalculate(int hours) {
-        std::time_t currentTime = std::time(nullptr);
-        std::tm* timeInfo = std::localtime(&currentTime);
-        timeInfo->tm_hour += 1;
-        std::time_t laterTime = std::mktime(timeInfo);
-        char formattedTime[15];
-        std::strftime(formattedTime, sizeof(formattedTime), "%Y%m%d%H%H%S", std::localtime(&laterTime));
-        std::string formattedTimeString(formattedTime);
-        return formattedTimeString;
+        if (hours > 0) {
+            std::time_t currentTime = std::time(nullptr);
+            std::tm* timeInfo = std::localtime(&currentTime);
+            timeInfo->tm_hour += hours;
+            std::time_t laterTime = std::mktime(timeInfo);
+            char formattedTime[15];
+            std::strftime(formattedTime, sizeof(formattedTime), "%Y%m%d%H%H%S", std::localtime(&laterTime));
+            std::string formattedTimeString(formattedTime);
+            return formattedTimeString;
+        } else {
+            return "0";
+        }
     }
 
     bool isReach(const std::string& timeString) {
-        std::time_t currentTime = std::time(nullptr);
-        char formattedTime[15];
-        std::strftime(formattedTime, sizeof(formattedTime), "%Y%m%d%H%H%S", std::localtime(&currentTime));
-        std::string formattedTimeString(formattedTime);
-        int64_t formattedTimeInt = std::stoll(formattedTimeString);
-        int64_t timeInt = std::stoll(timeString);
-        if (formattedTimeInt > timeInt) return true;
-        else return false;
+        if (timeString != "0") {
+            std::time_t currentTime = std::time(nullptr);
+            char formattedTime[15];
+            std::strftime(formattedTime, sizeof(formattedTime), "%Y%m%d%H%H%S", std::localtime(&currentTime));
+            std::string formattedTimeString(formattedTime);
+            int64_t formattedTimeInt = std::stoll(formattedTimeString);
+            int64_t timeInt = std::stoll(timeString);
+            if (formattedTimeInt > timeInt) return true;
+            else return false;
+        } else {
+            return false;
+        }
     }
 
     bool isMute(Player* player) {
