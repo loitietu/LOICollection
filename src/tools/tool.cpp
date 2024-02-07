@@ -2,7 +2,6 @@
 #include <string>
 #include <vector>
 #include <filesystem>
-#include <llapi/GlobalServiceAPI.h>
 #include <llapi/mc/Container.hpp>
 #include <llapi/mc/ItemStack.hpp>
 #include <llapi/mc/Level.hpp>

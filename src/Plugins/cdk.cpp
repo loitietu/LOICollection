@@ -3,7 +3,6 @@
 #include <llapi/EventAPI.h>
 #include <llapi/LoggerAPI.h>
 #include <llapi/RegCommandAPI.h>
-#include <llapi/GlobalServiceAPI.h>
 #include <llapi/mc/Player.hpp>
 #include <llapi/mc/ItemStack.hpp>
 #include <llapi/mc/Level.hpp>

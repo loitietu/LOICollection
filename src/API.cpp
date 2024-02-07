@@ -10,7 +10,6 @@
 #include <algorithm>
 #include <filesystem>
 #include <llapi/ScheduleAPI.h>
-#include <llapi/mc/Scoreboard.hpp>
 #include <llapi/mc/ItemStack.hpp>
 #include <llapi/mc/Player.hpp>
 #include "Storage/SQLiteDatabase.h"
@@ -123,7 +122,7 @@ namespace LOICollectionAPI {
         std::smatch match;
         while (std::regex_search(str, match, pattern)) {
             std::string extractedContent = match.str(1);
-            str = std::regex_replace(str, pattern, std::to_string(Scoreboard::getScore(player, extractedContent)));
+            str = std::regex_replace(str, pattern, std::to_string(player->getScore(extractedContent)));
         }
         return str.c_str();
     }
