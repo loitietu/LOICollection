@@ -140,12 +140,7 @@ namespace market {
                         return;
                     }
                     if (!pl->getHandSlot()->isNull()) {
-                        int price = 100;
-                        try {
-                            price = std::stoi(mp["input4"]->getString());
-                        } catch (std::exception& e) { 
-                            price = 100;
-                        }
+                        int price = tool::toInt(mp["input4"]->getString(), 100);
                         if (price < 0) price = (price * -1);
                         std::string itemName = mp["input1"]->getString();
                         std::string itemIcon = mp["input2"]->getString();

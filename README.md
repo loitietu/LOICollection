@@ -70,6 +70,10 @@ wallet gui | Open wallet UI | Any
 #### Chat
 Command | Description | Permission
 --- | :---: | :---:
+chat add \<player> \<title> [time] | Add titles to players | OP
+chat remove \<player> \<title> | Remove titles from players | OP
+chat gui | Open OP ChatManager UI | OP
+chat list | List titles of a player | Any
 chat setting | Open personal chat settings UI | Any
 #### Announcement
 Command | Description | Permission

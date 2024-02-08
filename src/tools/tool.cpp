@@ -44,6 +44,42 @@ namespace tool {
         }
     }
 
+    int toInt(const std::string& intString, int defaultValue) {
+        int result = defaultValue;
+        try {
+            result = std::stoi(intString);
+        } catch (const std::exception& e) {
+            result = defaultValue;
+        }
+        return result;
+    }
+
+    void updateChat(Player* player) {
+        if (std::filesystem::exists(PluginData + "/chat.db") && player != nullptr) {
+            std::string xuid = player->getXuid();
+            SQLiteDatabase db(PluginData + "/chat.db");
+            if (db.existsTable("XUID" + xuid + "TITLE")) {
+                db.setTable("XUID" + xuid + "TITLE");
+                for (auto& i : db.listTable("XUID" + xuid + "TITLE")) {
+                    std::string timeString = std::to_string(tool::toInt(db.get(i), 0));
+                    if (tool::isReach(timeString)) {
+                        db.remove(i);
+                    }
+                }
+            }
+            if (db.existsTable("XUID" + xuid)) {
+                db.setTable("XUID" + xuid);
+                std::string title = db.get("title");
+                db.setTable("XUID" + xuid + "TITLE");
+                if (!db.exists(title)) {
+                    db.setTable("XUID" + xuid);
+                    db.update("title", "None");
+                }
+            }
+            db.close();
+        }
+    }
+
     std::vector<std::string> split(const std::string& s, char delimiter) {
         std::vector<std::string> tokens;
         std::stringstream ss(s);
@@ -61,7 +97,7 @@ namespace tool {
             timeInfo->tm_hour += hours;
             std::time_t laterTime = std::mktime(timeInfo);
             char formattedTime[15];
-            std::strftime(formattedTime, sizeof(formattedTime), "%Y%m%d%H%H%S", std::localtime(&laterTime));
+            std::strftime(formattedTime, sizeof(formattedTime), "%Y%m%d%H%M%S", std::localtime(&laterTime));
             std::string formattedTimeString(formattedTime);
             return formattedTimeString;
         } else {
@@ -73,7 +109,7 @@ namespace tool {
         if (timeString != "0") {
             std::time_t currentTime = std::time(nullptr);
             char formattedTime[15];
-            std::strftime(formattedTime, sizeof(formattedTime), "%Y%m%d%H%H%S", std::localtime(&currentTime));
+            std::strftime(formattedTime, sizeof(formattedTime), "%Y%m%d%H%M%S", std::localtime(&currentTime));
             std::string formattedTimeString(formattedTime);
             int64_t formattedTimeInt = std::stoll(formattedTimeString);
             int64_t timeInt = std::stoll(timeString);

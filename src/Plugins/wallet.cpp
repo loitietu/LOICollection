@@ -35,7 +35,7 @@ namespace wallet {
             labelString = tool::replaceString(labelString, "${tax}", std::to_string(tax));
             std::vector<Player*> playerList =  Level::getAllPlayers();
             std::vector<std::string> playerListName;
-            for (auto p : playerList) playerListName.push_back(p->getName());
+            for (auto& p : playerList) playerListName.push_back(p->getName());
             auto form = Form::CustomForm(lang.tr(PlayerLanguage, "wallet.gui.title"));
             form.append(Form::Label("label", labelString));
             form.append(Form::Dropdown("dropdown", lang.tr(PlayerLanguage, "wallet.gui.stepslider.dropdown"), playerListName));
@@ -49,21 +49,15 @@ namespace wallet {
                     lang.close();
                     return;
                 }
-                int money = 0;
-                try {
-                    money = std::stoi(mp["input"]->getString());
-                } catch (std::exception& e) { 
-                    money = 0;
-                }
-                if (money < 0) money = (money * -1);
+                int money = tool::toInt(mp["input"]->getString(), 0);
+                int moneys = money - money * tax;
+                if (moneys < 0) moneys = (moneys * -1);
                 std::string PlayerSelectName = mp["dropdown"]->getString();
                 Player* PlayerSelect = tool::toNamePlayer(PlayerSelectName);
                 if (tool::llmoney::get(pl) >= money && enableMoney) {
-                    int moneys = money - money * tax;
                     tool::llmoney::reduce(pl, money);
                     tool::llmoney::add(PlayerSelect, moneys);
                 } else if (pl->getScore(ScoreboardId) >= money && !enableMoney) {
-                    int moneys = money - money * tax;
                     pl->reduceScore(ScoreboardId, money);
                     PlayerSelect->addScore(ScoreboardId, moneys);
                 }

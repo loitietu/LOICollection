@@ -112,17 +112,9 @@ namespace cdk {
                 JsonManager database(PluginData + "/cdk.json");
                 nlohmann::ordered_json emptyArray = nlohmann::ordered_json::array();
                 nlohmann::ordered_json emptyObject = nlohmann::ordered_json::object();
-                int money = 0;
-                int time = 0;
-                try {
-                    money = std::stoi(mp["input2"]->getString());
-                    time = std::stoi(mp["input3"]->getString());
-                } catch (std::exception& e) { 
-                    money = 0;
-                    time = 0;
-                }
+                int money = tool::toInt(mp["input2"]->getString(), 0);
+                int time = tool::toInt(mp["input3"]->getString(), 0);
                 std::string timeString = tool::timeCalculate(time);
-                if (!time) timeString = "0";
                 nlohmann::ordered_json dataList = {
                     {"personal", mp["Toggle"]->getBool()},
                     {"player", emptyArray},
@@ -178,12 +170,7 @@ namespace cdk {
                     lang.close();
                     return;
                 }
-                int money = 0;
-                try {
-                    money = std::stoi(mp["input2"]->getString());
-                } catch (std::exception& e) { 
-                    money = 0;
-                }
+                int money = tool::toInt(mp["input2"]->getString(), 0);
                 JsonManager database(PluginData + "/cdk.json");
                 nlohmann::ordered_json cdkData = database.get(mp["dropdown"]->getString());
                 cdkData["scores"][mp["input1"]->getString()] = money;
@@ -213,15 +200,8 @@ namespace cdk {
                     lang.close();
                     return;
                 }
-                int aux = 0;
-                int count = 1;
-                try {
-                    count = std::stoi(mp["input3"]->getString());
-                    aux = std::stoi(mp["input4"]->getString());
-                } catch (std::exception& e) { 
-                    aux = 0;
-                    count = 1;
-                }
+                int count = tool::toInt(mp["input3"]->getString(), 1);
+                int aux = tool::toInt(mp["input4"]->getString(), 0);
                 JsonManager database(PluginData + "/cdk.json");
                 nlohmann::ordered_json cdkData = database.get(mp["dropdown"]->getString());
                 cdkData["item"][mp["input1"]->getString()] = {

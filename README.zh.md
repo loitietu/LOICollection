@@ -70,7 +70,11 @@ wallet gui | 打开钱包UI | Any
 #### Chat
 命令 | 描述 | 权限
 --- | :---: | :---:
-chat setting | 打开个人聊天设置UI | Any
+chat add \<player> \<title> [time] | 添加指定称号给玩家 | OP
+chat remove \<player> \<title> | 从玩家删除指定称号 | OP
+chat gui | 打开Chat管理UI | OP
+chat list | 显示玩家称号列表 | Any
+chat setting | 打开个人Chat设置UI | Any
 #### AnnounCement
 命令 | 描述 | 权限
 --- | :---: | :---:

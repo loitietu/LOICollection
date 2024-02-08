@@ -76,6 +76,7 @@ namespace LOICollectionAPI {
 
     //Plugin API: translate String
     const char* translateString(std::string str, Player* player, bool enable) {
+        tool::updateChat(player);
         if (std::filesystem::exists(PluginData + "/chat.db")) {
             SQLiteDatabase db(PluginData + "/chat.db");
             if (db.existsTable("XUID" + player->getXuid())) {

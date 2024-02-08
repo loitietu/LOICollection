@@ -1,6 +1,7 @@
 #include <string>
 #include <vector>
 #include <filesystem>
+#include <unordered_map>
 #include <llapi/LoggerAPI.h>
 #include <llapi/EventAPI.h>
 #include <llapi/RegCommandAPI.h>
@@ -32,7 +33,11 @@ namespace tpa {
         void menuGui(Player* player) {
             std::vector<Player*> playerList =  Level::getAllPlayers();
             std::vector<std::string> playerListName;
-            for (auto p : playerList) playerListName.push_back(p->getName());
+            std::unordered_map<std::string, std::string> playerListNameMap;
+            for (auto& p : playerList) {
+                playerListName.push_back(p->getName());
+                playerListNameMap[p->getName()] = p->getXuid();
+            }
             std::vector<std::string> typeList = { "tpa", "tphere" };
             std::string PlayerLanguage = tool::get(player);
             i18nLang lang("./plugins/LOICollection/language.json");
@@ -41,7 +46,7 @@ namespace tpa {
             form.append(Form::Dropdown("dropdown1", lang.tr(PlayerLanguage, "tpa.gui.dropdown1"), playerListName));
             form.append(Form::Dropdown("dropdown2", lang.tr(PlayerLanguage, "tpa.gui.dropdown2"), typeList));
             lang.close();
-            form.sendTo(player, [playerList](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
+            form.sendTo(player, [playerListNameMap](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
                 if (mp.empty()) {
                     std::string PlayerLanguage = tool::get(pl);
                     i18nLang lang("./plugins/LOICollection/language.json");
@@ -51,7 +56,7 @@ namespace tpa {
                 }
                 std::string PlayerSelectName = mp["dropdown1"]->getString();
                 std::string PlayerSelectType = mp["dropdown2"]->getString();
-                Player* PlayerSelect = tool::toNamePlayer(PlayerSelectName);
+                Player* PlayerSelect = tool::toXuidPlayer(playerListNameMap.at(PlayerSelectName));
                 if (!getInvite(PlayerSelect)) {
                     std::string PlayerLanguage = tool::get(PlayerSelect);
                     i18nLang lang("./plugins/LOICollection/language.json");

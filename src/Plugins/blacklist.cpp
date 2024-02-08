@@ -18,7 +18,7 @@ namespace blacklist {
         void addGui(Player* player) {
             std::vector<Player*> playerList =  Level::getAllPlayers();
             std::vector<std::string> playerListName;
-            for (auto p : playerList) playerListName.push_back(p->getName());
+            for (auto& p : playerList) playerListName.push_back(p->getName());
             std::string PlayerLanguage = tool::get(player);
             i18nLang lang("./plugins/LOICollection/language.json");
             std::vector<std::string> typeList = { "ip", "xuid" };
@@ -40,8 +40,8 @@ namespace blacklist {
                 std::string PlayerSelectName = mp["dropdown1"]->getString();
                 std::string PlayerSelectType = mp["dropdown2"]->getString();
                 std::string PlayerInputCause = mp["input1"]->getString();
-                std::string PlayerInputTime = mp["input2"]->getString();
-                Level::runcmdEx("blacklist add " + PlayerSelectType + " " + PlayerSelectName + " " + PlayerInputCause + " " + PlayerInputTime);
+                int time = tool::toInt(mp["input2"]->getString(), 0);
+                Level::runcmdEx("blacklist add " + PlayerSelectType + " " + PlayerSelectName + " " + PlayerInputCause + " " + std::to_string(time));
             });
         }
 
@@ -121,7 +121,7 @@ namespace blacklist {
                             }
                             switch (BlacklisType) {
                                 case BLACKLISTYPE::xuid:
-                                    for (auto i : res) {
+                                    for (auto& i : res) {
                                         std::string xuid = i->getXuid();
                                         std::string BlackCause = cause;
                                         std::string timeString = std::to_string(time);
@@ -138,7 +138,7 @@ namespace blacklist {
                                     outp.success("Blacklist: Adding players succeeded.");
                                     break;
                                 case BLACKLISTYPE::ip:
-                                    for (auto i : res) {
+                                    for (auto& i : res) {
                                         std::string mIp = tool::split(i->getIP(), ':')[0];
                                         std::replace(mIp.begin(), mIp.end(), '.', 'A');
                                         std::string BlackCause = cause;

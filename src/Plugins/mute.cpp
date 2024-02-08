@@ -17,7 +17,7 @@ namespace mute {
         void addGui(Player* player) {
             std::vector<Player*> playerList =  Level::getAllPlayers();
             std::vector<std::string> playerListName;
-            for (auto p : playerList) playerListName.push_back(p->getName());
+            for (auto& p : playerList) playerListName.push_back(p->getName());
             std::string PlayerLanguage = tool::get(player);
             i18nLang lang("./plugins/LOICollection/language.json");
             auto form = Form::CustomForm(lang.tr(PlayerLanguage, "mute.gui.add.title"));
@@ -36,15 +36,15 @@ namespace mute {
                 }
                 std::string PlayerSelectName = mp["dropdown"]->getString();
                 std::string PlayerInputCause = mp["input1"]->getString();
-                std::string PlayerInputTime = mp["input2"]->getString();
-                Level::runcmdEx("mute add " + PlayerSelectName + " " + PlayerInputCause + " " + PlayerInputTime);
+                int PlayerInputTime = tool::toInt(mp["input2"]->getString(), 0);
+                Level::runcmdEx("mute add " + PlayerSelectName + " " + PlayerInputCause + " " + std::to_string(PlayerInputTime));
             });
         }
 
         void removeGui(Player* player) {
             std::vector<Player*> playerList =  Level::getAllPlayers();
             std::vector<std::string> playerListName;
-            for (auto p : playerList) playerListName.push_back(p->getName());
+            for (auto& p : playerList) playerListName.push_back(p->getName());
             std::string PlayerLanguage = tool::get(player);
             i18nLang lang("./plugins/LOICollection/language.json");
             auto form = Form::CustomForm(lang.tr(PlayerLanguage, "mute.gui.remove.title"));
@@ -110,7 +110,7 @@ namespace mute {
                                 outp.error("Mute: No player selected.");
                                 break;
                             }
-                            for (auto i : res) {
+                            for (auto& i : res) {
                                 std::string xuid = i->getXuid();
                                 std::string MuteCause = cause;
                                 std::string timeString = std::to_string(time);
@@ -130,7 +130,7 @@ namespace mute {
                                 outp.error("Mute: No player selected.");
                                 break;
                             }
-                            for (auto i : res) {
+                            for (auto& i : res) {
                                 std::string xuid = i->getXuid();
                                 if (db.existsTable("XUID" + xuid)) {
                                     db.removeTable("XUID" + xuid);
