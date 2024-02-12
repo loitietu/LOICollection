@@ -81,9 +81,18 @@ namespace LOICollectionAPI {
             SQLiteDatabase db(PluginData + "/chat.db");
             if (db.existsTable("XUID" + player->getXuid())) {
                 db.setTable("XUID" + player->getXuid());
-                str = tool::replaceString(str, "{title}", db.get("title"));
+                std::string title = db.get("title");
+                str = tool::replaceString(str, "{title}", title);
+                db.setTable("XUID" + player->getXuid() + "TITLE");
+                std::string timeString = db.get(title);
+                if (!tool::toInt(timeString, 0)) {
+                    str = tool::replaceString(str, "{title.time}", "None");
+                } else {
+                    str = tool::replaceString(str, "{title.time}", timeString);
+                }
             } else {
                 str = tool::replaceString(str, "{title}", "None");
+                str = tool::replaceString(str, "{title.time}", "None");
             }
             db.close();
         }

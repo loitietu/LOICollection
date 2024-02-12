@@ -81,7 +81,7 @@ static const nlohmann::ordered_json CNLangData = {
     {"chat.gui.title", "§eLOIChat §b-> §a个人称号"},
     {"chat.gui.label", "§b功能如下:"},
     {"chat.gui.setTitle", "§a设置称号\n§4设置自己的称号显示"},
-    {"chat.gui.setTitle.label", "§a当前配戴称号: §f{title}"},
+    {"chat.gui.setTitle.label", "§a当前配戴称号: §f{title}\n§e称号到期时间: §f{title.time}"},
     {"chat.gui.setTitle.dropdown", "§b请选择配戴称号"},
     {"chat.gui.manager.add", "§a添加称号\n§4添加称号给指定玩家"},
     {"chat.gui.manager.remove", "§c删除称号\n§4从玩家上删除指定称号"},
