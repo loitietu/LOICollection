@@ -56,7 +56,7 @@ namespace wallet {
                 int moneys = (money - money * (float) data["tax"]);
                 if (moneys < 0) moneys = (moneys * -1);
                 std::string PlayerSelectName = mp["dropdown"]->getString();
-                Player* PlayerSelect = playerListNameMap.at(PlayerSelectName);
+                Player* PlayerSelect = tool::toXuidPlayer(playerListNameMap.at(PlayerSelectName));
                 if (tool::llmoney::get(pl) >= money && (bool) data["llmoney"]) {
                     tool::llmoney::reduce(pl, money);
                     tool::llmoney::add(PlayerSelect, moneys);
