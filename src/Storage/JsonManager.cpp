@@ -57,6 +57,12 @@ std::vector<std::string> JsonManager::list() {
     return keys;
 }
 
+nlohmann::ordered_json JsonManager::toJson() {
+    nlohmann::ordered_json data = json;
+    clear();
+    return data;
+}
+
 void JsonManager::save() {
     std::ofstream file(jsonFilePath);
     file << json.dump(4);

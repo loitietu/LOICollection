@@ -20,6 +20,7 @@ public:
     bool getBool(const std::string& key);
     bool isKey(const std::string& key);
     std::vector<std::string> list();
+    nlohmann::ordered_json toJson();
     void save();
     void clear();
 };

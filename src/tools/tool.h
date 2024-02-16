@@ -19,6 +19,7 @@ namespace tool {
     bool isMute(Player* player);
     Player* toXuidPlayer(const std::string& xuid);
     Player* toNamePlayer(const std::string& name);
+    nlohmann::ordered_json getJson(const std::string& path);
     bool isJsonArrayFind(const nlohmann::ordered_json& json, const std::string& find);
     bool isItemPlayerInventory(Player* player, ItemStack* item);
     std::string replaceString(std::string str, const std::string& from, const std::string& to);

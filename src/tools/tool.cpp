@@ -9,6 +9,7 @@
 #include <llapi/mc/Scoreboard.hpp>
 #include <Nlohmann/json.hpp>
 #include "../Storage/SQLiteDatabase.h"
+#include "../Storage/JsonManager.h"
 #include "../include/LLMoney.h"
 #include "tool.h"
 
@@ -143,6 +144,11 @@ namespace tool {
             }
         }
         return nullptr;
+    }
+
+    nlohmann::ordered_json getJson(const std::string& path) {
+        JsonManager data(path);
+        return data.toJson();
     }
     
     bool isJsonArrayFind(const nlohmann::ordered_json& json, const std::string& find) {

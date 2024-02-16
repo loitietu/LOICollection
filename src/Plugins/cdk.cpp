@@ -4,8 +4,9 @@
 #include <llapi/LoggerAPI.h>
 #include <llapi/RegCommandAPI.h>
 #include <llapi/mc/Player.hpp>
-#include <llapi/mc/ItemStack.hpp>
 #include <llapi/mc/Level.hpp>
+#include <llapi/mc/ItemStack.hpp>
+#include <llapi/mc/Scoreboard.hpp>
 #include <Nlohmann/json.hpp>
 #include "../tools/tool.h"
 #include "../Storage/JsonManager.h"
@@ -43,7 +44,7 @@ namespace cdk {
                 nlohmann::ordered_json ItemList = cdkJson.at("item");
                 for (nlohmann::ordered_json::iterator it = ScoreboardList.begin(); it != ScoreboardList.end(); ++it) {
                     int score = ScoreboardList[it.key()].template get<int>();
-                    Level::runcmdEx("scoreboard objectives add " + it.key() + " dummy");
+                    Scoreboard::newObjective(it.key(), "");
                     player->addScore(it.key(), score);
                 }
                 for (nlohmann::ordered_json::iterator it = ItemList.begin(); it != ItemList.end(); ++it) {

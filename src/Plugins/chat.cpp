@@ -26,8 +26,8 @@ namespace chat {
             i18nLang lang("./plugins/LOICollection/language.json");
             auto form = Form::CustomForm(lang.tr(PlayerLanguage, "chat.gui.title"));
             form.append(Form::Label("label", lang.tr(PlayerLanguage, "chat.gui.label")));
-            form.append(Form::Input("input1", lang.tr(PlayerLanguage, "chat.gui.manager.add.input1"), "None"));
-            form.append(Form::Input("input2", lang.tr(PlayerLanguage, "chat.gui.manager.add.input2"), "0"));
+            form.append(Form::Input("input1", "", lang.tr(PlayerLanguage, "chat.gui.manager.add.input1"), "None"));
+            form.append(Form::Input("input2", "", lang.tr(PlayerLanguage, "chat.gui.manager.add.input2"), "0"));
             form.append(Form::Dropdown("dropdown", lang.tr(PlayerLanguage, "chat.gui.manager.add.dropdown"), playerListName));
             lang.close();
             form.sendTo(player, [](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {

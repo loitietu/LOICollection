@@ -4,7 +4,6 @@
 #include <llapi/mc/Player.hpp>
 #include <llapi/mc/Level.hpp>
 #include <Nlohmann/json.hpp>
-#include "../Storage/JsonManager.h"
 #include "../include/LLMoney.h"
 #include "../tools/tool.h"
 #include "../API.h"
@@ -13,9 +12,7 @@
 namespace monitor {
     namespace {
         bool OnLLMoneyCallback(LLMoneyEvent type, xuid_t from, xuid_t to, money_t value) {
-            JsonManager config("./plugins/LOICollection/config.json");
-            nlohmann::ordered_json data = config.get("Monitor");
-            config.clear();
+            nlohmann::ordered_json data = tool::getJson("./plugins/LOICollection/config.json")["Monitor"];
             Player* PlayerFrom = tool::toXuidPlayer(from);
             Player* PlayerTo = tool::toXuidPlayer(to);
             switch (type) {
@@ -61,9 +58,7 @@ namespace monitor {
             LLMoneyListenBeforeEvent(callback);
             Event::PlayerJoinEvent::subscribe([](const Event::PlayerJoinEvent& e) {
                 if (!tool::isBlacklist(e.mPlayer)) {
-                    JsonManager config("./plugins/LOICollection/config.json");
-                    nlohmann::ordered_json data = config.get("Monitor");
-                    config.clear();
+                    nlohmann::ordered_json data = tool::getJson("./plugins/LOICollection/config.json")["Monitor"];
                     std::string MonitorString = data["join"];
                     MonitorString = std::string(LOICollectionAPI::translateString(MonitorString, e.mPlayer, false));
                     Level::broadcastText(MonitorString, TextType::SYSTEM);
@@ -71,9 +66,7 @@ namespace monitor {
                 return true;
             });
             Event::PlayerLeftEvent::subscribe([](const Event::PlayerLeftEvent& e) {
-                JsonManager config("./plugins/LOICollection/config.json");
-                nlohmann::ordered_json data = config.get("Monitor");
-                config.clear();
+                nlohmann::ordered_json data = tool::getJson("./plugins/LOICollection/config.json")["Monitor"];
                 std::string MonitorString = data["left"];
                 MonitorString = std::string(LOICollectionAPI::translateString(MonitorString, e.mPlayer, false));
                 Level::broadcastText(MonitorString, TextType::SYSTEM);
@@ -81,9 +74,7 @@ namespace monitor {
             });
             Event::PlayerCmdEvent::subscribe([](const Event::PlayerCmdEvent& e) {
                 if (!e.mCommand.empty()) {
-                    JsonManager config("./plugins/LOICollection/config.json");
-                    nlohmann::ordered_json data = config.get("Monitor");
-                    config.clear();
+                    nlohmann::ordered_json data = tool::getJson("./plugins/LOICollection/config.json")["Monitor"];
                     std::vector<std::string> commandArray = tool::split(e.mCommand, ' ');
                     if (tool::isJsonArrayFind(data["command"], commandArray[0])) {
                         e.mPlayer->sendTextPacket(data["tips"]);
