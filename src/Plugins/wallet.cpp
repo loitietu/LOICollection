@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include <unordered_map>
 #include <llapi/EventAPI.h>
 #include <llapi/FormUI.h>
 #include <llapi/LoggerAPI.h>
@@ -33,13 +34,17 @@ namespace wallet {
             }
             std::vector<Player*> playerList =  Level::getAllPlayers();
             std::vector<std::string> playerListName;
-            for (auto& p : playerList) playerListName.push_back(p->getName());
+            std::unordered_map<std::string, std::string> playerListNameMap;
+            for (auto& p : playerList) {
+                playerListName.push_back(p->getName());
+                playerListNameMap[p->getName()] = p->getXuid();
+            }
             auto form = Form::CustomForm(lang.tr(PlayerLanguage, "wallet.gui.title"));
             form.append(Form::Label("label", labelString));
             form.append(Form::Dropdown("dropdown", lang.tr(PlayerLanguage, "wallet.gui.stepslider.dropdown"), playerListName));
             form.append(Form::Input("input", lang.tr(PlayerLanguage, "wallet.gui.stepslider.input"), "", "100"));
             lang.close();
-            form.sendTo(player, [data, ScoreboardID](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
+            form.sendTo(player, [data, ScoreboardID, playerListNameMap](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
                 if (mp.empty()) {
                     std::string PlayerLanguage = tool::get(pl);
                     i18nLang lang("./plugins/LOICollection/language.json");
@@ -51,7 +56,7 @@ namespace wallet {
                 int moneys = (money - money * (float) data["tax"]);
                 if (moneys < 0) moneys = (moneys * -1);
                 std::string PlayerSelectName = mp["dropdown"]->getString();
-                Player* PlayerSelect = tool::toNamePlayer(PlayerSelectName);
+                Player* PlayerSelect = playerListNameMap.at(PlayerSelectName);
                 if (tool::llmoney::get(pl) >= money && (bool) data["llmoney"]) {
                     tool::llmoney::reduce(pl, money);
                     tool::llmoney::add(PlayerSelect, moneys);
