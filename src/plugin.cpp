@@ -92,7 +92,7 @@ void Init(const std::string* versionInfo) {
     if (!std::filesystem::exists(PluginDirectory)) {
         logger.info("初次运行，正在初始化插件");
         std::filesystem::create_directory(PluginDirectory);
-        std::filesystem::create_directory(PluginDirectory + "data");
+        std::filesystem::create_directory(PluginDirectory + "/data");
         nlohmann::ordered_json config;
         config["version"] = (*versionInfo);
         std::ofstream configFile(PluginDirectory + "/config.json");
