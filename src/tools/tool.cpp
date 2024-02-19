@@ -90,7 +90,7 @@ namespace tool {
         }
         return tokens;
     }
-
+    
     std::string timeCalculate(int hours) {
         if (hours > 0) {
             std::time_t currentTime = std::time(nullptr);

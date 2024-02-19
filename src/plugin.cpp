@@ -7,8 +7,10 @@
 
 #include <fstream>
 #include <string>
+#include <unordered_map>
 #include <llapi/LoggerAPI.h>
 #include <llapi/EventAPI.h>
+#include <llapi/DynamicCommandAPI.h>
 #include <Nlohmann/json.hpp>
 #include "Plugins/include/language.h"
 #include "Plugins/include/blacklist.h"
@@ -23,10 +25,12 @@
 #include "Plugins/include/chat.h"
 #include "Plugins/include/announcement.h"
 #include "Plugins/include/market.h"
+#include "tools/tool.h"
+#include "version.h"
 #include "API.h"
 #include "lang.h"
-#include "version.h"
 extern Logger logger;
+namespace fs = std::filesystem;
 const std::string PluginDirectory = "./plugins/LOICollection";
 bool blacklistPlugin, mutePlugin, cdkPlugin, menuPlugin, tpaPlugin, shopPlugin, monitorPlugin, pvpPlugin, walletPlugin, chatPlugin, announcementPlugin, marketPlugin = false;
 int64_t FakeSeed = 0;
@@ -89,10 +93,11 @@ void update(const std::string* versionInfo) {
 
 //Initialize the plugin
 void Init(const std::string* versionInfo) {
-    if (!std::filesystem::exists(PluginDirectory)) {
+    if (!fs::exists(PluginDirectory)) {
         logger.info("初次运行，正在初始化插件");
-        std::filesystem::create_directory(PluginDirectory);
-        std::filesystem::create_directory(PluginDirectory + "/data");
+        fs::create_directory(PluginDirectory);
+        fs::create_directory(PluginDirectory + "/data");
+        fs::create_directory(PluginDirectory + "/backup");
         nlohmann::ordered_json config;
         config["version"] = (*versionInfo);
         std::ofstream configFile(PluginDirectory + "/config.json");
@@ -128,6 +133,26 @@ void loadBuilt() {
         LOICollectionAPI::init();
         return true;
     });
+    auto BackupCommand = DynamicCommand::createCommand("backup", "backup database", CommandPermissionLevel::GameMasters);
+    auto& BackupCommandEnum = BackupCommand->setEnum("data", { "data" });
+    BackupCommand->mandatory("BackupCommandEnum", DynamicCommand::ParameterType::Enum, BackupCommandEnum);
+    BackupCommand->addOverload({ BackupCommandEnum });
+    BackupCommand->setCallback([](DynamicCommand const& command, CommandOrigin const& origin, CommandOutput& output, std::unordered_map<std::string, DynamicCommand::Result>& results) {
+        if (!fs::exists(PluginDirectory + "/backup")) fs::create_directory(PluginDirectory + "/backup");
+        auto action = results["BackupCommandEnum"].get<std::string>();
+        switch (do_hash(action.c_str())) {
+            case do_hash("data"):
+                logger.info("Backup >> 备份data数据...");
+                system((".\\plugins\\LiteLoader\\7z\\7za.exe a -tzip " + PluginDirectory + "/backup/data" + tool::timeCalculate(1) + ".zip " + PluginDirectory + "/data/ > NUL").c_str());
+                output.success("Backup data data completed.");
+                break;
+            default:
+                logger.error("Backup >> 没有指定的分支.");
+                output.error("No specified branch.");
+                break;
+        }
+    });
+    DynamicCommand::setup(std::move(BackupCommand));
 }
 
 //Plug-in entry

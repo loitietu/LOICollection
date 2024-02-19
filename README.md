@@ -19,73 +19,6 @@ Chat | $\color{#00FF00}{√}$
 AnnounCement | $\color{#00FF00}{√}$
 Market | $\color{#00FF00}{√}$
 
-## Function Commands
-#### language
-Command | Description | Permission
---- | :---: | :---:
-language | Switch language | Any
-#### Blacklist
-Command | Description | Permission
---- | :---: | :---:
-blacklist gui | Open blacklist UI | OP
-blacklist list | Show blacklist list | OP
-blacklist add \<type(xuid/ip)> \<player> ([cause]/[time]) [time] | Add a player to the blacklist | OP
-blacklist remove \<string> | Remove a player from the blacklist | OP
-#### Mute
-Command | Description | Permission
---- | :---: | :---:
-mute gui | Open Mute UI | OP
-mute add \<player> ([cause]/[time]) [time] | Mute a player | OP
-mute remove \<player> | Unmute a player | OP
-#### Cdk
-Command | Description | Permission
---- | :---: | :---:
-cdk gui | Open CDK exchange UI | Any
-cdk gui true | Open CDK settings UI | OP
-cdk convert \<string> | Convert CDK | Any
-#### Menu
-Command | Description | Permission
---- | :---: | :---:
-menu gui | Open menu UI | Any
-menu gui \<string> | Open specific ID menu UI | OP
-menu clock | Get menu items | Any
-#### Tpa
-Command | Description | Permission
---- | :---: | :---:
-tpa gui | Open TPA UI | Any
-tpa setting | Open personal TPA settings | Any
-#### Shop
-Command | Description | Permission
---- | :---: | :---:
-shop gui | Open shop selling UI | Any
-shop sell | Open shop selling UI | Any
-#### Pvp
-Command | Description | Permission
---- | :---: | :---:
-pvp gui | Open PVP UI | Any
-#### Wallet
-Command | Description | Permission
---- | :---: | :---:
-wallet gui | Open wallet UI | Any
-#### Chat
-Command | Description | Permission
---- | :---: | :---:
-chat add \<player> \<title> [time] | Add titles to players | OP
-chat remove \<player> \<title> | Remove titles from players | OP
-chat gui | Open OP ChatManager UI | OP
-chat list | List titles of a player | Any
-chat setting | Open personal chat settings UI | Any
-#### Announcement
-Command | Description | Permission
---- | :---: | :---:
-announcement gui | Open announcement UI | Any
-announcement setting | Open announcement settings | OP
-#### Market
-Command | Description | Permission
---- | :---: | :---:
-market gui | Open player market UI | Any
-market sell | Open player market personal selling UI | Any
-
 ### How to install the plugin?
 1. Place the file `LOICollection.dll` in the server directory `plugins`.
 - `LOICollection.dll` (You can download it in the Release page.).
@@ -99,7 +32,7 @@ market sell | Open player market personal selling UI | Any
 3. When you open it, you'll see something like this:
 ```json
 {
-    "version": "1.2.11",
+    "version": "1.3.1",
     "FakeSeed": 114514,
     "Blacklist": false,
     "Mute": false, 
@@ -114,7 +47,7 @@ market sell | Open player market personal selling UI | Any
         "Enable": false,
         "join": "{player}加入了服务器",
         "left": "{player}退出了服务器",
-        "llmoney": "§e§l检测到金钱发生变化 §b原值: §f${OriMoney} §a更改: §f${SetMoney} §e现值: §f${GetMoney}",
+        "llmoney": "§e§l检测到LLMoney发生变化 §b原值: §f${OriMoney} §a更改: §f${SetMoney} §e现值: §f${GetMoney}",
         "command": [],
         "tips": "该指令已被禁用" 
     },
