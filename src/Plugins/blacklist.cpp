@@ -190,7 +190,7 @@ namespace blacklist {
                             break;
                         }
                         default:
-                            logger.error("<Blacklist>: 命令分支 " + std::to_string(op) + " 不存在");
+                            logger.error("Blacklist >> 命令分支 " + std::to_string(op) + " 不存在");
                             outp.error("Blacklist: Instruction error.");
                             break;
                     }

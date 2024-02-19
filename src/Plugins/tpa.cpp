@@ -150,7 +150,7 @@ namespace tpa {
                             break;
                         }
                         default:
-                            logger.error("<Tpa>: 命令分支 " + std::to_string(op) + " 不存在");
+                            logger.error("Tpa >> 命令分支 " + std::to_string(op) + " 不存在");
                             outp.error("Tpa: Instruction error.");
                             break;
                     }

@@ -141,7 +141,7 @@ namespace wallet {
                             break;
                         }
                         default:
-                            logger.error("<Wallet>: 命令分支 " + std::to_string(op) + " 不存在");
+                            logger.error("Wallet >> 命令分支 " + std::to_string(op) + " 不存在");
                             outp.error("Wallet: Instruction error.");
                             break;
                     }

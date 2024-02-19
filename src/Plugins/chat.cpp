@@ -248,7 +248,7 @@ namespace chat {
                             break;
                         }
                         default:
-                            logger.error("<Chat>: 命令分支 " + std::to_string(op) + " 不存在");
+                            logger.error("Chat >> 命令分支 " + std::to_string(op) + " 不存在");
                             outp.error("Chat: Instruction error.");
                             break;
                     }
@@ -296,9 +296,7 @@ namespace chat {
             });
             Event::PlayerChatEvent::subscribe([](const Event::PlayerChatEvent& e) {
                 if (!tool::isMute(e.mPlayer)) {
-                    JsonManager config("./plugins/LOICollection/config.json");
-                    nlohmann::ordered_json data = config.get("Chat");
-                    config.clear();
+                    nlohmann::ordered_json data = tool::getJson("./plugins/LOICollection/config.json")["Chat"];
                     std::string MessageString = data["chat"];
                     MessageString = std::string(LOICollectionAPI::translateString(MessageString, e.mPlayer, true));
                     MessageString = tool::replaceString(MessageString, "${chat}", e.mMessage);

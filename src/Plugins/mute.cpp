@@ -149,7 +149,7 @@ namespace mute {
                             break;
                         }
                         default:
-                            logger.error("<Mute>: 命令分支 " + std::to_string(op) + " 不存在");
+                            logger.error("Mute >> 命令分支 " + std::to_string(op) + " 不存在");
                             outp.error("Mute: Instruction error.");
                             break;
                     }

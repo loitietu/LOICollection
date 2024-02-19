@@ -313,7 +313,7 @@ namespace cdk {
                             break;
                         }
                         default:
-                            logger.error("<Cdk>: 命令分支 " + std::to_string(op) + " 不存在");
+                            logger.error("Cdk >> 命令分支 " + std::to_string(op) + " 不存在");
                             outp.error("Cdk: Instruction error.");
                             break;
                     }

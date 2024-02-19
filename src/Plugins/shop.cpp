@@ -291,7 +291,7 @@ namespace shop {
                             break;
                         }
                         default:
-                            logger.error("<Shop>: 命令分支 " + std::to_string(op) + " 不存在");
+                            logger.error("Shop >> 命令分支 " + std::to_string(op) + " 不存在");
                             outp.error("Shop: Instruction error.");
                             break;
                     }

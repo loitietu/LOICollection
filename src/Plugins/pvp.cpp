@@ -72,7 +72,7 @@ namespace pvp {
                             break;
                         }
                         default:
-                            logger.error("<Pvp>: 命令分支 " + std::to_string(op) + " 不存在");
+                            logger.error("Pvp >> 命令分支 " + std::to_string(op) + " 不存在");
                             outp.error("Pvp: Instruction error.");
                             break;
                     }

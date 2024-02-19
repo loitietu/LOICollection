@@ -143,7 +143,7 @@ namespace announcement {
                             break;
                         }
                         default:
-                            logger.error("<AnnounCement>: 命令分支 " + std::to_string(op) + " 不存在");
+                            logger.error("AnnounCement >> 命令分支 " + std::to_string(op) + " 不存在");
                             outp.error("AnnounCement: Instruction error.");
                             break;
                     }
