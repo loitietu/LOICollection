@@ -4,6 +4,7 @@
 #include <llapi/LoggerAPI.h>
 #include <llapi/EventAPI.h>
 #include <llapi/mc/Player.hpp>
+#include "../API.h"
 #include "../Storage/SQLiteDatabase.h"
 #include "../tools/tool.h"
 #include "include/i18nLang.h"
@@ -32,9 +33,9 @@ namespace pvp {
             form.addButton(lang.tr(PlayerLanguage, "pvp.gui.off"), "textures/ui/cancel");
             lang.close();
             form.sendTo(player, [](Player* pl, int id) {
+                std::string PlayerLanguage = tool::get(pl);
+                i18nLang lang("./plugins/LOICollection/language.json");
                 if (id == -1) {
-                    std::string PlayerLanguage = tool::get(pl);
-                    i18nLang lang("./plugins/LOICollection/language.json");
                     pl->sendTextPacket(lang.tr(PlayerLanguage, "exit"));
                     lang.close();
                     return;
@@ -44,13 +45,16 @@ namespace pvp {
                     case 0:
                         db.setTable("XUID" + pl->getXuid());
                         db.update("enable", "true");
+                        logger.info(LOICollectionAPI::translateString(lang.tr(PlayerLanguage, "pvp.log1"), pl, true));
                         break;
                     case 1:
                         db.setTable("XUID" + pl->getXuid());
                         db.update("enable", "false");
+                        logger.info(LOICollectionAPI::translateString(lang.tr(PlayerLanguage, "pvp.log2"), pl, true));
                         break;
                 }
                 db.close();
+                lang.close();
             });
         }
         

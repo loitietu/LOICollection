@@ -58,8 +58,9 @@ extern "C"
 {
     _declspec(dllexport) void onPostInit()
     {
+        std::ios::sync_with_stdio(false);
+        logger.setFile("./logs/LOICollection.log");
         if (std::filesystem::exists("./plugins/LLMoney.dll")) {
-            std::ios::sync_with_stdio(false);
             CheckProtocolVersion();
             PluginInit();
         } else {

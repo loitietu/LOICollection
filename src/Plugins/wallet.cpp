@@ -45,9 +45,9 @@ namespace wallet {
             form.append(Form::Input("input", lang.tr(PlayerLanguage, "wallet.gui.stepslider.input"), "", "100"));
             lang.close();
             form.sendTo(player, [data, ScoreboardID, playerListNameMap](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
+                std::string PlayerLanguage = tool::get(pl);
+                i18nLang lang("./plugins/LOICollection/language.json");
                 if (mp.empty()) {
-                    std::string PlayerLanguage = tool::get(pl);
-                    i18nLang lang("./plugins/LOICollection/language.json");
                     pl->sendTextPacket(lang.tr(PlayerLanguage, "exit"));
                     lang.close();
                     return;
@@ -64,6 +64,12 @@ namespace wallet {
                     pl->reduceScore(ScoreboardID, money);
                     PlayerSelect->addScore(ScoreboardID, moneys);
                 }
+                std::string log = lang.tr(PlayerLanguage, "wallet.log");
+                log = tool::replaceString(log, "${player1}", pl->getName());
+                log = tool::replaceString(log, "${player2}", PlayerSelect->getName());
+                log = tool::replaceString(log, "${money}", std::to_string(money));
+                logger.info(log);
+                lang.close();
             });
         }
 

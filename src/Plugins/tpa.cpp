@@ -72,13 +72,23 @@ namespace tpa {
                     }
                     lang.close();
                     form.sendTo(PlayerSelect, [pl, PlayerSelectType](Player* pl2, bool isConfirm) {
+                        std::string PlayerLanguage = tool::get(pl);
+                        i18nLang lang("./plugins/LOICollection/language.json");
                         if (isConfirm) {
-                            if (PlayerSelectType == "tpa") Level::runcmdEx("tp " + pl->getName() + " " + pl2->getName());
-                            else Level::runcmdEx("tp " + pl2->getName() + " " + pl->getName());
+                            std::string log = lang.tr(PlayerLanguage, "tpa.log");
+                            if (PlayerSelectType == "tpa") {
+                                Level::runcmdEx("tp " + pl->getName() + " " + pl2->getName());
+                                log = tool::replaceString(log, "${player1}", pl->getName());
+                                log = tool::replaceString(log, "${player2}", pl2->getName());
+                                logger.info(log);
+                            } else {
+                                Level::runcmdEx("tp " + pl2->getName() + " " + pl->getName());
+                                log = tool::replaceString(log, "${player1}", pl2->getName());
+                                log = tool::replaceString(log, "${player2}", pl->getName());
+                                logger.info(log);
+                            }
                             return;
                         } else {
-                            std::string PlayerLanguage = tool::get(pl);
-                            i18nLang lang("./plugins/LOICollection/language.json");
                             pl->sendTextPacket(lang.tr(PlayerLanguage, "tpa.no.tips"));
                             lang.close();
                             return;

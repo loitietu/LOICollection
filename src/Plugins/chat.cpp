@@ -301,6 +301,7 @@ namespace chat {
                     MessageString = std::string(LOICollectionAPI::translateString(MessageString, e.mPlayer, true));
                     MessageString = tool::replaceString(MessageString, "${chat}", e.mMessage);
                     Level::broadcastText(MessageString, TextType::SYSTEM);
+                    logger.info(MessageString);
                     return false;
                 } else {
                     return true;

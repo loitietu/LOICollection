@@ -8,6 +8,7 @@
 #include <llapi/mc/ItemStack.hpp>
 #include <llapi/mc/Scoreboard.hpp>
 #include <Nlohmann/json.hpp>
+#include "../API.h"
 #include "../tools/tool.h"
 #include "../Storage/JsonManager.h"
 #include "include/i18nLang.h"
@@ -20,6 +21,9 @@ namespace cdk {
             std::string PlayerLanguage = tool::get(player);
             i18nLang lang("./plugins/LOICollection/language.json");
             JsonManager database(PluginData + "/cdk.json");
+            std::string log3 = lang.tr(PlayerLanguage, "cdk.log3");
+            log3 = tool::replaceString(log3, "${cdk}", convertString);
+            logger.info(LOICollectionAPI::translateString(log3, player, true));
             if (database.isKey(convertString)) {
                 nlohmann::ordered_json cdkJson(database.get(convertString));
                 if (cdkJson.contains("time")) {
@@ -103,9 +107,9 @@ namespace cdk {
             form.append(Form::Input("input3", lang.tr(PlayerLanguage, "cdk.gui.new.input3"), "", "0"));
             lang.close();
             form.sendTo(player, [](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
+                std::string PlayerLanguage = tool::get(pl);
+                i18nLang lang("./plugins/LOICollection/language.json");
                 if (mp.empty()) {
-                    std::string PlayerLanguage = tool::get(pl);
-                    i18nLang lang("./plugins/LOICollection/language.json");
                     pl->sendTextPacket(lang.tr(PlayerLanguage, "exit"));
                     lang.close();
                     return;
@@ -115,6 +119,7 @@ namespace cdk {
                 nlohmann::ordered_json emptyObject = nlohmann::ordered_json::object();
                 int money = tool::toInt(mp["input2"]->getString(), 0);
                 int time = tool::toInt(mp["input3"]->getString(), 0);
+                std::string cdkName = mp["input1"]->getString();
                 std::string timeString = tool::timeCalculate(time);
                 nlohmann::ordered_json dataList = {
                     {"personal", mp["Toggle"]->getBool()},
@@ -124,8 +129,12 @@ namespace cdk {
                     {"llmoney", money},
                     {"time", timeString}
                 };
-                database.set(mp["input1"]->getString(), dataList);
+                std::string log1 = lang.tr(PlayerLanguage, "cdk.log1");
+                log1 = tool::replaceString(log1, "${cdk}", cdkName);
+                logger.info(LOICollectionAPI::translateString(log1, pl, true));
+                database.set(cdkName, dataList);
                 database.save();
+                lang.close();
             });
         }
 
@@ -139,16 +148,21 @@ namespace cdk {
             database.clear();
             lang.close();
             form.sendTo(player, [](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
+                std::string PlayerLanguage = tool::get(pl);
+                i18nLang lang("./plugins/LOICollection/language.json");
                 if (mp.empty()) {
-                    std::string PlayerLanguage = tool::get(pl);
-                    i18nLang lang("./plugins/LOICollection/language.json");
                     pl->sendTextPacket(lang.tr(PlayerLanguage, "exit"));
                     lang.close();
                     return;
                 }
+                std::string cdkName = mp["dropdown"]->getString();
                 JsonManager database(PluginData + "/cdk.json");
-                database.remove(mp["dropdown"]->getString());
+                database.remove(cdkName);
                 database.save();
+                std::string log2 = lang.tr(PlayerLanguage, "cdk.log2");
+                log2 = tool::replaceString(log2, "${cdk}", cdkName);
+                logger.info(LOICollectionAPI::translateString(log2, pl, true));
+                lang.close();
             });
         }
 

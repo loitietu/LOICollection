@@ -7,6 +7,7 @@
 #include <llapi/EventAPI.h>
 #include <llapi/mc/Level.hpp>
 #include <llapi/mc/Player.hpp>
+#include "../API.h"
 #include "../tools/tool.h"
 #include "../Storage/SQLiteDatabase.h"
 #include "include/i18nLang.h"
@@ -111,6 +112,7 @@ namespace blacklist {
             public:
                 void execute(CommandOrigin const& ori, CommandOutput& outp) const {
                     SQLiteDatabase db(PluginData + "/blacklist.db");
+                    std::string PlayerLanguage = tool::get(ori.getPlayer());
                     i18nLang lang("./plugins/LOICollection/language.json");
                     auto res = target.results(ori);
                     switch (op) {
@@ -133,6 +135,7 @@ namespace blacklist {
                                             db.set("Cause", BlackCause);
                                             db.set("Time", timeString);
                                         }
+                                        logger.info(LOICollectionAPI::translateString(lang.tr(PlayerLanguage, "blacklist.log1"), i, true));
                                         i->kick(BlackCause);
                                     }
                                     outp.success("Blacklist: Adding players succeeded.");
@@ -151,6 +154,7 @@ namespace blacklist {
                                             db.set("Cause", BlackCause);
                                             db.set("Time", timeString);
                                         }
+                                        logger.info(LOICollectionAPI::translateString(lang.tr(PlayerLanguage, "blacklist.log1"), i, true));
                                         i->kick(BlackCause);
                                     }
                                     outp.success("Blacklist: Adding players succeeded.");
@@ -164,6 +168,8 @@ namespace blacklist {
                             if (PlayerString != "data") {
                                 if (db.existsTable(PlayerString)) {
                                     db.removeTable(PlayerString);
+                                    std::string log2 = lang.tr(PlayerLanguage, "blacklist.log2");
+                                    logger.info(tool::replaceString(log2, "${blacklist}", PlayerString));
                                     outp.success("Blacklist: Data table " + PlayerString + " has been successfully deleted.");
                                 } else {
                                     outp.error("Blacklist: There is no data table " + PlayerString);
@@ -222,6 +228,8 @@ namespace blacklist {
                 return true;
             });
             Event::PlayerJoinEvent::subscribe([](const Event::PlayerJoinEvent& e) {
+                std::string PlayerLanguage = tool::get(e.mPlayer);
+                i18nLang lang("./plugins/LOICollection/language.json");
                 SQLiteDatabase db(PluginData + "/blacklist.db");
                 std::string xuid = e.mPlayer->getXuid();
                 std::string ip = tool::split(e.mPlayer->getIP(), ':')[0];
@@ -231,29 +239,23 @@ namespace blacklist {
                     std::string timeString = db.get("Time");
                     if (tool::isReach(timeString)) {
                         db.removeTable("XUID" + xuid);
-                        db.close();
-                        return true;
                     } else {
+                        logger.info(LOICollectionAPI::translateString(lang.tr(PlayerLanguage, "blacklist.log3"), e.mPlayer, false));
                         e.mPlayer->kick(db.get("Cause"));
-                        db.close();
-                        return false;
                     }
                 } else if(db.existsTable("IP" + ip)) {
                     db.setTable("IP" + ip);
                     std::string timeString = db.get("Time");
                     if (tool::isReach(timeString)) {
                         db.removeTable("IP" + ip);
-                        db.close();
-                        return true;
                     } else {
+                        logger.info(LOICollectionAPI::translateString(lang.tr(PlayerLanguage, "blacklist.log3"), e.mPlayer, false));
                         e.mPlayer->kick(db.get("Cause"));
-                        db.close();
-                        return false;
                     }
-                } else {
-                    db.close();
-                    return true;
                 }
+                db.close();
+                lang.close();
+                return true;
             });
         }
     }

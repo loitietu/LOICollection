@@ -15,11 +15,15 @@
 
 namespace tool {
     std::string get(Player* player) {
-        if (std::filesystem::exists(PluginData + "/language.db")) {
+        if (std::filesystem::exists(PluginData + "/language.db") && player != nullptr) {
             SQLiteDatabase db(PluginData + "/language.db");
-            std::string playerLang = db.get(player->getXuid());
-            db.close();
-            return playerLang;
+            if (db.existsTable(player->getXuid())) {
+                std::string playerLang = db.get(player->getXuid());
+                db.close();
+                return playerLang;
+            } else {
+                return "zh_CN";
+            }
         } else {
             return "zh_CN";
         }

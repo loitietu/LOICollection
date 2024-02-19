@@ -96,6 +96,7 @@ namespace LOICollectionAPI {
             }
             db.close();
         }
+        str = tool::replaceString(str, "{language}", tool::get(player));
         str = tool::replaceString(str, "{tps}", std::to_string(tickPerSecond));
         str = tool::replaceString(str, "{tpm}", std::to_string(tickPerMinute));
         str = tool::replaceString(str, "{player}", player->getName());

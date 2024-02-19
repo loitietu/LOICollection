@@ -6,6 +6,7 @@
 #include <llapi/FormUI.h>
 #include <llapi/mc/Level.hpp>
 #include <llapi/mc/Player.hpp>
+#include "../API.h"
 #include "../tools/tool.h"
 #include "../Storage/SQLiteDatabase.h"
 #include "include/i18nLang.h"
@@ -102,6 +103,7 @@ namespace mute {
             public:
                 void execute(CommandOrigin const& ori, CommandOutput& outp) const {
                     SQLiteDatabase db(PluginData + "/mute.db");
+                    std::string PlayerLanguage = tool::get(ori.getPlayer());
                     i18nLang lang("./plugins/LOICollection/language.json");
                     auto res = target.results(ori);
                     switch (op) {
@@ -122,6 +124,9 @@ namespace mute {
                                     db.set("Cause", MuteCause);
                                     db.set("Time", timeString);
                                 }
+                                std::string log1 = lang.tr(PlayerLanguage, "mute.log1");
+                                log1 = tool::replaceString(log1, "${cause}", MuteCause);
+                                logger.info(LOICollectionAPI::translateString(log1, i, true));
                             }
                             outp.success("Mute: Adding players succeeded.");
                             break;
@@ -134,6 +139,7 @@ namespace mute {
                                 std::string xuid = i->getXuid();
                                 if (db.existsTable("XUID" + xuid)) {
                                     db.removeTable("XUID" + xuid);
+                                    logger.info(LOICollectionAPI::translateString(lang.tr(PlayerLanguage, "mute.log2"), i, true));
                                 }
                             }
                             outp.success("Mute: The player silence status has been deleted.");
@@ -179,16 +185,23 @@ namespace mute {
             });
             Event::PlayerChatEvent::subscribe([](const Event::PlayerChatEvent& e) {
                 std::string xuid = e.mPlayer->getXuid();
+                std::string PlayerLanguage = tool::get(e.mPlayer);
+                i18nLang lang("./plugins/LOICollection/language.json");
                 SQLiteDatabase db(PluginData + "/mute.db");
                 if(db.existsTable("XUID" + xuid)) {
                     db.setTable("XUID" + xuid);
                     std::string timeString = db.get("Time");
+                    std::string MuteCause = db.get("Cause");
                     if (tool::isReach(timeString)) {
                         db.removeTable("XUID" + xuid);
                         db.close();
+                        logger.info(LOICollectionAPI::translateString(lang.tr(PlayerLanguage, "mute.log2"), e.mPlayer, true));
                         return true;
                     }
-                    e.mPlayer->sendTextPacket(db.get("Cause"));
+                    e.mPlayer->sendTextPacket(MuteCause);
+                    std::string log3 = lang.tr(PlayerLanguage, "mute.log3");
+                    log3 = tool::replaceString(log3, "${message}", e.mMessage);
+                    logger.info(LOICollectionAPI::translateString(log3, e.mPlayer, true));
                     db.close();
                     return false;
                 } else {
