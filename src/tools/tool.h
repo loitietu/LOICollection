@@ -14,6 +14,7 @@ namespace tool {
     int toInt(const std::string& intString, int defaultValue);
     void updateChat(Player* player);
     std::vector<std::string> split(const std::string& s, char delimiter);
+    std::string nowTime();
     std::string timeCalculate(int hours);
     bool isReach(const std::string& timeString);
     bool isMute(Player* player);

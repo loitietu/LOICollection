@@ -143,7 +143,7 @@ void loadBuilt() {
         switch (do_hash(action.c_str())) {
             case do_hash("data"):
                 logger.info("Backup >> 备份data数据...");
-                system((".\\plugins\\LiteLoader\\7z\\7za.exe a -tzip " + PluginDirectory + "/backup/data" + tool::timeCalculate(1) + ".zip " + PluginDirectory + "/data/ > NUL").c_str());
+                system((".\\plugins\\LiteLoader\\7z\\7za.exe a -tzip " + PluginDirectory + "/backup/data" + tool::nowTime() + ".zip " + PluginDirectory + "/data/ > NUL").c_str());
                 output.success("Backup data data completed.");
                 break;
             default:

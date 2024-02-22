@@ -94,6 +94,16 @@ namespace tool {
         }
         return tokens;
     }
+
+    std::string nowTime() {
+        std::time_t currentTime = std::time(nullptr);
+        std::tm* timeInfo = std::localtime(&currentTime);
+        std::time_t laterTime = std::mktime(timeInfo);
+        char formattedTime[15];
+        std::strftime(formattedTime, sizeof(formattedTime), "%Y%m%d%H%M%S", std::localtime(&laterTime));
+        std::string formattedTimeString(formattedTime);
+        return formattedTimeString;
+    }
     
     std::string timeCalculate(int hours) {
         if (hours > 0) {
