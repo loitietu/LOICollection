@@ -9,7 +9,7 @@
 #include <llapi/mc/Player.hpp>
 #include <llapi/mc/Scoreboard.hpp>
 #include <Nlohmann/json.hpp>
-#include "../tools/tool.h"
+#include "../utils/tool.h"
 #include "../API.h"
 #include "include/i18nLang.h"
 #include "include/wallet.h"

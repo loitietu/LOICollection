@@ -9,7 +9,7 @@
 #include <llapi/mc/Level.hpp>
 #include <llapi/mc/Player.hpp>
 #include "../Storage/SQLiteDatabase.h"
-#include "../tools/tool.h"
+#include "../utils/tool.h"
 #include "../API.h"
 #include "include/i18nLang.h"
 #include "include/tpa.h"

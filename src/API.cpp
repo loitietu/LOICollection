@@ -13,7 +13,7 @@
 #include <llapi/mc/ItemStack.hpp>
 #include <llapi/mc/Player.hpp>
 #include "Storage/SQLiteDatabase.h"
-#include "tools/tool.h"
+#include "utils/tool.h"
 #include "API.h"
 
 unsigned short ticks = 0;

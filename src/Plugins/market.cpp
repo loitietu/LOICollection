@@ -9,7 +9,7 @@
 #include <llapi/mc/ItemStack.hpp>
 #include <llapi/mc/Player.hpp>
 #include "../Storage/SQLiteDatabase.h"
-#include "../tools/tool.h"
+#include "../utils/tool.h"
 #include "include/i18nLang.h"
 #include "include/market.h"
 extern Logger logger;

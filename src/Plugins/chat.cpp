@@ -10,7 +10,7 @@
 #include <llapi/mc/Level.hpp>
 #include "../Storage/SQLiteDatabase.h"
 #include "../Storage/JsonManager.h"
-#include "../tools/tool.h"
+#include "../utils/tool.h"
 #include "../API.h"
 #include "include/i18nLang.h"
 #include "include/chat.h"

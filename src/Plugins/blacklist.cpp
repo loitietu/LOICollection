@@ -8,7 +8,7 @@
 #include <llapi/mc/Level.hpp>
 #include <llapi/mc/Player.hpp>
 #include "../API.h"
-#include "../tools/tool.h"
+#include "../utils/tool.h"
 #include "../Storage/SQLiteDatabase.h"
 #include "include/i18nLang.h"
 #include "include/blacklist.h"

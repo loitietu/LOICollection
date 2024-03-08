@@ -9,7 +9,7 @@
 #include <llapi/mc/Scoreboard.hpp>
 #include <Nlohmann/json.hpp>
 #include "../API.h"
-#include "../tools/tool.h"
+#include "../utils/tool.h"
 #include "../Storage/JsonManager.h"
 #include "include/i18nLang.h"
 #include "include/cdk.h"
