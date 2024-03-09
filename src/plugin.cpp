@@ -5,11 +5,12 @@
  * @copyright Copyright (C) 2024 Tietu
  */
 
-#include <fstream>
 #include <string>
+#include <fstream>
 #include <unordered_map>
 #include <llapi/LoggerAPI.h>
 #include <llapi/EventAPI.h>
+#include <llapi/DynamicCommandAPI.h>
 #include <Nlohmann/json.hpp>
 #include "Plugins/include/language.h"
 #include "Plugins/include/blacklist.h"
@@ -24,6 +25,7 @@
 #include "Plugins/include/chat.h"
 #include "Plugins/include/announcement.h"
 #include "Plugins/include/market.h"
+#include "utils/internet.h"
 #include "utils/tool.h"
 #include "version.h"
 #include "API.h"
@@ -111,7 +113,7 @@ void Init(const std::string* versionInfo) {
 }
 
 //Load built-in data features
-void loadBuilt() {
+void loadBuilt(const std::string versionInfo) {
     int OpenPlugin = 0;
     language::load(&OpenPlugin);
     if (blacklistPlugin) blacklist::load(&OpenPlugin);
@@ -131,6 +133,30 @@ void loadBuilt() {
         LOICollectionAPI::init();
         return true;
     });
+    auto UpgradeCommand = DynamicCommand::createCommand("upgrade", "update plugin", CommandPermissionLevel::GameMasters);
+    auto& UpgradeCommandEnum = UpgradeCommand->setEnum("data", { "plugin" });
+    UpgradeCommand->mandatory("UpgradeCommandEnum", DynamicCommand::ParameterType::Enum, UpgradeCommandEnum);
+    UpgradeCommand->addOverload({ UpgradeCommandEnum });
+    UpgradeCommand->setCallback([versionInfo](DynamicCommand const& command, CommandOrigin const& origin, CommandOutput& output, std::unordered_map<std::string, DynamicCommand::Result>& results) {
+        auto action = results["UpgradeCommandEnum"].get<std::string>();
+        switch (do_hash(action.c_str())) {
+            case do_hash("plugin"):
+                if (internet::upgrade::isNewVersionAvailable(versionInfo, 5570)) {
+                    logger.info("Upgrade >> 发现新版本，正在下载...");
+                    output.success("Upgrade: New version found, downloading...");
+                    internet::upgrade::downloadAndInstallUpgrade(5570);
+                } else {
+                    logger.info("Upgrade >> 当前已是最新版本");
+                    output.success("Upgrade: Already the latest version.");
+                }
+                break;
+            default:
+                logger.error("Upgrade >> 没有指定的分支.");
+                output.error("No specified branch.");
+                break;
+        }
+    });
+    DynamicCommand::setup(std::move(UpgradeCommand));
 }
 
 //Plug-in entry
@@ -140,7 +166,7 @@ void PluginInit() {
     std::string versionString = ss.str();
     logger.info("感谢您使用本插件，版本:" + versionString + "，作者:贴图");
     Init(&versionString);
-    loadBuilt();
+    loadBuilt(versionString);
 }
 
 /**
