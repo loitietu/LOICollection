@@ -70,7 +70,7 @@ namespace internet {
                 logger.info("下载地址: " + url);
                 logger.info("请复制地址手动下载");
             } else {
-                logger.info("Upgrade >> 当前已是最新版本");
+                logger.info("当前已是最新版本");
             }
         }
     }
