@@ -141,15 +141,7 @@ void loadBuilt(const std::string versionInfo) {
         auto action = results["UpgradeCommandEnum"].get<std::string>();
         switch (do_hash(action.c_str())) {
             case do_hash("plugin"):
-                if (internet::upgrade::isNewVersionAvailable(versionInfo, 5570)) {
-                    std::string url = internet::upgrade::getLastUrl(5570);
-                    std::string version = internet::upgrade::getLastVersion(5570);
-                    logger.info("发现新版本: " + version);
-                    logger.info("下载地址: " + url);
-                    logger.info("复制地址手动下载");
-                } else {
-                    logger.info("Upgrade >> 当前已是最新版本");
-                }
+                internet::LOICollection::checkForUpdates(versionInfo);
                 break;
             default:
                 logger.error("Upgrade >> 没有指定的分支.");
@@ -166,6 +158,7 @@ void PluginInit() {
     ss << PLUGIN_VERSION_MAJOR << "." << PLUGIN_VERSION_MINOR << "." << PLUGIN_VERSION_REVISION;
     std::string versionString = ss.str();
     logger.info("感谢您使用本插件，版本:" + versionString + "，作者:贴图");
+    internet::LOICollection::checkForUpdates(versionString);
     Init(&versionString);
     loadBuilt(versionString);
 }

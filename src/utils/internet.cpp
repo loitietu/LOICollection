@@ -3,10 +3,12 @@
 #include <string>
 #include <fstream>
 #include <llapi/LLAPI.h>
+#include <llapi/LoggerAPI.h>
 #include <llapi/utils/NetworkHelper.h>
 #include <httplib/httplib.h>
 #include <Nlohmann/json.hpp>
 #include "internet.h"
+extern Logger logger;
 
 namespace internet {
     namespace upgrade {
@@ -55,6 +57,20 @@ namespace internet {
                 return true;
             } else {
                 return false;
+            }
+        }
+    }
+
+    namespace LOICollection {
+        void checkForUpdates(const std::string versionInfo) {
+            if (internet::upgrade::isNewVersionAvailable(versionInfo, 5570)) {
+                std::string url = internet::upgrade::getLastUrl(5570);
+                std::string version = internet::upgrade::getLastVersion(5570);
+                logger.info("发现新版本: " + version);
+                logger.info("下载地址: " + url);
+                logger.info("请复制地址手动下载");
+            } else {
+                logger.info("Upgrade >> 当前已是最新版本");
             }
         }
     }

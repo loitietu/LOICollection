@@ -10,6 +10,9 @@ namespace internet {
         std::string getLastUrl(int ResId);
         bool isNewVersionAvailable(const std::string version, int ResId);
     }
+    namespace LOICollection {
+        void checkForUpdates(const std::string versionInfo);
+    }
 }
 
 #endif
