@@ -144,10 +144,11 @@ void loadBuilt(const std::string versionInfo) {
                 if (internet::upgrade::isNewVersionAvailable(versionInfo, 5570)) {
                     std::string url = internet::upgrade::getLastUrl(5570);
                     std::string version = internet::upgrade::getLastVersion(5570);
-                    logger.info("Upgrade >> 发现新版本: " + version + " 下载地址: " + url);
+                    logger.info("发现新版本: " + version);
+                    logger.info("下载地址: " + url);
+                    logger.info("复制地址手动下载");
                 } else {
                     logger.info("Upgrade >> 当前已是最新版本");
-                    output.success("Upgrade: Already the latest version.");
                 }
                 break;
             default:
