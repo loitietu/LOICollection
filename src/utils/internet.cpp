@@ -39,6 +39,15 @@ namespace internet {
             }
         }
 
+        std::string getLastUrl(int ResId) {
+            nlohmann::ordered_json data = nlohmann::ordered_json::parse(getLastData(ResId));
+            if (data.contains("view_url")) {
+                return data["view_url"].get<std::string>();
+            } else {
+                return nullptr;
+            }
+        }
+
         bool isNewVersionAvailable(const std::string version, int ResId) {
             ll::Version varRemote = ll::Version::parse(getLastVersion(ResId));
             ll::Version varLocal = ll::Version::parse(version);
@@ -48,30 +57,5 @@ namespace internet {
                 return false;
             }
         }
-
-        void downloadAndInstallUpgrade(int ResId) {
-            nlohmann::ordered_json data = nlohmann::ordered_json::parse(getLastData(ResId));
-            if (data.contains("view_url")) {
-                std::string url = (data["view_url"].get<std::string>() + "download");
-                downloadFile(url, "./plugins/update.bin");
-            }
-        }
-    }
-
-    void downloadFile(const std::string url, const std::string path) {
-        std::thread downloadThread([url, path]() {
-            int status = -1;
-            std::string info;
-            if (!HttpGetSync(url, &status, &info, 60) || status != 200) {
-                return;
-            }
-            std::ofstream file(path, std::ios::binary);
-            if (!file.is_open()) {
-                return;
-            }
-            file.write(info.data(), info.size());
-            file.close();
-        });
-        downloadThread.detach();
     }
 }

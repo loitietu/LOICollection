@@ -133,7 +133,7 @@ void loadBuilt(const std::string versionInfo) {
         LOICollectionAPI::init();
         return true;
     });
-    auto UpgradeCommand = DynamicCommand::createCommand("upgrade", "update plugin", CommandPermissionLevel::GameMasters);
+    auto UpgradeCommand = DynamicCommand::createCommand("upgrade", "Update plug-in", CommandPermissionLevel::GameMasters);
     auto& UpgradeCommandEnum = UpgradeCommand->setEnum("data", { "plugin" });
     UpgradeCommand->mandatory("UpgradeCommandEnum", DynamicCommand::ParameterType::Enum, UpgradeCommandEnum);
     UpgradeCommand->addOverload({ UpgradeCommandEnum });
@@ -142,9 +142,9 @@ void loadBuilt(const std::string versionInfo) {
         switch (do_hash(action.c_str())) {
             case do_hash("plugin"):
                 if (internet::upgrade::isNewVersionAvailable(versionInfo, 5570)) {
-                    logger.info("Upgrade >> 发现新版本，正在下载...");
-                    output.success("Upgrade: New version found, downloading...");
-                    internet::upgrade::downloadAndInstallUpgrade(5570);
+                    std::string url = internet::upgrade::getLastUrl(5570);
+                    std::string version = internet::upgrade::getLastVersion(5570);
+                    logger.info("Upgrade >> 发现新版本: " + version + " 下载地址: " + url);
                 } else {
                     logger.info("Upgrade >> 当前已是最新版本");
                     output.success("Upgrade: Already the latest version.");

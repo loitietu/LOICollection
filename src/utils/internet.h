@@ -7,10 +7,9 @@ namespace internet {
     namespace upgrade {
         std::string getLastData(int ResId);
         std::string getLastVersion(int ResId);
+        std::string getLastUrl(int ResId);
         bool isNewVersionAvailable(const std::string version, int ResId);
-        void downloadAndInstallUpgrade(int ResId);
     }
-    void downloadFile(const std::string url, const std::string path);
 }
 
 #endif
