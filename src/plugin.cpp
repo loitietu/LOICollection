@@ -7,10 +7,8 @@
 
 #include <string>
 #include <fstream>
-#include <unordered_map>
 #include <llapi/LoggerAPI.h>
 #include <llapi/EventAPI.h>
-#include <llapi/DynamicCommandAPI.h>
 #include <Nlohmann/json.hpp>
 #include "Plugins/include/language.h"
 #include "Plugins/include/blacklist.h"
@@ -25,7 +23,6 @@
 #include "Plugins/include/chat.h"
 #include "Plugins/include/announcement.h"
 #include "Plugins/include/market.h"
-#include "utils/internet.h"
 #include "utils/tool.h"
 #include "version.h"
 #include "API.h"
@@ -98,6 +95,7 @@ void Init(const std::string* versionInfo) {
         logger.info("初次运行，正在初始化插件");
         fs::create_directory(PluginDirectory);
         fs::create_directory(PluginDirectory + "/data");
+        fs::create_directory(PluginDirectory + "/tools");
         nlohmann::ordered_json config;
         config["version"] = (*versionInfo);
         std::ofstream configFile(PluginDirectory + "/config.json");
@@ -109,11 +107,13 @@ void Init(const std::string* versionInfo) {
         languageFile.close();
         logger.info("初始化成功!");
     }
+    if (!fs::exists(PluginDirectory + "/data")) fs::create_directory(PluginDirectory + "/data");
+    if (!fs::exists(PluginDirectory + "/tools")) fs::create_directory(PluginDirectory + "/tools");
     update(&(*versionInfo));
 }
 
 //Load built-in data features
-void loadBuilt(const std::string versionInfo) {
+void loadBuilt() {
     int OpenPlugin = 0;
     language::load(&OpenPlugin);
     if (blacklistPlugin) blacklist::load(&OpenPlugin);
@@ -133,23 +133,6 @@ void loadBuilt(const std::string versionInfo) {
         LOICollectionAPI::init();
         return true;
     });
-    auto UpgradeCommand = DynamicCommand::createCommand("upgrade", "Update plug-in", CommandPermissionLevel::GameMasters);
-    auto& UpgradeCommandEnum = UpgradeCommand->setEnum("data", { "plugin" });
-    UpgradeCommand->mandatory("UpgradeCommandEnum", DynamicCommand::ParameterType::Enum, UpgradeCommandEnum);
-    UpgradeCommand->addOverload({ UpgradeCommandEnum });
-    UpgradeCommand->setCallback([versionInfo](DynamicCommand const& command, CommandOrigin const& origin, CommandOutput& output, std::unordered_map<std::string, DynamicCommand::Result>& results) {
-        auto action = results["UpgradeCommandEnum"].get<std::string>();
-        switch (do_hash(action.c_str())) {
-            case do_hash("plugin"):
-                internet::LOICollection::checkForUpdates(versionInfo);
-                break;
-            default:
-                logger.error("Upgrade >> 没有指定的分支.");
-                output.error("No specified branch.");
-                break;
-        }
-    });
-    DynamicCommand::setup(std::move(UpgradeCommand));
 }
 
 //Plug-in entry
@@ -158,9 +141,8 @@ void PluginInit() {
     ss << PLUGIN_VERSION_MAJOR << "." << PLUGIN_VERSION_MINOR << "." << PLUGIN_VERSION_REVISION;
     std::string versionString = ss.str();
     logger.info("感谢您使用本插件，版本:" + versionString + "，作者:贴图");
-    internet::LOICollection::checkForUpdates(versionString);
     Init(&versionString);
-    loadBuilt(versionString);
+    loadBuilt();
 }
 
 /**
