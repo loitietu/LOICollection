@@ -131,51 +131,49 @@ namespace market {
             form.append(Form::Input("input4", lang.tr(PlayerLanguage, "market.gui.sell.sellItem.input4"), "", "100"));
             lang.close();
             form.sendTo(player, [](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
-                std::thread([&] {
-                    std::string PlayerLanguage = tool::get(pl);
-                    i18nLang lang("./plugins/LOICollection/language.json");
-                    if (mp.empty()) {
-                        pl->sendTextPacket(lang.tr(PlayerLanguage, "exit"));
-                        lang.close();
-                        return;
-                    }
-                    if (!pl->getHandSlot()->isNull()) {
-                        int price = tool::toInt(mp["input4"]->getString(), 100);
-                        if (price < 0) price = (price * -1);
-                        std::string itemName = mp["input1"]->getString();
-                        std::string itemIcon = mp["input2"]->getString();
-                        std::string introduce = mp["input3"]->getString();
-                        SQLiteDatabase db(PluginData + "/market.db");
-                        db.setTable("Item");
-                        if (!db.existsTable("Item")) db.createTable();
-                        db.setTable("XUID" + pl->getXuid() + "LIST");
-                        if (!db.existsTable("XUID" + pl->getXuid() + "LIST")) db.createTable();
-                        int index = 1;
-                        while (db.existsMap("Item" + std::to_string(index))) {
-                            index++;
-                        }
-                        ItemStack* item = pl->getHandSlot();
-                        auto snbt = const_cast<ItemStack*>(item)->getNbt()->toSNBT();
-                        int count = item->getCount();
-                        std::string mapName = "Item" + std::to_string(index);
-                        db.createMap(mapName);
-                        db.setMap(mapName, "name", itemName);
-                        db.setMap(mapName, "icon", itemIcon);
-                        db.setMap(mapName, "introduce", introduce);
-                        db.setMap(mapName, "llmoney", std::to_string(price));
-                        db.setMap(mapName, "nbt", snbt);
-                        db.setMap(mapName, "xuid", pl->getXuid());
-                        db.setMap(mapName, "player", pl->getRealName());
-                        db.setTable("Item");
-                        db.set("XUID" + pl->getXuid() + mapName, "XUID" + pl->getXuid());
-                        db.close();
-                        item->remove(count);
-                        pl->refreshInventory();
-                    } else {
-                        pl->sendTextPacket(lang.tr(PlayerLanguage, "market.gui.sell.sellItem.tips1"));
-                    }
+                std::string PlayerLanguage = tool::get(pl);
+                i18nLang lang("./plugins/LOICollection/language.json");
+                if (mp.empty()) {
+                    pl->sendTextPacket(lang.tr(PlayerLanguage, "exit"));
                     lang.close();
-                }).detach();
+                    return;
+                }
+                if (!pl->getHandSlot()->isNull()) {
+                    int price = tool::toInt(mp["input4"]->getString(), 100);
+                    if (price < 0) price = (price * -1);
+                    std::string itemName = mp["input1"]->getString();
+                    std::string itemIcon = mp["input2"]->getString();
+                    std::string introduce = mp["input3"]->getString();
+                    SQLiteDatabase db(PluginData + "/market.db");
+                    db.setTable("Item");
+                    if (!db.existsTable("Item")) db.createTable();
+                    db.setTable("XUID" + pl->getXuid() + "LIST");
+                    if (!db.existsTable("XUID" + pl->getXuid() + "LIST")) db.createTable();
+                    int index = 1;
+                    while (db.existsMap("Item" + std::to_string(index))) {
+                        index++;
+                    }
+                    ItemStack* item = pl->getHandSlot();
+                    auto snbt = const_cast<ItemStack*>(item)->getNbt()->toSNBT();
+                    int count = item->getCount();
+                    std::string mapName = "Item" + std::to_string(index);
+                    db.createMap(mapName);
+                    db.setMap(mapName, "name", itemName);
+                    db.setMap(mapName, "icon", itemIcon);
+                    db.setMap(mapName, "introduce", introduce);
+                    db.setMap(mapName, "llmoney", std::to_string(price));
+                    db.setMap(mapName, "nbt", snbt);
+                    db.setMap(mapName, "xuid", pl->getXuid());
+                    db.setMap(mapName, "player", pl->getRealName());
+                    db.setTable("Item");
+                    db.set("XUID" + pl->getXuid() + mapName, "XUID" + pl->getXuid());
+                    db.close();
+                    item->remove(count);
+                    pl->refreshInventory();
+                } else {
+                    pl->sendTextPacket(lang.tr(PlayerLanguage, "market.gui.sell.sellItem.tips1"));
+                }
+                lang.close();
             });
         }
 

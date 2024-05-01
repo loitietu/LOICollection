@@ -214,7 +214,9 @@ namespace chat {
                             std::vector<std::string> titleList = db.listTable("XUID" + ori.getPlayer()->getXuid() + "TITLE");
                             std::stringstream ss;
                             for (const auto& l : titleList) ss << l << ",";
-                            outp.success("Chat: Title list - " + ss.str());
+                            std::string chatList = ss.str();
+                            chatList.pop_back();
+                            outp.success("Chat: Title list - " + chatList);
                             break;
                         }
                         case CHATOP::add: {

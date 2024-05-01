@@ -29,6 +29,33 @@ namespace tool {
         }
     }
 
+    std::string timeCalculate(int hours) {
+        if (hours > 0) {
+            std::time_t currentTime = std::time(nullptr);
+            std::tm* timeInfo = std::localtime(&currentTime);
+            timeInfo->tm_hour += hours;
+            std::time_t laterTime = std::mktime(timeInfo);
+            char formattedTime[15];
+            std::strftime(formattedTime, sizeof(formattedTime), "%Y%m%d%H%M%S", std::localtime(&laterTime));
+            std::string formattedTimeString(formattedTime);
+            return formattedTimeString;
+        } else {
+            return "0";
+        }
+    }
+
+    std::string replaceString(std::string str, const std::string& from, const std::string& to) {
+        for (std::string::size_type pos(0); pos != std::string::npos; pos += to.length()) {
+            if ((pos = str.find(from, pos)) != std::string::npos) str.replace(pos, from.length(), to);
+            else break;
+        }
+        return str;
+    }
+
+    std::string vec3ToString(Vec3 vec3) {
+        return std::to_string(vec3[0]) + "," + std::to_string(vec3[1]) + "," + std::to_string(vec3[2]);
+    }
+
     bool isBlacklist(Player* player) {
         if (std::filesystem::exists(PluginData + "/blacklist.db")) {
             SQLiteDatabase db(PluginData + "/blacklist.db");
@@ -46,67 +73,6 @@ namespace tool {
             return false;
         } else {
             return false;
-        }
-    }
-
-    int toInt(const std::string& intString, int defaultValue) {
-        int result = defaultValue;
-        try {
-            result = std::stoi(intString);
-        } catch (const std::exception& e) {
-            result = defaultValue;
-        }
-        return result;
-    }
-
-    void updateChat(Player* player) {
-        if (std::filesystem::exists(PluginData + "/chat.db") && player != nullptr) {
-            std::string xuid = player->getXuid();
-            SQLiteDatabase db(PluginData + "/chat.db");
-            if (db.existsTable("XUID" + xuid + "TITLE")) {
-                db.setTable("XUID" + xuid + "TITLE");
-                for (auto& i : db.listTable("XUID" + xuid + "TITLE")) {
-                    std::string timeString = std::to_string(tool::toInt(db.get(i), 0));
-                    if (tool::isReach(timeString)) {
-                        db.remove(i);
-                    }
-                }
-            }
-            if (db.existsTable("XUID" + xuid)) {
-                db.setTable("XUID" + xuid);
-                std::string title = db.get("title");
-                db.setTable("XUID" + xuid + "TITLE");
-                if (!db.exists(title)) {
-                    db.setTable("XUID" + xuid);
-                    db.update("title", "None");
-                }
-            }
-            db.close();
-        }
-    }
-
-    std::vector<std::string> split(const std::string& s, char delimiter) {
-        std::vector<std::string> tokens;
-        std::stringstream ss(s);
-        std::string token;
-        while (std::getline(ss, token, delimiter)) {
-            tokens.push_back(token);
-        }
-        return tokens;
-    }
-
-    std::string timeCalculate(int hours) {
-        if (hours > 0) {
-            std::time_t currentTime = std::time(nullptr);
-            std::tm* timeInfo = std::localtime(&currentTime);
-            timeInfo->tm_hour += hours;
-            std::time_t laterTime = std::mktime(timeInfo);
-            char formattedTime[15];
-            std::strftime(formattedTime, sizeof(formattedTime), "%Y%m%d%H%M%S", std::localtime(&laterTime));
-            std::string formattedTimeString(formattedTime);
-            return formattedTimeString;
-        } else {
-            return "0";
         }
     }
 
@@ -136,25 +102,6 @@ namespace tool {
         }
     }
 
-    Player* toXuidPlayer(const std::string& xuid) {
-        return Global<Level>->getPlayer(xuid);
-    }
-
-    Player* toNamePlayer(const std::string& name) {
-        std::vector<Player*> players = Global<Level>->getAllPlayers();
-        for (auto player : players) {
-            if (player->getName() == name) {
-                return player;
-            }
-        }
-        return nullptr;
-    }
-
-    nlohmann::ordered_json getJson(const std::string& path) {
-        JsonManager data(path);
-        return data.toJson();
-    }
-    
     bool isJsonArrayFind(const nlohmann::ordered_json& json, const std::string& find) {
         auto it = std::find(json.begin(), json.end(), find);
         return it != json.end();
@@ -175,16 +122,93 @@ namespace tool {
         return false;
     }
 
-    std::string replaceString(std::string str, const std::string& from, const std::string& to) {
-        for (std::string::size_type pos(0); pos != std::string::npos; pos += to.length()) {
-            if ((pos = str.find(from, pos)) != std::string::npos) str.replace(pos, from.length(), to);
-            else break;
+    int toInt(const std::string& intString, int defaultValue) {
+        int result = defaultValue;
+        try {
+            result = std::stoi(intString);
+        } catch (const std::exception& e) {
+            result = defaultValue;
         }
-        return str;
+        return result;
     }
 
-    std::string vec3ToString(Vec3 vec3) {
-        return std::to_string(vec3[0]) + "," + std::to_string(vec3[1]) + "," + std::to_string(vec3[2]);
+    std::vector<std::string> split(const std::string& s, char delimiter) {
+        std::vector<std::string> tokens;
+        std::stringstream ss(s);
+        std::string token;
+        while (std::getline(ss, token, delimiter)) {
+            tokens.push_back(token);
+        }
+        return tokens;
+    }
+
+    Player* toXuidPlayer(const std::string& xuid) {
+        return Global<Level>->getPlayer(xuid);
+    }
+
+    Player* toNamePlayer(const std::string& name) {
+        std::vector<Player*> players = Global<Level>->getAllPlayers();
+        for (auto player : players) {
+            if (player->getName() == name) {
+                return player;
+            }
+        }
+        return nullptr;
+    }
+
+    nlohmann::ordered_json getJson(const std::string& path) {
+        JsonManager data(path);
+        return data.toJson();
+    }
+
+    void updateChat(Player* player) {
+        if (std::filesystem::exists(PluginData + "/chat.db") && player != nullptr) {
+            std::string xuid = player->getXuid();
+            SQLiteDatabase db(PluginData + "/chat.db");
+            if (db.existsTable("XUID" + xuid + "TITLE")) {
+                db.setTable("XUID" + xuid + "TITLE");
+                for (auto& i : db.listTable("XUID" + xuid + "TITLE")) {
+                    std::string timeString = std::to_string(tool::toInt(db.get(i), 0));
+                    if (tool::isReach(timeString)) {
+                        db.remove(i);
+                    }
+                }
+            }
+            if (db.existsTable("XUID" + xuid)) {
+                db.setTable("XUID" + xuid);
+                std::string title = db.get("title");
+                db.setTable("XUID" + xuid + "TITLE");
+                if (!db.exists(title)) {
+                    db.setTable("XUID" + xuid);
+                    db.update("title", "None");
+                }
+            }
+            db.close();
+        }
+    }
+
+    void clearItem(Player* player, ItemStack* item) {
+        int itemCount = item->getCount();
+        Container& itemInventory = player->getInventory();
+        for (int i = 0; i < itemInventory.getSize(); i++) {
+            auto& itemObject = itemInventory.getItem(i);
+            if (!itemObject.isNull()) {
+                if (item->getTypeName() == itemObject.getTypeName()) {
+                    if (itemCount <= itemObject.getCount()) {
+                        ItemStack newItem = itemObject.clone();
+                        newItem.remove(itemCount);
+                        itemInventory.setItem(i, newItem);
+                        break;
+                    } else {
+                        itemCount -= itemObject.getCount();
+                        ItemStack newItem = itemObject.clone();
+                        newItem.remove(itemObject.getCount());
+                        itemInventory.setItem(i, newItem);
+                    }
+                }
+            }
+        }
+        player->refreshInventory();
     }
 
     namespace llmoney {

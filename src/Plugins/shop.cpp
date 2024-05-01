@@ -59,12 +59,16 @@ namespace shop {
                                     pl2->sendTextPacket(shopDatabase["exit"]);
                                     return;
                                 }
-                                bool ScoreboardEnough, LLMoneyEnough = true;
+                                volatile bool ScoreboardEnough = true;
+                                volatile bool LLMoneyEnough = true;
                                 int buyNumber = mp["slider"]->getInt();
                                 nlohmann::ordered_json ScoreboardList = item.at("scores");
                                 for (nlohmann::ordered_json::iterator it = ScoreboardList.begin(); it != ScoreboardList.end(); ++it) {
                                     int score = ScoreboardList[it.key()].template get<int>();
-                                    if ((score * buyNumber) > pl2->getScore(it.key())) ScoreboardEnough = false;
+                                    if ((score * buyNumber) > pl2->getScore(it.key())) {
+                                        ScoreboardEnough = false;
+                                        break;
+                                    }
                                 }
                                 if ((item["llmoney"] * buyNumber) > tool::llmoney::get(pl2)) LLMoneyEnough = false;
                                 if (ScoreboardEnough && LLMoneyEnough) {
@@ -105,11 +109,15 @@ namespace shop {
                                 auto form = Form::ModalForm(shopDatabase["title"], introduce, item["confirmButton"], item["cancelButton"]);
                                 form.sendTo(pl, [shopDatabase, item, llmoney](Player* pl2, bool isConfirm) {
                                     if (isConfirm) {
-                                        bool ScoreboardEnough, LLMoneyEnough = true;
+                                        volatile bool ScoreboardEnough = true;
+                                        volatile bool LLMoneyEnough = true;
                                         nlohmann::ordered_json ScoreboardList = item.at("scores");
                                         for (nlohmann::ordered_json::iterator it = ScoreboardList.begin(); it != ScoreboardList.end(); ++it) {
                                             int score = ScoreboardList[it.key()].template get<int>();
-                                            if (score > pl2->getScore(it.key())) ScoreboardEnough = false;
+                                            if (score > pl2->getScore(it.key())) {
+                                                ScoreboardEnough = false;
+                                                break;
+                                            }
                                         }
                                         if (llmoney > tool::llmoney::get(pl2)) LLMoneyEnough = false;
                                         if (ScoreboardEnough && LLMoneyEnough) {
@@ -184,7 +192,7 @@ namespace shop {
                                 std::string itemStackId = item["id"].template get<std::string>();
                                 auto* itemStack = ItemStack::create(itemStackId, sellNumber);
                                 if (tool::isItemPlayerInventory(pl2, itemStack)) {
-                                    pl2->clearItem(itemStack->getTypeName(), itemStack->getCount());
+                                    tool::clearItem(pl2, itemStack);
                                     tool::llmoney::add(pl2, (llmoney * sellNumber));
                                     nlohmann::ordered_json ScoreboardList = item.at("scores");
                                     for (nlohmann::ordered_json::iterator it = ScoreboardList.begin(); it != ScoreboardList.end(); ++it) {

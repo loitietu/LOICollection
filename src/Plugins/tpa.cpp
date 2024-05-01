@@ -19,8 +19,8 @@ namespace tpa {
     namespace {
         bool getInvite(Player* player) {
             SQLiteDatabase db(PluginData + "/tpa.db");
-            if (db.existsTable(player->getName())) {
-                db.setTable(player->getName());
+            if (db.existsTable("XUID" + player->getXuid())) {
+                db.setTable("XUID" + player->getXuid());
                 bool result = db.get("Toggle1") == "true" ? true : false;
                 db.close();
                 return result;
@@ -106,7 +106,7 @@ namespace tpa {
 
         void settingGui(Player* player) {
             SQLiteDatabase db(PluginData + "/tpa.db");
-            db.setTable(player->getName());
+            db.setTable("XUID" + player->getXuid());
             bool defToggle1 = false;
             if (db.get("Toggle1") == "true") defToggle1 = true;
             std::string PlayerLanguage = tool::get(player);
@@ -125,7 +125,7 @@ namespace tpa {
                     return;
                 }
                 SQLiteDatabase db(PluginData + "/tpa.db");
-                db.setTable(pl->getName());
+                db.setTable("XUID" + pl->getXuid());
                 db.update("Toggle1", mp["Toggle1"]->getBool() ? "true" : "false");
                 db.close();
             });
