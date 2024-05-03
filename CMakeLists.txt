@@ -4,7 +4,6 @@ project(LOICollection)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_BUILD_TYPE Release)
-set(CMAKE_CXX_COMPILER g++)
 
 file(GLOB_RECURSE SRC_FILES_DIR
     ${PROJECT_SOURCE_DIR}/src/*.cpp
