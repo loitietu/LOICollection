@@ -214,13 +214,12 @@ namespace menu {
                                 outp.error("Menu: No player selected.");
                                 break;
                             }
-                            JsonManager config("./plugins/LOICollection/config.json");
-                            nlohmann::ordered_json menu = config.get("Menu");
-                            config.clear();
-                            std::string ItemId = menu["ItemId"].template get<std::string>();
+                            nlohmann::ordered_json data = tool::getJson("./plugins/LOICollection/config.json")["Menu"];
+                            std::string ItemId = data["ItemId"].template get<std::string>();
                             auto* item = ItemStack::create(ItemId, 1);
                             bool isItemNull = item->isNull();
                             ori.getPlayer()->giveItem(item);
+                            data.clear();
                             delete item;
                             std::string playerName = ori.getName();
                             if (!isItemNull) outp.success("Menu: The MenuItem has been given to player " + playerName);
@@ -251,11 +250,20 @@ namespace menu {
                 return true;
             });
             Event::PlayerUseItemEvent::subscribe([](const Event::PlayerUseItemEvent& e) {
-                JsonManager config("./plugins/LOICollection/config.json");
-                nlohmann::ordered_json menu = config.get("Menu");
-                config.clear();
-                std::string ItemId = menu["ItemId"].template get<std::string>();
+                nlohmann::ordered_json data = tool::getJson("./plugins/LOICollection/config.json")["Menu"];
+                std::string ItemId = data["ItemId"].template get<std::string>();
                 if (e.mItemStack->getTypeName() == ItemId) menuGui(e.mPlayer, "main");
+                return true;
+            });
+            Event::PlayerJoinEvent::subscribe([](const Event::PlayerJoinEvent& e) {
+                nlohmann::ordered_json data = tool::getJson("./plugins/LOICollection/config.json")["Menu"];
+                std::string ItemId = data["ItemId"].template get<std::string>();
+                ItemStack* item = ItemStack::create(ItemId, 1);
+                if (!tool::isItemPlayerInventory(e.mPlayer, item) && !item->isNull()) {
+                    e.mPlayer->giveItem(item);
+                }
+                data.clear();
+                delete item;
                 return true;
             });
         }
