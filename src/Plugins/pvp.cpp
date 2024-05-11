@@ -31,7 +31,6 @@ namespace pvp {
             auto form = Form::SimpleForm(lang.tr(PlayerLanguage, "pvp.gui.title"), lang.tr(PlayerLanguage, "pvp.gui.label"));
             form.addButton(lang.tr(PlayerLanguage, "pvp.gui.on"), "textures/ui/book_addtextpage_default");
             form.addButton(lang.tr(PlayerLanguage, "pvp.gui.off"), "textures/ui/cancel");
-            lang.close();
             form.sendTo(player, [](Player* pl, int id) {
                 std::string PlayerLanguage = tool::get(pl);
                 i18nLang lang("./plugins/LOICollection/language.json");
@@ -53,9 +52,10 @@ namespace pvp {
                         logger.info(LOICollectionAPI::translateString(lang.tr(PlayerLanguage, "pvp.log2"), pl, true));
                         break;
                 }
-                db.close();
                 lang.close();
+                db.close();
             });
+            lang.close();
         }
         
         class PvpCommand : public Command {
@@ -71,8 +71,7 @@ namespace pvp {
                                 break;
                             }
                             menuGui(ori.getPlayer());
-                            std::string playerName = ori.getName();
-                            outp.success("The UI has been opened to player " + playerName);
+                            outp.success("The UI has been opened to player " + ori.getName());
                             break;
                         }
                         default:
@@ -112,15 +111,13 @@ namespace pvp {
                     Player* mobPlayer = tool::toNamePlayer(e.mTarget->getNameTag());
                     Player* sourcePlayer = e.mPlayer;
                     if (!getEnable(mobPlayer)) {
-                        std::string PlayerLanguage = tool::get(sourcePlayer);
                         i18nLang lang("./plugins/LOICollection/language.json");
-                        sourcePlayer->sendTextPacket(lang.tr(PlayerLanguage, "pvp.off1"));
+                        sourcePlayer->sendTextPacket(lang.tr(tool::get(sourcePlayer), "pvp.off1"));
                         lang.close();
                         return false;
                     } else if (!getEnable(sourcePlayer)) {
-                        std::string PlayerLanguage = tool::get(sourcePlayer);
                         i18nLang lang("./plugins/LOICollection/language.json");
-                        sourcePlayer->sendTextPacket(lang.tr(PlayerLanguage, "pvp.off2"));
+                        sourcePlayer->sendTextPacket(lang.tr(tool::get(sourcePlayer), "pvp.off2"));
                         lang.close();
                         return false;
                     }

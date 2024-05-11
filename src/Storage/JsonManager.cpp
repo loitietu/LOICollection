@@ -22,6 +22,10 @@ void JsonManager::set(const std::string& key, const nlohmann::ordered_json& valu
     json[key] = value;
 }
 
+void JsonManager::setString(const std::string& key, const std::string& value) {
+    json[key] = value;
+}
+
 void JsonManager::remove(const std::string& key) {
     json.erase(key);
 }

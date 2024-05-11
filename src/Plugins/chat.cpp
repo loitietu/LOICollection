@@ -19,17 +19,13 @@ extern Logger logger;
 namespace chat {
     namespace {
         void addManagerGui(Player* player) {
-            std::vector<Player*> playerList =  Level::getAllPlayers();
-            std::vector<std::string> playerListName;
-            for (auto& p : playerList) playerListName.push_back(p->getName());
             std::string PlayerLanguage = tool::get(player);
             i18nLang lang("./plugins/LOICollection/language.json");
             auto form = Form::CustomForm(lang.tr(PlayerLanguage, "chat.gui.title"));
             form.append(Form::Label("label", lang.tr(PlayerLanguage, "chat.gui.label")));
             form.append(Form::Input("input1", "", lang.tr(PlayerLanguage, "chat.gui.manager.add.input1"), "None"));
             form.append(Form::Input("input2", "", lang.tr(PlayerLanguage, "chat.gui.manager.add.input2"), "0"));
-            form.append(Form::Dropdown("dropdown", lang.tr(PlayerLanguage, "chat.gui.manager.add.dropdown"), playerListName));
-            lang.close();
+            form.append(Form::Dropdown("dropdown", lang.tr(PlayerLanguage, "chat.gui.manager.add.dropdown"), tool::getAllPlayerName()));
             form.sendTo(player, [](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
                 if (mp.empty()) {
                     std::string PlayerLanguage = tool::get(pl);
@@ -43,23 +39,16 @@ namespace chat {
                 std::string playerName = mp["dropdown"]->getString();
                 Level::runcmdAs(pl, "chat add " + playerName + " " + title + " " + std::to_string(time));
             });
+            lang.close();
         }
 
         void removeManagerGui(Player* player) {
-            std::vector<Player*> playerList =  Level::getAllPlayers();
-            std::vector<std::string> playerListName;
-            std::unordered_map<std::string, std::string> playerListNameMap;
-            for (auto& p : playerList) {
-                playerListName.push_back(p->getName());
-                playerListNameMap[p->getName()] = p->getXuid();
-            }
             std::string PlayerLanguage = tool::get(player);
             i18nLang lang("./plugins/LOICollection/language.json");
             auto form = Form::CustomForm(lang.tr(PlayerLanguage, "chat.gui.title"));
             form.append(Form::Label("label", lang.tr(PlayerLanguage, "chat.gui.label")));
-            form.append(Form::Dropdown("dropdown", lang.tr(PlayerLanguage, "chat.gui.manager.remove.dropdown1"), playerListName));
-            lang.close();
-            form.sendTo(player, [playerListNameMap](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
+            form.append(Form::Dropdown("dropdown", lang.tr(PlayerLanguage, "chat.gui.manager.remove.dropdown1"), tool::getAllPlayerName()));
+            form.sendTo(player, [](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
                 std::string PlayerLanguage = tool::get(pl);
                 i18nLang lang("./plugins/LOICollection/language.json");
                 if (mp.empty()) {
@@ -67,16 +56,13 @@ namespace chat {
                     lang.close();
                     return;
                 }
-                std::string playerName = mp["dropdown"]->getString();
-                Player* player = tool::toXuidPlayer(playerListNameMap.at(playerName));
+                Player* player = tool::toNamePlayer(mp["dropdown"]->getString());
                 tool::updateChat(player);
                 SQLiteDatabase db(PluginData + "/chat.db");
                 auto form = Form::CustomForm(lang.tr(PlayerLanguage, "chat.gui.title"));
                 form.append(Form::Label("label", lang.tr(PlayerLanguage, "chat.gui.label")));
                 form.append(Form::Dropdown("dropdown", lang.tr(PlayerLanguage, "chat.gui.manager.remove.dropdown2"), db.listTable("XUID" + player->getXuid() + "TITLE")));
-                lang.close();
-                db.close();
-                form.sendTo(pl, [playerName](Player* pl2, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
+                form.sendTo(pl, [player](Player* pl2, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
                     if (mp.empty()) {
                         std::string PlayerLanguage = tool::get(pl2);
                         i18nLang lang("./plugins/LOICollection/language.json");
@@ -84,10 +70,12 @@ namespace chat {
                         lang.close();
                         return;
                     }
-                    std::string title = mp["dropdown"]->getString();
-                    Level::runcmdAs(pl2, "chat remove " + playerName + " " + title);
+                    Level::runcmdAs(pl2, "chat remove " + player->getName() + " " + mp["dropdown"]->getString());
                 });
+                lang.close();
+                db.close();
             });
+            lang.close();
         }
 
         void menuGui(Player* player) {
@@ -96,7 +84,6 @@ namespace chat {
             auto form = Form::SimpleForm(lang.tr(PlayerLanguage, "chat.gui.title"), lang.tr(PlayerLanguage, "chat.gui.label"));
             form.addButton(lang.tr(PlayerLanguage, "chat.gui.manager.add"), "textures/ui/backup_replace");
             form.addButton(lang.tr(PlayerLanguage, "chat.gui.manager.remove"), "textures/ui/free_download_symbol");
-            lang.close();
             form.sendTo(player, [](Player* pl, int id) {
                 if (id == -1) {
                     std::string PlayerLanguage = tool::get(pl);
@@ -114,20 +101,17 @@ namespace chat {
                         break;
                 }
             });
+            lang.close();
         }
 
         void settingTitleGui(Player* player) {
             SQLiteDatabase db(PluginData + "/chat.db");
-            std::vector<std::string> titleList = db.listTable("XUID" + player->getXuid() + "TITLE");
-            db.close();
             std::string PlayerLanguage = tool::get(player);
             i18nLang lang("./plugins/LOICollection/language.json");
             std::string label = lang.tr(PlayerLanguage, "chat.gui.setTitle.label");
-            label = std::string(LOICollectionAPI::translateString(label, player, true));
             auto form = Form::CustomForm(lang.tr(PlayerLanguage, "chat.gui.title"));
-            form.append(Form::Label("label", label));
-            form.append(Form::Dropdown("dropdown", lang.tr(PlayerLanguage, "chat.gui.setTitle.dropdown"), titleList));
-            lang.close();
+            form.append(Form::Label("label", std::string(LOICollectionAPI::translateString(label, player, true))));
+            form.append(Form::Dropdown("dropdown", lang.tr(PlayerLanguage, "chat.gui.setTitle.dropdown"), db.listTable("XUID" + player->getXuid() + "TITLE")));
             form.sendTo(player, [](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
                 if (mp.empty()) {
                     std::string PlayerLanguage = tool::get(pl);
@@ -142,6 +126,8 @@ namespace chat {
                 db.update("title", PlayerSelectTitle);
                 db.close();
             });
+            lang.close();
+            db.close();
         }
 
         void settingGui(Player* player) {
@@ -149,7 +135,6 @@ namespace chat {
             i18nLang lang("./plugins/LOICollection/language.json");
             auto form = Form::SimpleForm(lang.tr(PlayerLanguage, "chat.gui.title"), lang.tr(PlayerLanguage, "chat.gui.label"));
             form.addButton(lang.tr(PlayerLanguage, "chat.gui.setTitle"), "textures/ui/backup_replace");
-            lang.close();
             form.sendTo(player, [](Player* pl, int id) {
                 if (id == -1) {
                     std::string PlayerLanguage = tool::get(pl);
@@ -164,6 +149,7 @@ namespace chat {
                         break;
                 }
             });
+            lang.close();
         }
 
         class ChatCommand : public Command {
@@ -187,9 +173,8 @@ namespace chat {
                                 outp.error("Chat: No player selected.");
                                 break;
                             }
-                            settingGui(ori.getPlayer());
-                            std::string playerName = ori.getName();
-                            outp.success("The UI has been opened to player " + playerName);
+                            settingGui(ori.getPlayer());;
+                            outp.success("The UI has been opened to player " + ori.getName());
                             break;
                         }
                         case CHATOP::gui: {
@@ -202,8 +187,7 @@ namespace chat {
                                 return;
                             }
                             menuGui(ori.getPlayer());
-                            std::string playerName = ori.getName();
-                            outp.success("The UI has been opened to player " + playerName);
+                            outp.success("The UI has been opened to player " + ori.getName());
                             break;
                         }
                         case CHATOP::list: {
@@ -237,13 +221,15 @@ namespace chat {
                                 return;
                             }
                             for (auto& i : res) {
-                                db.setTable("XUID" + i->getXuid() + "TITLE");
-                                if (db.exists(title)) {
-                                    db.remove(title);
-                                }
-                                db.setTable("XUID" + i->getXuid());
-                                if (db.get("title") == title) {
-                                    db.update("title", "None");
+                                if (title != "None") {
+                                    db.setTable("XUID" + i->getXuid() + "TITLE");
+                                    if (db.exists(title)) {
+                                        db.remove(title);
+                                    }
+                                    db.setTable("XUID" + i->getXuid());
+                                    if (db.get("title") == title) {
+                                        db.update("title", "None");
+                                    }
                                 }
                             }
                             outp.success("Chat: Removing players succeeded.");
@@ -299,10 +285,10 @@ namespace chat {
             Event::PlayerChatEvent::subscribe([](const Event::PlayerChatEvent& e) {
                 if (!tool::isMute(e.mPlayer)) {
                     nlohmann::ordered_json data = tool::getJson("./plugins/LOICollection/config.json")["Chat"];
-                    std::string MessageString = data["chat"];
-                    MessageString = std::string(LOICollectionAPI::translateString(MessageString, e.mPlayer, true));
+                    std::string MessageString = std::string(LOICollectionAPI::translateString(data["chat"], e.mPlayer, true));
                     MessageString = tool::replaceString(MessageString, "${chat}", e.mMessage);
                     Level::broadcastText(MessageString, TextType::SYSTEM);
+                    data.clear();
                     return false;
                 } else {
                     return true;

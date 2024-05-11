@@ -1,5 +1,5 @@
-#include <string>
 #include <map>
+#include <string>
 #include <unordered_map>
 #include <filesystem>
 #include <llapi/FormUI.h>
@@ -24,7 +24,6 @@ namespace language {
             auto form = Form::CustomForm(lang.tr(PlayerLanguage, "language.gui.title"));
             form.append(Form::Label("label", lang.tr(PlayerLanguage, "language.gui.label")));
             form.append(Form::Dropdown("dropdown", lang.tr(PlayerLanguage, "language.gui.dropdown"), lang.list()));
-            lang.close();
             form.sendTo(player, [](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
                 std::string PlayerLanguage = tool::get(pl);
                 i18nLang lang("./plugins/LOICollection/language.json");
@@ -36,10 +35,11 @@ namespace language {
                 std::string PlayerSelectLanguage = mp["dropdown"]->getString();
                 SQLiteDatabase db(PluginData + "/language.db");
                 db.update(pl->getXuid(), PlayerSelectLanguage);
-                db.close();
                 logger.info(LOICollectionAPI::translateString(lang.tr(PlayerLanguage, "language.log"), pl, true));
                 lang.close();
+                db.close();
             });
+            lang.close();
         }
 
         void listen() {
@@ -68,9 +68,8 @@ namespace language {
                         output.error("Language: No player selected.");
                         return;
                     }
-                    std::string playerName = origin.getName();
                     ui(origin.getPlayer());
-                    output.success("The UI has been opened to player " + playerName);
+                    output.success("The UI has been opened to player " + origin.getName());
                 }
             );
         }

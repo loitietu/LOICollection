@@ -62,6 +62,7 @@ namespace monitor {
                     std::string MonitorString = data["join"];
                     MonitorString = std::string(LOICollectionAPI::translateString(MonitorString, e.mPlayer, false));
                     Level::broadcastText(MonitorString, TextType::SYSTEM);
+                    data.clear();
                 }
                 return true;
             });
@@ -70,6 +71,7 @@ namespace monitor {
                 std::string MonitorString = data["left"];
                 MonitorString = std::string(LOICollectionAPI::translateString(MonitorString, e.mPlayer, false));
                 Level::broadcastText(MonitorString, TextType::SYSTEM);
+                data.clear();
                 return true;
             });
             Event::PlayerCmdEvent::subscribe([](const Event::PlayerCmdEvent& e) {
@@ -78,8 +80,10 @@ namespace monitor {
                     std::vector<std::string> commandArray = tool::split(e.mCommand, ' ');
                     if (tool::isJsonArrayFind(data["command"], commandArray[0])) {
                         e.mPlayer->sendTextPacket(data["tips"]);
+                        data.clear();
                         return false;
                     }
+                    data.clear();
                 }
                 return true;
             });

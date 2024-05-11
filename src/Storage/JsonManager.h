@@ -13,6 +13,7 @@ private:
 public:
     JsonManager(const std::string& filePath);
     void set(const std::string& key, const nlohmann::ordered_json& value);
+    void setString(const std::string& key, const std::string& value);
     void remove(const std::string& key);
     nlohmann::ordered_json get(const std::string& key);
     std::string getString(const std::string& key);

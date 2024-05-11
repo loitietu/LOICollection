@@ -33,8 +33,6 @@ namespace market {
                 form.addButton(name, icon);
                 db.setTable("Item");
             }
-            lang.close();
-            db.close();
             form.sendTo(player, [data](Player* pl, int id) {
                 std::string PlayerLanguage = tool::get(pl);
                 i18nLang lang("./plugins/LOICollection/language.json");
@@ -57,8 +55,6 @@ namespace market {
                 auto form = Form::SimpleForm(lang.tr(PlayerLanguage, "market.gui.title"), introduce);
                 form.addButton(lang.tr(PlayerLanguage, "market.gui.sell.buy.button1"), "");
                 if (pl->isOP()) form.addButton(lang.tr(PlayerLanguage, "market.gui.sell.sellItemContent.button1"), "");
-                lang.close();
-                db.close();
                 form.sendTo(pl, [idString, UploadPlayer](Player* pl2, int id) {
                     std::string PlayerLanguage = tool::get(pl2);
                     i18nLang lang("./plugins/LOICollection/language.json");
@@ -114,10 +110,14 @@ namespace market {
                             break;
                         }
                     }
-                    db.close();
                     lang.close();
+                    db.close();
                 });
+                lang.close();
+                db.close();
             });
+            lang.close();
+            db.close();
         }
 
         void sellItemGui(Player* player) {
@@ -129,7 +129,6 @@ namespace market {
             form.append(Form::Input("input2", lang.tr(PlayerLanguage, "market.gui.sell.sellItem.input2"), "", "textures/items/diamond"));
             form.append(Form::Input("input3", lang.tr(PlayerLanguage, "market.gui.sell.sellItem.input3"), "", "Introduce"));
             form.append(Form::Input("input4", lang.tr(PlayerLanguage, "market.gui.sell.sellItem.input4"), "", "100"));
-            lang.close();
             form.sendTo(player, [](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
                 std::string PlayerLanguage = tool::get(pl);
                 i18nLang lang("./plugins/LOICollection/language.json");
@@ -175,6 +174,7 @@ namespace market {
                 }
                 lang.close();
             });
+            lang.close();
         }
 
         void sellItemContentGui(Player* player) {
@@ -190,8 +190,6 @@ namespace market {
                 std::string icon = db.getMap(i, "icon");
                 form.addButton(name, icon);
             }
-            lang.close();
-            db.close();
             form.sendTo(player, [data](Player* pl, int id) {
                 std::string PlayerLanguage = tool::get(pl);
                 i18nLang lang("./plugins/LOICollection/language.json");
@@ -210,8 +208,6 @@ namespace market {
                 introduce = tool::replaceString(introduce, "${player}", db.getMap(idString, "player"));
                 auto form = Form::SimpleForm(lang.tr(PlayerLanguage, "market.gui.title"), introduce);
                 form.addButton(lang.tr(PlayerLanguage, "market.gui.sell.sellItemContent.button1"), "");
-                lang.close();
-                db.close();
                 form.sendTo(pl, [idString](Player* pl2, int id) {
                     std::string PlayerLanguage = tool::get(pl2);
                     i18nLang lang("./plugins/LOICollection/language.json");
@@ -241,7 +237,11 @@ namespace market {
                     db.close();
                     lang.close();
                 });
+                lang.close();
+                db.close();
             });
+            lang.close();
+            db.close();
         }
 
         void sellGui(Player* player) {
@@ -250,7 +250,6 @@ namespace market {
             auto form = Form::SimpleForm(lang.tr(PlayerLanguage, "market.gui.title"), lang.tr(PlayerLanguage, "market.gui.label"));
             form.addButton(lang.tr(PlayerLanguage, "market.gui.sell.sellItem"), "textures/items/diamond");
             form.addButton(lang.tr(PlayerLanguage, "market.gui.sell.sellItemContent"), "textures/items/diamond_axe");
-            lang.close();
             form.sendTo(player, [](Player* pl, int id) {
                 if (id == -1) {
                     std::string PlayerLanguage = tool::get(pl);
@@ -268,6 +267,7 @@ namespace market {
                         break;
                 }
             });
+            lang.close();
         }
 
         class MarketCommand : public Command {
@@ -284,8 +284,7 @@ namespace market {
                                 break;
                             }
                             buyGui(ori.getPlayer());
-                            std::string playerName = ori.getName();
-                            outp.success("The UI has been opened to player " + playerName);
+                            outp.success("The UI has been opened to player " + ori.getName());
                             break;
                         }
                         case MARKETOP::sell: {
@@ -294,8 +293,7 @@ namespace market {
                                 break;
                             }
                             sellGui(ori.getPlayer());
-                            std::string playerName = ori.getName();
-                            outp.success("The UI has been opened to player " + playerName);
+                            outp.success("The UI has been opened to player " + ori.getName());
                             break;
                         }
                         default:
@@ -322,20 +320,19 @@ namespace market {
             });
             Event::PlayerJoinEvent::subscribe([](const Event::PlayerJoinEvent& e) {
                 if (!tool::isBlacklist(e.mPlayer)) {
-                    Player* player = e.mPlayer;
                     SQLiteDatabase db(PluginData + "/market.db");
-                    if (db.existsTable("XUID" + player->getXuid())) {
-                        db.setTable("XUID" + player->getXuid());
+                    if (db.existsTable("XUID" + e.mPlayer->getXuid())) {
+                        db.setTable("XUID" + e.mPlayer->getXuid());
                         int score = std::stoi(db.get("Money"));
                         if (score > 0) {
-                            tool::llmoney::add(player, score);
+                            tool::llmoney::add(e.mPlayer, score);
                             db.set("Money", "0");
                         }
                     } else {
-                        db.setTable("XUID" + player->getXuid());
+                        db.setTable("XUID" + e.mPlayer->getXuid());
                         db.createTable();
                         db.set("Money", "0");
-                        db.setTable("XUID" + player->getXuid() + "LIST");
+                        db.setTable("XUID" + e.mPlayer->getXuid() + "LIST");
                         db.createTable();
                     }
                     db.close();

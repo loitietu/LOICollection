@@ -16,13 +16,10 @@ extern Logger logger;
 namespace announcement {
     namespace {
         void menuGui(Player* player) {
-            JsonManager database(PluginData + "/announcement.json");
-            std::string title = database.get("title").template get<std::string>();
-            nlohmann::ordered_json data = database.get("content");
-            database.clear();
             int index = 1;
-            auto form = Form::CustomForm(title);
-            for (nlohmann::ordered_json& content : data) {
+            JsonManager database(PluginData + "/announcement.json");
+            auto form = Form::CustomForm(database.get("title").template get<std::string>());
+            for (nlohmann::ordered_json& content : database.get("content")) {
                 form.append(Form::Label("label" + std::to_string(index), content));
                 index++;
             }
@@ -32,29 +29,25 @@ namespace announcement {
                 pl->sendTextPacket(lang.tr(PlayerLanguage, "exit"));
                 lang.close();
                 return;
-            });            
+            });
+            database.clear();    
         }
 
         void settingGui(Player* player) {
+            int index = 1;
             std::string PlayerLanguage = tool::get(player);
             i18nLang lang("./plugins/LOICollection/language.json");
             JsonManager database(PluginData + "/announcement.json");
-            std::string title = database.get("title").template get<std::string>();
-            nlohmann::ordered_json data = database.get("content");
-            database.clear();
-            int index = 1;
             std::string titleContent = lang.tr(PlayerLanguage, "announcement.gui.line");
             auto form = Form::CustomForm(lang.tr(PlayerLanguage, "announcement.gui.title"));
             form.append(Form::Label("label", lang.tr(PlayerLanguage, "announcement.gui.label")));
-            form.append(Form::Input("input", lang.tr(PlayerLanguage, "announcement.gui.setTitle"), "", title));
-            for (nlohmann::ordered_json& content : data) {
+            form.append(Form::Input("input", lang.tr(PlayerLanguage, "announcement.gui.setTitle"), "", database.get("title").template get<std::string>()));
+            for (nlohmann::ordered_json& content : database.get("content")) {
                 form.append(Form::Input("input" + std::to_string(index), tool::replaceString(titleContent, "${index}", std::to_string(index)), "", content));
                 index++;
             }
             form.append(Form::Toggle("toggle1", lang.tr(PlayerLanguage, "announcement.gui.addLine")));
             form.append(Form::Toggle("toggle2", lang.tr(PlayerLanguage, "announcement.gui.removeLine")));
-            lang.close();
-            data.clear();
             form.sendTo(player, [index](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
                 if (mp.empty()) {
                     std::string PlayerLanguage = tool::get(pl);
@@ -63,51 +56,35 @@ namespace announcement {
                     lang.close();
                     return;
                 }
-                bool addLine = mp["toggle1"]->getBool();
-                bool removeLine = mp["toggle2"]->getBool();
                 std::string title = mp["input"]->getString();
                 JsonManager database(PluginData + "/announcement.json");
                 nlohmann::ordered_json data = database.get("content");
-                database.clear();
-                if (addLine) {
+                if (mp["toggle1"]->getBool()) {
                     data.push_back("");
-                    nlohmann::ordered_json dataNew = {
-                        {"title", title},
-                        {"content", data}
-                    };
-                    std::ofstream databaseNewFile(PluginData + "/announcement.json");
-                    databaseNewFile << dataNew.dump(4);
-                    databaseNewFile.close();
-                    dataNew.clear();
-                    data.clear();
+                    database.setString("title", title);
+                    database.set("content", data);
+                    database.save();
                     settingGui(pl);
-                } else if (removeLine) {
-                    data.erase(data.end());
-                    nlohmann::ordered_json dataNew = {
-                        {"title", title},
-                        {"content", data}
-                    };
-                    std::ofstream databaseNewFile(PluginData + "/announcement.json");
-                    databaseNewFile << dataNew.dump(4);
-                    databaseNewFile.close();
-                    dataNew.clear();
-                    data.clear();
+                } else if (mp["toggle2"]->getBool()) {
+                    data.erase(data.end() - 1);
+                    database.setString("title", title);
+                    database.set("content", data);
+                    database.save();
                     settingGui(pl);
                 } else {
                     nlohmann::ordered_json dataNewList;
-                    for (int i = 1; i < index; i++) dataNewList.push_back(mp["input" + std::to_string(i)]->getString());
-                    nlohmann::ordered_json dataNew = {
-                        {"title", title},
-                        {"content", dataNewList}
-                    };
-                    std::ofstream databaseNewFile(PluginData + "/announcement.json");
-                    databaseNewFile << dataNew.dump(4);
-                    databaseNewFile.close();
+                    for (int i = 1; i < index; i++) {
+                        dataNewList.push_back(mp["input" + std::to_string(i)]->getString());
+                    }
+                    database.setString("title", title);
+                    database.set("content", dataNewList);
+                    database.save();
                     dataNewList.clear();
-                    dataNew.clear();
-                    data.clear();
                 }
-            }); 
+                data.clear();
+            });
+            database.clear();
+            lang.close();
         }
 
         class AnnounCementCommand : public Command {
@@ -124,8 +101,7 @@ namespace announcement {
                                 break;
                             }
                             menuGui(ori.getPlayer());
-                            std::string playerName = ori.getName();
-                            outp.success("The UI has been opened to player " + playerName);
+                            outp.success("The UI has been opened to player " + ori.getName());
                             break;
                         }
                         case ANNOUNCEMENTOP::setting: {
@@ -135,8 +111,7 @@ namespace announcement {
                             }
                             if (ori.getPlayer()->isOP()) {
                                 settingGui(ori.getPlayer());
-                                std::string playerName = ori.getName();
-                                outp.success("The UI has been opened to player " + playerName);
+                                outp.success("The UI has been opened to player " + ori.getName());
                             } else {
                                 outp.error("AnnounCement: No permission to open the Setting.");
                             }

@@ -31,22 +31,13 @@ namespace tpa {
         }
 
         void menuGui(Player* player) {
-            std::vector<Player*> playerList =  Level::getAllPlayers();
-            std::vector<std::string> playerListName;
-            std::unordered_map<std::string, std::string> playerListNameMap;
-            for (auto& p : playerList) {
-                playerListName.push_back(p->getName());
-                playerListNameMap[p->getName()] = p->getXuid();
-            }
-            std::vector<std::string> typeList = { "tpa", "tphere" };
             std::string PlayerLanguage = tool::get(player);
             i18nLang lang("./plugins/LOICollection/language.json");
             auto form = Form::CustomForm(lang.tr(PlayerLanguage, "tpa.gui.title"));
             form.append(Form::Label("label", lang.tr(PlayerLanguage, "tpa.gui.label")));
-            form.append(Form::Dropdown("dropdown1", lang.tr(PlayerLanguage, "tpa.gui.dropdown1"), playerListName));
-            form.append(Form::Dropdown("dropdown2", lang.tr(PlayerLanguage, "tpa.gui.dropdown2"), typeList));
-            lang.close();
-            form.sendTo(player, [playerListNameMap](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
+            form.append(Form::Dropdown("dropdown1", lang.tr(PlayerLanguage, "tpa.gui.dropdown1"), tool::getAllPlayerName()));
+            form.append(Form::Dropdown("dropdown2", lang.tr(PlayerLanguage, "tpa.gui.dropdown2"), { "tpa", "tphere" }));
+            form.sendTo(player, [](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
                 if (mp.empty()) {
                     std::string PlayerLanguage = tool::get(pl);
                     i18nLang lang("./plugins/LOICollection/language.json");
@@ -54,9 +45,8 @@ namespace tpa {
                     lang.close();
                     return;
                 }
-                std::string PlayerSelectName = mp["dropdown1"]->getString();
                 std::string PlayerSelectType = mp["dropdown2"]->getString();
-                Player* PlayerSelect = tool::toXuidPlayer(playerListNameMap.at(PlayerSelectName));
+                Player* PlayerSelect = tool::toNamePlayer(mp["dropdown1"]->getString());
                 if (!getInvite(PlayerSelect)) {
                     std::string PlayerLanguage = tool::get(PlayerSelect);
                     i18nLang lang("./plugins/LOICollection/language.json");
@@ -70,7 +60,6 @@ namespace tpa {
                         contentString = std::string(LOICollectionAPI::translateString(contentString, pl, true));
                         form.setContent(contentString);
                     }
-                    lang.close();
                     form.sendTo(PlayerSelect, [pl, PlayerSelectType](Player* pl2, bool isConfirm) {
                         std::string PlayerLanguage = tool::get(pl);
                         i18nLang lang("./plugins/LOICollection/language.json");
@@ -94,6 +83,7 @@ namespace tpa {
                             return;
                         }
                     });
+                    lang.close();
                 } else {
                     std::string PlayerLanguage = tool::get(pl);
                     i18nLang lang("./plugins/LOICollection/language.json");
@@ -102,20 +92,17 @@ namespace tpa {
                     return;
                 }
             });
+            lang.close();
         }
 
         void settingGui(Player* player) {
             SQLiteDatabase db(PluginData + "/tpa.db");
             db.setTable("XUID" + player->getXuid());
-            bool defToggle1 = false;
-            if (db.get("Toggle1") == "true") defToggle1 = true;
             std::string PlayerLanguage = tool::get(player);
             i18nLang lang("./plugins/LOICollection/language.json");
             auto form = Form::CustomForm(lang.tr(PlayerLanguage, "tpa.gui.setting.title"));
             form.append(Form::Label("label", lang.tr(PlayerLanguage, "tpa.gui.setting.label")));
-            form.append(Form::Toggle("Toggle1", lang.tr(PlayerLanguage, "tpa.gui.setting.switch1"), defToggle1));
-            lang.close();
-            db.close();
+            form.append(Form::Toggle("Toggle1", lang.tr(PlayerLanguage, "tpa.gui.setting.switch1"), db.get("Toggle1") == "true" ? true : false));
             form.sendTo(player, [](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
                 if (mp.empty()) {
                     std::string PlayerLanguage = tool::get(pl);
@@ -129,6 +116,8 @@ namespace tpa {
                 db.update("Toggle1", mp["Toggle1"]->getBool() ? "true" : "false");
                 db.close();
             });
+            lang.close();
+            db.close();
         }
 
         class TpaCommand : public Command {
@@ -145,8 +134,7 @@ namespace tpa {
                                 break;
                             }
                             menuGui(ori.getPlayer());
-                            std::string playerName = ori.getName();
-                            outp.success("The UI has been opened to player " + playerName);
+                            outp.success("The UI has been opened to player " + ori.getName());
                             break;
                         }
                         case TPAOP::setting: {
@@ -155,8 +143,7 @@ namespace tpa {
                                 break;
                             }
                             settingGui(ori.getPlayer());
-                            std::string playerName = ori.getName();
-                            outp.success("The UI has been opened to player " + playerName);
+                            outp.success("The UI has been opened to player " + ori.getName());
                             break;
                         }
                         default:

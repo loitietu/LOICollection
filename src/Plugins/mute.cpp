@@ -1,4 +1,5 @@
 #include <string>
+#include <vector>
 #include <filesystem>
 #include <llapi/LoggerAPI.h>
 #include <llapi/RegCommandAPI.h>
@@ -16,17 +17,13 @@ extern Logger logger;
 namespace mute {
     namespace {
         void addGui(Player* player) {
-            std::vector<Player*> playerList =  Level::getAllPlayers();
-            std::vector<std::string> playerListName;
-            for (auto& p : playerList) playerListName.push_back(p->getName());
             std::string PlayerLanguage = tool::get(player);
             i18nLang lang("./plugins/LOICollection/language.json");
             auto form = Form::CustomForm(lang.tr(PlayerLanguage, "mute.gui.add.title"));
             form.append(Form::Label("label", lang.tr(PlayerLanguage, "mute.gui.label")));
-            form.append(Form::Dropdown("dropdown", lang.tr(PlayerLanguage, "mute.gui.add.dropdown"), playerListName));
+            form.append(Form::Dropdown("dropdown", lang.tr(PlayerLanguage, "mute.gui.add.dropdown"), tool::getAllPlayerName()));
             form.append(Form::Input("input1", lang.tr(PlayerLanguage, "mute.gui.add.input1"), "", lang.tr(PlayerLanguage, "mute.cause")));
             form.append(Form::Input("input2", lang.tr(PlayerLanguage, "mute.gui.add.input2"), "", "0"));
-            lang.close();
             form.sendTo(player, [](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
                 if (mp.empty()) {
                     std::string PlayerLanguage = tool::get(pl);
@@ -40,18 +37,15 @@ namespace mute {
                 int PlayerInputTime = tool::toInt(mp["input2"]->getString(), 0);
                 Level::runcmdEx("mute add " + PlayerSelectName + " " + PlayerInputCause + " " + std::to_string(PlayerInputTime));
             });
+            lang.close();
         }
 
         void removeGui(Player* player) {
-            std::vector<Player*> playerList =  Level::getAllPlayers();
-            std::vector<std::string> playerListName;
-            for (auto& p : playerList) playerListName.push_back(p->getName());
             std::string PlayerLanguage = tool::get(player);
             i18nLang lang("./plugins/LOICollection/language.json");
             auto form = Form::CustomForm(lang.tr(PlayerLanguage, "mute.gui.remove.title"));
             form.append(Form::Label("label", lang.tr(PlayerLanguage, "mute.gui.label")));
-            form.append(Form::Dropdown("dropdown", lang.tr(PlayerLanguage, "mute.gui.remove.dropdown"), playerListName));
-            lang.close();
+            form.append(Form::Dropdown("dropdown", lang.tr(PlayerLanguage, "mute.gui.remove.dropdown"), tool::getAllPlayerName()));
             form.sendTo(player, [](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
                 if (mp.empty()) {
                     std::string PlayerLanguage = tool::get(pl);
@@ -63,6 +57,7 @@ namespace mute {
                 std::string PlayerSelectString = mp["dropdown"]->getString();
                 Level::runcmdEx("mute remove " + PlayerSelectString);
             });
+            lang.close();
         }
 
         void menuGui(Player* player) {
@@ -71,7 +66,6 @@ namespace mute {
             auto form = Form::SimpleForm(lang.tr(PlayerLanguage, "mute.gui.title"), lang.tr(PlayerLanguage, "mute.gui.label"));
             form.addButton(lang.tr(PlayerLanguage, "mute.gui.addMute"), "textures/ui/backup_replace");
             form.addButton(lang.tr(PlayerLanguage, "mute.gui.removeMute"), "textures/ui/free_download_symbol");
-            lang.close();
             form.sendTo(player, [](Player* pl, int id) {
                 if (id == -1) {
                     std::string PlayerLanguage = tool::get(pl);
@@ -89,6 +83,7 @@ namespace mute {
                         break;
                 }
             });
+            lang.close();
         }
 
         class MuteCommand : public Command {
@@ -149,9 +144,8 @@ namespace mute {
                                 outp.error("Mute: No player selected.");
                                 break;
                             }
-                            std::string playerName = ori.getName();
                             menuGui(ori.getPlayer());
-                            outp.success("The UI has been opened to player " + playerName);
+                            outp.success("The UI has been opened to player " + ori.getName());
                             break;
                         }
                         default:
@@ -194,14 +188,16 @@ namespace mute {
                     std::string MuteCause = db.get("Cause");
                     if (tool::isReach(timeString)) {
                         db.removeTable("XUID" + xuid);
-                        db.close();
                         logger.info(LOICollectionAPI::translateString(lang.tr(PlayerLanguage, "mute.log2"), e.mPlayer, true));
+                        lang.close();
+                        db.close();
                         return true;
                     }
                     e.mPlayer->sendTextPacket(MuteCause);
                     std::string log3 = lang.tr(PlayerLanguage, "mute.log3");
                     log3 = tool::replaceString(log3, "${message}", e.mMessage);
                     logger.info(LOICollectionAPI::translateString(log3, e.mPlayer, true));
+                    lang.close();
                     db.close();
                     return false;
                 } else {

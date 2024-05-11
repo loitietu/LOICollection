@@ -38,7 +38,6 @@ void update(const std::string* versionInfo) {
     logger.info("开始加载配置文件");
     std::ifstream configFile(PluginDirectory + "/config.json");
     nlohmann::ordered_json config;
-    nlohmann::ordered_json configArray = nlohmann::ordered_json::array();
     configFile >> config;
     configFile.close();
     if (!config.contains("FakeSeed")) config["FakeSeed"] = 114514;
@@ -48,7 +47,7 @@ void update(const std::string* versionInfo) {
     if (!config.contains("Menu")) config["Menu"] = {{"Enable", false},{"ItemId", "minecraft:clock"}};
     if (!config.contains("Tpa")) config["Tpa"] = false;
     if (!config.contains("Shop")) config["Shop"] = false;
-    if (!config.contains("Monitor")) config["Monitor"] = {{"Enable", false},{"join", "{player}加入了服务器"},{"left", "{player}退出了服务器"},{"llmoney", "§e§l检测到LLMoney发生变化 §b原值: §f${OriMoney} §a更改: §f${SetMoney} §e现值: §f${GetMoney}"},{"command", configArray},{"tips", "该指令已被禁用"}};
+    if (!config.contains("Monitor")) config["Monitor"] = {{"Enable", false},{"join", "{player}加入了服务器"},{"left", "{player}退出了服务器"},{"llmoney", "§e§l检测到LLMoney发生变化 §b原值: §f${OriMoney} §a更改: §f${SetMoney} §e现值: §f${GetMoney}"},{"command", nlohmann::ordered_json::array()},{"tips", "该指令已被禁用"}};
     if (!config.contains("Pvp")) config["Pvp"] = false;
     if (!config.contains("Wallet")) config["Wallet"] = {{"Enable", false},{"llmoney", true},{"score", "money"},{"tax", 0.1}};
     if (!config.contains("Chat")) config["Chat"] = {{"Enable", false},{"chat","<{player}> ${chat}"}};

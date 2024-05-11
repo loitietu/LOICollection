@@ -197,12 +197,10 @@ namespace menu {
                                 break;
                             }
                             if (uiName == "main") {
-                                std::string playerName = ori.getName();
-                                outp.success("Menu: The UI has been opened to player " + playerName);
+                                outp.success("Menu: The UI has been opened to player " + ori.getName());
                                 menuGui(ori.getPlayer(), uiName);
                             } else if (ori.getPlayer()->isOP()) {
-                                std::string playerName = ori.getName();
-                                outp.success("Menu: The UI has been opened to player " + playerName);
+                                outp.success("Menu: The UI has been opened to player " + ori.getName());
                                 menuGui(ori.getPlayer(), uiName);
                             } else {
                                 outp.error("Menu: No permission to open the Setting.");
@@ -217,13 +215,12 @@ namespace menu {
                             nlohmann::ordered_json data = tool::getJson("./plugins/LOICollection/config.json")["Menu"];
                             std::string ItemId = data["ItemId"].template get<std::string>();
                             auto* item = ItemStack::create(ItemId, 1);
-                            bool isItemNull = item->isNull();
                             ori.getPlayer()->giveItem(item);
+                            if (!item->isNull()) { 
+                                outp.success("Menu: The MenuItem has been given to player " + ori.getName());
+                            } else outp.error("Menu: Failed to give the MenuItem to player " + ori.getName());
                             data.clear();
                             delete item;
-                            std::string playerName = ori.getName();
-                            if (!isItemNull) outp.success("Menu: The MenuItem has been given to player " + playerName);
-                            else outp.error("Menu: Failed to give the MenuItem to player " + playerName);
                             break;
                         }
                         default:
@@ -252,7 +249,10 @@ namespace menu {
             Event::PlayerUseItemEvent::subscribe([](const Event::PlayerUseItemEvent& e) {
                 nlohmann::ordered_json data = tool::getJson("./plugins/LOICollection/config.json")["Menu"];
                 std::string ItemId = data["ItemId"].template get<std::string>();
-                if (e.mItemStack->getTypeName() == ItemId) menuGui(e.mPlayer, "main");
+                if (e.mItemStack->getTypeName() == ItemId) {
+                    menuGui(e.mPlayer, "main");
+                }
+                data.clear();
                 return true;
             });
             Event::PlayerJoinEvent::subscribe([](const Event::PlayerJoinEvent& e) {
@@ -271,8 +271,8 @@ namespace menu {
 
     void load(int* OpenPlugin) {
         (*OpenPlugin)++;
-        listen();
         JsonManager database(PluginData + "/menu.json");
         database.save();
+        listen();
     }
 }

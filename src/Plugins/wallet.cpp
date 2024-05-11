@@ -22,8 +22,7 @@ namespace wallet {
             std::string PlayerLanguage = tool::get(player);
             i18nLang lang("./plugins/LOICollection/language.json");
             std::string ScoreboardID = data["score"];
-            std::string labelString = lang.tr(PlayerLanguage, "wallet.gui.label");
-            labelString = std::string(LOICollectionAPI::translateString(labelString, player, true));
+            std::string labelString = std::string(LOICollectionAPI::translateString(lang.tr(PlayerLanguage, "wallet.gui.label"), player, true));
             labelString = tool::replaceString(labelString, "${tax}", std::to_string((float) data["tax"]));
             if ((bool) data["llmoney"]) {
                 labelString = tool::replaceString(labelString, "${money}", std::to_string(tool::llmoney::get(player)));
@@ -32,19 +31,11 @@ namespace wallet {
                 player->addScore(ScoreboardID, 0);
                 labelString = tool::replaceString(labelString, "${money}", std::to_string(player->getScore(ScoreboardID)));
             }
-            std::vector<Player*> playerList =  Level::getAllPlayers();
-            std::vector<std::string> playerListName;
-            std::unordered_map<std::string, std::string> playerListNameMap;
-            for (auto& p : playerList) {
-                playerListName.push_back(p->getName());
-                playerListNameMap[p->getName()] = p->getXuid();
-            }
             auto form = Form::CustomForm(lang.tr(PlayerLanguage, "wallet.gui.title"));
             form.append(Form::Label("label", labelString));
-            form.append(Form::Dropdown("dropdown", lang.tr(PlayerLanguage, "wallet.gui.stepslider.dropdown"), playerListName));
+            form.append(Form::Dropdown("dropdown", lang.tr(PlayerLanguage, "wallet.gui.stepslider.dropdown"), tool::getAllPlayerName()));
             form.append(Form::Input("input", lang.tr(PlayerLanguage, "wallet.gui.stepslider.input"), "", "100"));
-            lang.close();
-            form.sendTo(player, [data, ScoreboardID, playerListNameMap](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
+            form.sendTo(player, [data, ScoreboardID](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
                 std::string PlayerLanguage = tool::get(pl);
                 i18nLang lang("./plugins/LOICollection/language.json");
                 if (mp.empty()) {
@@ -55,8 +46,7 @@ namespace wallet {
                 int money = tool::toInt(mp["input"]->getString(), 0);
                 int moneys = (money - money * (float) data["tax"]);
                 if (moneys < 0) moneys = (moneys * -1);
-                std::string PlayerSelectName = mp["dropdown"]->getString();
-                Player* PlayerSelect = tool::toXuidPlayer(playerListNameMap.at(PlayerSelectName));
+                Player* PlayerSelect = tool::toNamePlayer(mp["dropdown"]->getString());
                 if (tool::llmoney::get(pl) >= money && (bool) data["llmoney"]) {
                     tool::llmoney::reduce(pl, money);
                     tool::llmoney::add(PlayerSelect, moneys);
@@ -71,13 +61,14 @@ namespace wallet {
                 logger.info(log);
                 lang.close();
             });
+            lang.close();
+            data.clear();
         }
 
         void wealth(Player* player) {
             nlohmann::ordered_json data = tool::getJson("./plugins/LOICollection/config.json")["Wallet"];
-            std::string PlayerLanguage = tool::get(player);
             i18nLang lang("./plugins/LOICollection/language.json");
-            std::string wealthString = lang.tr(PlayerLanguage, "wallet.showOff");
+            std::string wealthString = lang.tr(tool::get(player), "wallet.showOff");
             wealthString = std::string(LOICollectionAPI::translateString(wealthString, player, true));
             wealthString = tool::replaceString(wealthString, "${tax}", std::to_string((float) data["tax"]));
             if ((bool) data["llmoney"]) {
@@ -89,6 +80,7 @@ namespace wallet {
                 wealthString = tool::replaceString(wealthString, "${money}", std::to_string(player->getScore(ScoreboardID)));
             }
             Level::broadcastText(wealthString, TextType::SYSTEM);
+            data.clear();
             lang.close();
         }
 
@@ -96,7 +88,6 @@ namespace wallet {
             nlohmann::ordered_json data = tool::getJson("./plugins/LOICollection/config.json")["Wallet"];
             std::string PlayerLanguage = tool::get(player);
             i18nLang lang("./plugins/LOICollection/language.json");
-            std::vector<std::string> stepsliderList = { "transfer", "wealth" };
             std::string labelString = lang.tr(PlayerLanguage, "wallet.gui.label");
             labelString = std::string(LOICollectionAPI::translateString(labelString, player, true));
             labelString = tool::replaceString(labelString, "${tax}", std::to_string((float) data["tax"]));
@@ -110,8 +101,7 @@ namespace wallet {
             }
             auto form = Form::CustomForm(lang.tr(PlayerLanguage, "wallet.gui.title"));
             form.append(Form::Label("label", labelString));
-            form.append(Form::StepSlider("stepslider", lang.tr(PlayerLanguage, "wallet.gui.stepslider"), stepsliderList));
-            lang.close();
+            form.append(Form::StepSlider("stepslider", lang.tr(PlayerLanguage, "wallet.gui.stepslider"), { "transfer", "wealth" }));
             form.sendTo(player, [](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
                 if (mp.empty()) {
                     std::string PlayerLanguage = tool::get(pl);
@@ -127,6 +117,8 @@ namespace wallet {
                     wealth(pl);
                 }
             });
+            lang.close();
+            data.clear();
         }
 
         class WalletCommand : public Command {
@@ -142,8 +134,7 @@ namespace wallet {
                                 break;
                             }
                             menuGui(ori.getPlayer());
-                            std::string playerName = ori.getName();
-                            outp.success("The UI has been opened to player " + playerName);
+                            outp.success("The UI has been opened to player " + ori.getName());
                             break;
                         }
                         default:

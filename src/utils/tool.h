@@ -20,6 +20,7 @@ namespace tool {
     bool isItemPlayerInventory(Player* player, ItemStack* item);
     int toInt(const std::string& intString, int defaultValue);
     std::vector<std::string> split(const std::string& s, char delimiter);
+    std::vector<std::string> getAllPlayerName();
     Player* toXuidPlayer(const std::string& xuid);
     Player* toNamePlayer(const std::string& name);
     nlohmann::ordered_json getJson(const std::string& path);

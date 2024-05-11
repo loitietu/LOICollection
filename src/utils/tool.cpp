@@ -142,6 +142,15 @@ namespace tool {
         return tokens;
     }
 
+    std::vector<std::string> getAllPlayerName() {
+        std::vector<Player*> players = Global<Level>->getAllPlayers();
+        std::vector<std::string> names;
+        for (auto& player : players) {
+            names.push_back(player->getName());
+        }
+        return names;
+    }
+
     Player* toXuidPlayer(const std::string& xuid) {
         return Global<Level>->getPlayer(xuid);
     }

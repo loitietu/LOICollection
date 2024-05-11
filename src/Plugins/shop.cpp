@@ -48,8 +48,7 @@ namespace shop {
                             } else {
                                 ScoreboardListString = "None";
                             }
-                            std::string introduce = item["introduce"];
-                            introduce = std::string(tool::replaceString(introduce, "${llmoney}", std::to_string(llmoney)));
+                            std::string introduce = std::string(tool::replaceString(item["introduce"], "${llmoney}", std::to_string(llmoney)));
                             introduce = std::string(tool::replaceString(introduce, "${scores}", ScoreboardListString));
                             auto form = Form::CustomForm(shopDatabase["title"]);
                             form.append(Form::Label("label", introduce));
@@ -78,8 +77,7 @@ namespace shop {
                                         pl2->reduceScore(it.key(), (score * buyNumber));
                                     }
                                     ScoreboardList.clear();
-                                    std::string itemStackId = item["id"].template get<std::string>();
-                                    auto* itemStack = ItemStack::create(itemStackId, buyNumber);
+                                    auto* itemStack = ItemStack::create(item["id"].template get<std::string>(), buyNumber);
                                     itemStack->setCustomName(item["name"]);
                                     pl2->giveItem(itemStack);
                                     delete itemStack;
@@ -103,8 +101,7 @@ namespace shop {
                                 } else {
                                     ScoreboardListString = "None";
                                 }
-                                std::string introduce = item["introduce"];
-                                introduce = std::string(tool::replaceString(introduce, "${llmoney}", std::to_string(llmoney)));
+                                std::string introduce = std::string(tool::replaceString(item["introduce"], "${llmoney}", std::to_string(llmoney)));
                                 introduce = std::string(tool::replaceString(introduce, "${scores}", ScoreboardListString));
                                 auto form = Form::ModalForm(shopDatabase["title"], introduce, item["confirmButton"], item["cancelButton"]);
                                 form.sendTo(pl, [shopDatabase, item, llmoney](Player* pl2, bool isConfirm) {
@@ -127,10 +124,9 @@ namespace shop {
                                                 pl2->reduceScore(it.key(), score);
                                             }
                                             ScoreboardList.clear();
-                                            std::string titleId = item["id"].template get<std::string>();
                                             SQLiteDatabase db(PluginData + "/chat.db");
                                             db.setTable("XUID" + pl2->getXuid() + "TITLE");
-                                            db.set(titleId, "true");
+                                            db.set(item["id"].template get<std::string>(), "true");
                                             db.close();
                                         } else {
                                             pl2->sendTextPacket(shopDatabase["NoScore"]);
@@ -176,8 +172,7 @@ namespace shop {
                             } else {
                                 ScoreboardListString = "None";
                             }
-                            std::string introduce = item["introduce"];
-                            introduce = std::string(tool::replaceString(introduce, "${llmoney}", std::to_string(llmoney)));
+                            std::string introduce = std::string(tool::replaceString(item["introduce"], "${llmoney}", std::to_string(llmoney)));
                             introduce = std::string(tool::replaceString(introduce, "${scores}", ScoreboardListString));
                             auto form = Form::CustomForm(shopDatabase["title"]);
                             form.append(Form::Label("label", introduce));
@@ -189,8 +184,7 @@ namespace shop {
                                 }
                                 int llmoney = item["llmoney"].template get<int>();
                                 int sellNumber = mp["slider"]->getInt();
-                                std::string itemStackId = item["id"].template get<std::string>();
-                                auto* itemStack = ItemStack::create(itemStackId, sellNumber);
+                                auto* itemStack = ItemStack::create(item["id"].template get<std::string>(), sellNumber);
                                 if (tool::isItemPlayerInventory(pl2, itemStack)) {
                                     tool::clearItem(pl2, itemStack);
                                     tool::llmoney::add(pl2, (llmoney * sellNumber));
@@ -221,8 +215,7 @@ namespace shop {
                                 } else {
                                     ScoreboardListString = "None";
                                 }
-                                std::string introduce = item["introduce"];
-                                introduce = std::string(tool::replaceString(introduce, "${llmoney}", std::to_string(llmoney)));
+                                std::string introduce = std::string(tool::replaceString(item["introduce"], "${llmoney}", std::to_string(llmoney)));
                                 introduce = std::string(tool::replaceString(introduce, "${scores}", ScoreboardListString));
                                 auto form = Form::ModalForm(shopDatabase["title"], introduce, item["confirmButton"], item["cancelButton"]);
                                 form.sendTo(pl, [shopDatabase, item](Player* pl2, bool isConfirm) {
@@ -234,7 +227,9 @@ namespace shop {
                                         if (db.exists(titleId)) {
                                             db.remove(titleId);
                                             db.setTable("XUID" + pl2->getXuid());
-                                            if (db.get("title") == titleId) db.update("title", "None");
+                                            if (db.get("title") == titleId) {
+                                                db.update("title", "None");
+                                            }
                                             tool::llmoney::add(pl2, llmoney);
                                             nlohmann::ordered_json ScoreboardList = item.at("scores");
                                             for (nlohmann::ordered_json::iterator it = ScoreboardList.begin(); it != ScoreboardList.end(); ++it) {
@@ -261,6 +256,8 @@ namespace shop {
                             ShopGui(pl, item["menu"]);
                         }
                     });
+                    shopDatabase.clear();
+                    itemLists.clear();
                 } else {
                     return;
                 }
@@ -284,8 +281,7 @@ namespace shop {
                                 break;
                             }
                             ShopGui(ori.getPlayer(), "MainBuy");
-                            std::string playerName = ori.getName();
-                            outp.success("The UI has been opened to player " + playerName);
+                            outp.success("The UI has been opened to player " + ori.getName());
                             break;
                         }
                         case SHOP::sell: {
@@ -294,8 +290,7 @@ namespace shop {
                                 break;
                             }
                             ShopGui(ori.getPlayer(), "MainSell");
-                            std::string playerName = ori.getName();
-                            outp.success("The UI has been opened to player " + playerName);
+                            outp.success("The UI has been opened to player " + ori.getName());
                             break;
                         }
                         default:
@@ -325,8 +320,8 @@ namespace shop {
 
     void load(int* OpenPlugin) {
         (*OpenPlugin)++;
-        listen();
         JsonManager database(PluginData + "/shop.json");
         database.save();
+        listen();
     }
 }

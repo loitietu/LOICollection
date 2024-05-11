@@ -17,19 +17,14 @@ extern Logger logger;
 namespace blacklist {
     namespace {
         void addGui(Player* player) {
-            std::vector<Player*> playerList =  Level::getAllPlayers();
-            std::vector<std::string> playerListName;
-            for (auto& p : playerList) playerListName.push_back(p->getName());
             std::string PlayerLanguage = tool::get(player);
             i18nLang lang("./plugins/LOICollection/language.json");
-            std::vector<std::string> typeList = { "ip", "xuid" };
             auto form = Form::CustomForm(lang.tr(PlayerLanguage, "blacklist.gui.add.title"));
             form.append(Form::Label("label", lang.tr(PlayerLanguage, "blacklist.gui.label")));
-            form.append(Form::Dropdown("dropdown1", lang.tr(PlayerLanguage, "blacklist.gui.add.dropdown1"), playerListName));
-            form.append(Form::Dropdown("dropdown2", lang.tr(PlayerLanguage, "blacklist.gui.add.dropdown2"), typeList));
+            form.append(Form::Dropdown("dropdown1", lang.tr(PlayerLanguage, "blacklist.gui.add.dropdown1"), tool::getAllPlayerName()));
+            form.append(Form::Dropdown("dropdown2", lang.tr(PlayerLanguage, "blacklist.gui.add.dropdown2"), { "ip", "xuid" }));
             form.append(Form::Input("input1", lang.tr(PlayerLanguage, "blacklist.gui.add.input1"), "", lang.tr(PlayerLanguage, "blacklist.cause")));
             form.append(Form::Input("input2", lang.tr(PlayerLanguage, "blacklist.gui.add.input2"), "", "0"));
-            lang.close();
             form.sendTo(player, [](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
                 if (mp.empty()) {
                     std::string PlayerLanguage = tool::get(pl);
@@ -44,6 +39,7 @@ namespace blacklist {
                 int time = tool::toInt(mp["input2"]->getString(), 0);
                 Level::runcmdEx("blacklist add " + PlayerSelectType + " " + PlayerSelectName + " " + PlayerInputCause + " " + std::to_string(time));
             });
+            lang.close();
         }
 
         void removeGui(Player* player) {
@@ -53,8 +49,6 @@ namespace blacklist {
             auto form = Form::CustomForm(lang.tr(PlayerLanguage, "blacklist.gui.remove.title"));
             form.append(Form::Label("label", lang.tr(PlayerLanguage, "blacklist.gui.label")));
             form.append(Form::Dropdown("dropdown", lang.tr(PlayerLanguage, "blacklist.gui.remove.dropdown"), db.list()));
-            lang.close();
-            db.close();
             form.sendTo(player, [](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
                 if (mp.empty()) {
                     std::string PlayerLanguage = tool::get(pl);
@@ -66,6 +60,8 @@ namespace blacklist {
                 std::string PlayerSelectString = mp["dropdown"]->getString();
                 Level::runcmdEx("blacklist remove " + PlayerSelectString);
             });
+            lang.close();
+            db.close();
         }
 
         void menuGui(Player* player) {
@@ -183,16 +179,17 @@ namespace blacklist {
                                 outp.error("Blacklist: No player selected.");
                                 break;
                             }
-                            std::string playerName = ori.getName();
                             menuGui(ori.getPlayer());
-                            outp.success("The UI has been opened to player " + playerName);
+                            outp.success("The UI has been opened to player " + ori.getName());
                             break;
                         }
                         case BLACKLISTOP::list: {
                             std::vector<std::string> listPlayer = db.list();
                             std::stringstream ss;
                             for (const auto& pl : listPlayer) ss << pl << ",";
-                            outp.success("Blacklist: Add list - " + ss.str());
+                            std::string blacklistList = ss.str();
+                            blacklistList.pop_back();
+                            outp.success("Blacklist: Add list - " + blacklistList);
                             break;
                         }
                         default:
