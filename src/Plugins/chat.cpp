@@ -23,8 +23,8 @@ namespace chat {
             i18nLang lang("./plugins/LOICollection/language.json");
             auto form = Form::CustomForm(lang.tr(PlayerLanguage, "chat.gui.title"));
             form.append(Form::Label("label", lang.tr(PlayerLanguage, "chat.gui.label")));
-            form.append(Form::Input("input1", "", lang.tr(PlayerLanguage, "chat.gui.manager.add.input1"), "None"));
-            form.append(Form::Input("input2", "", lang.tr(PlayerLanguage, "chat.gui.manager.add.input2"), "0"));
+            form.append(Form::Input("input1", lang.tr(PlayerLanguage, "chat.gui.manager.add.input1"), "", "None"));
+            form.append(Form::Input("input2", lang.tr(PlayerLanguage, "chat.gui.manager.add.input2"), "", "0"));
             form.append(Form::Dropdown("dropdown", lang.tr(PlayerLanguage, "chat.gui.manager.add.dropdown"), tool::getAllPlayerName()));
             form.sendTo(player, [](Player* pl, std::map<std::string, std::shared_ptr<Form::CustomFormElement>> mp) {
                 if (mp.empty()) {
@@ -34,9 +34,9 @@ namespace chat {
                     lang.close();
                     return;
                 }
-                int time = tool::toInt(mp["input2"]->getString(), 0);
                 std::string title = mp["input1"]->getString();
                 std::string playerName = mp["dropdown"]->getString();
+                int time = tool::toInt(mp["input2"]->getString(), 0);
                 Level::runcmdAs(pl, "chat add " + playerName + " " + title + " " + std::to_string(time));
             });
             lang.close();

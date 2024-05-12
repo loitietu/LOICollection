@@ -125,6 +125,7 @@ static const nlohmann::ordered_json CNLangData = {
     {"market.gui.sell.sellItem.tips4", "§c您没有足够的分数购买这个物品"},
     {"market.gui.sell.sellItemContent.button1", "§c下架物品\n§4下架该物品"},
     {"market.gui.sell.buy.button1", "§e购买物品\n§4购买当前物品"},
+    {"market.gui.sell.buy.button2", "§a预览物品\n§4预览当前物品"}
 };
 
 static const nlohmann::ordered_json defaultLangData = {

@@ -54,6 +54,7 @@ namespace market {
                 introduce = tool::replaceString(introduce, "${player}", db.getMap(idString, "player"));
                 auto form = Form::SimpleForm(lang.tr(PlayerLanguage, "market.gui.title"), introduce);
                 form.addButton(lang.tr(PlayerLanguage, "market.gui.sell.buy.button1"), "");
+                form.addButton(lang.tr(PlayerLanguage, "market.gui.sell.buy.button2"), "");
                 if (pl->isOP()) form.addButton(lang.tr(PlayerLanguage, "market.gui.sell.sellItemContent.button1"), "");
                 form.sendTo(pl, [idString, UploadPlayer](Player* pl2, int id) {
                     std::string PlayerLanguage = tool::get(pl2);
@@ -99,6 +100,18 @@ namespace market {
                             break;
                         }
                         case 1: {
+                            if (pl2->getHandSlot()->isNull()) {
+                                db.setTable(UploadPlayer + "LIST");
+                                auto* item = ItemStack::create(CompoundTag::fromSNBT(db.getMap(idString, "nbt")));
+                                auto* handSlotItem = pl2->getHandSlot();
+                                handSlotItem->setItem(item);
+                                pl2->refreshInventory();
+                                handSlotItem->remove(item->getCount());
+                                delete item;
+                            }
+                            break;
+                        }
+                        case 2: {
                             db.setTable(UploadPlayer + "LIST");
                             std::string name = db.getMap(idString, "name");
                             std::string tips = lang.tr(PlayerLanguage, "market.gui.sell.sellItem.tips3");
@@ -153,22 +166,20 @@ namespace market {
                         index++;
                     }
                     ItemStack* item = pl->getHandSlot();
-                    auto snbt = const_cast<ItemStack*>(item)->getNbt()->toSNBT();
-                    int count = item->getCount();
                     std::string mapName = "Item" + std::to_string(index);
                     db.createMap(mapName);
                     db.setMap(mapName, "name", itemName);
                     db.setMap(mapName, "icon", itemIcon);
                     db.setMap(mapName, "introduce", introduce);
                     db.setMap(mapName, "llmoney", std::to_string(price));
-                    db.setMap(mapName, "nbt", snbt);
+                    db.setMap(mapName, "nbt", const_cast<ItemStack*>(item)->getNbt()->toSNBT());
                     db.setMap(mapName, "xuid", pl->getXuid());
                     db.setMap(mapName, "player", pl->getRealName());
                     db.setTable("Item");
                     db.set("XUID" + pl->getXuid() + mapName, "XUID" + pl->getXuid());
-                    db.close();
-                    item->remove(count);
+                    item->remove(item->getCount());
                     pl->refreshInventory();
+                    db.close();
                 } else {
                     pl->sendTextPacket(lang.tr(PlayerLanguage, "market.gui.sell.sellItem.tips1"));
                 }

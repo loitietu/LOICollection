@@ -46,8 +46,9 @@ namespace tool {
 
     std::string replaceString(std::string str, const std::string& from, const std::string& to) {
         for (std::string::size_type pos(0); pos != std::string::npos; pos += to.length()) {
-            if ((pos = str.find(from, pos)) != std::string::npos) str.replace(pos, from.length(), to);
-            else break;
+            if ((pos = str.find(from, pos)) != std::string::npos) {
+                str.replace(pos, from.length(), to);
+            } else break;
         }
         return str;
     }

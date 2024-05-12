@@ -144,10 +144,6 @@ void PluginInit() {
     loadBuilt();
 }
 
-/**
- * @Plugin FakeSeed
- * @Reference repositories: https://github.com/LiteLDev/LLEssentials
- */
 THook(void*, "?write@StartGamePacket@@UEBAXAEAVBinaryStream@@@Z", void* a, void* b) {
     if (FakeSeed) dAccess<int64_t, 48>(a) = FakeSeed;
     return original(a, b);
