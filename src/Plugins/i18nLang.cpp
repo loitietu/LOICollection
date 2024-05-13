@@ -21,7 +21,7 @@ std::string i18nLang::tr(const std::string& lang, const std::string& title) {
         std::string langTitle = language[lang][title].template get<std::string>();
         return langTitle;
     } else {
-        logger.error("Language key not found!");
+        logger.error("{} Language key {} not found!", lang, title);
         return "None";
     }
 }
