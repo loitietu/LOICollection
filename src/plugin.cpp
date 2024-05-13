@@ -41,6 +41,7 @@ void update(const std::string* versionInfo) {
     configFile >> config;
     configFile.close();
     if (!config.contains("FakeSeed")) config["FakeSeed"] = 114514;
+    if (!config.contains("language")) config["language"] = {{"update", true}};
     if (!config.contains("Blacklist")) config["Blacklist"] = false;
     if (!config.contains("Mute")) config["Mute"] = false;
     if (!config.contains("Cdk")) config["Cdk"] = false;
@@ -58,15 +59,17 @@ void update(const std::string* versionInfo) {
         logger.info("配置文件版本: " + configVersion);
         logger.info("插件版本: " + (*versionInfo));
         config["version"] = (*versionInfo);
-        nlohmann::ordered_json langData;
-        std::ifstream languageFile(PluginDirectory + "/language.json");
-        languageFile >> langData;
-        languageFile.close();
-        langData["zh_CN"] = CNLangData;
-        std::ofstream languageNewFile(PluginDirectory + "/language.json");
-        languageNewFile << langData.dump(4);
-        languageNewFile.close();
-        langData.clear();
+        if (config["language"]["update"].template get<bool>()) {
+            nlohmann::ordered_json langData;
+            std::ifstream languageFile(PluginDirectory + "/language.json");
+            languageFile >> langData;
+            languageFile.close();
+            langData["zh_CN"] = CNLangData;
+            std::ofstream languageNewFile(PluginDirectory + "/language.json");
+            languageNewFile << langData.dump(4);
+            languageNewFile.close();
+            langData.clear();
+        }
         logger.info("数据文件已更新");
     }
     blacklistPlugin = config["Blacklist"].template get<bool>();

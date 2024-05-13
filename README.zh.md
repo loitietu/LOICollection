@@ -32,8 +32,11 @@ Market | $\color{#00FF00}{√}$
 3. 打开后，您会看到类似以下内容的内容：
 ```json
 {
-    "version": "1.3.1",
+    "version": "1.3.5",
     "FakeSeed": 114514,
+    "language": {
+        "update": true
+    },
     "Blacklist": false,
     "Mute": false, 
     "Cdk": false,

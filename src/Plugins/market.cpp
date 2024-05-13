@@ -108,6 +108,8 @@ namespace market {
                                 pl2->refreshInventory();
                                 handSlotItem->remove(item->getCount());
                                 delete item;
+                            } else {
+                                pl2->sendTextPacket(lang.tr(PlayerLanguage, "market.gui.sell.sellItem.tips5"));
                             }
                             break;
                         }
